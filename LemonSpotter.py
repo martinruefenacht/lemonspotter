@@ -6,9 +6,14 @@ import os
 import argparse
 import subprocess
 
+from src.MPI_Element import MPI_Element
+
 
 def main():
-	generate_test("test.c")
+
+	elements = []
+
+	generate_test("test.c", elements)
 	run_process("mpicc test.c -o test")
 	run_process("mpiexec -n 4 ./test")
 	clean_test("test.c")
@@ -24,11 +29,12 @@ def run_process(command):
 	process = subprocess.Popen(command, cwd="tests/", stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 	stdout, stderr = process.communicate()
 	print(stdout)
+	print(stderr)
 
 
 # Generates a test file that includes the MPI_Elements that are passed to it. 
 def generate_test(file_name, MPI_Elements=[]):
-	
+
 	# Generates test file 
 	f = open("tests/" + file_name, "w+")
 
@@ -40,12 +46,16 @@ def generate_test(file_name, MPI_Elements=[]):
 
 	# Writes the MPI elements to C test file
 	for element in MPI_Elements:
-		f.write(element.text + "\n")
+		f.write("\t"+element.text + "\n")
 
 	f.write("return 0;\n")
 	f.write("}\n")
 	
 	f.close()
+
+
+def add_dependency(element):
+	print("add_dependency(): NEEDS TO BE IMPLEMENTED")
 
 
 
