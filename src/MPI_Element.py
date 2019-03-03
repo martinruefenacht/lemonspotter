@@ -11,8 +11,9 @@ class MPI_Element:
 
 
 	def add_dependency(self, to_add):
-		self.dependencies = to_add
+		self.dependencies.append(to_add)
 
 
-	def save():
+	def get_dependency_list(self):
+		return self.dependencies
 		
