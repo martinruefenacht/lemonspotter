@@ -9,11 +9,13 @@ class MPI_Element:
 		self.dependencies = []
 
 
-
 	def add_dependency(self, to_add):
 		self.dependencies.append(to_add)
 
 
 	def get_dependency_list(self):
 		return self.dependencies
+
+	def getName(self):
+		return self.name
 		
