@@ -11,7 +11,18 @@ from src.MPI_Element import MPI_Element
 
 def main():
 
-	elements = []
+	init = MPI_Element("MPI_Init()", "\tMPI_Init(&argc, &argv);\n")
+	finalize = MPI_Element("MPI_Finalize", "\tMPI_Finalize();\n")
+
+	finalize.add_dependency(init)
+
+
+
+	elements = [finalize]
+	elements2 = elements
+
+	for x in elements:
+		elements2.append(add_dependency(x))
 
 	generate_test("test.c", elements)
 	run_process("mpicc test.c -o test")
@@ -55,7 +66,8 @@ def generate_test(file_name, MPI_Elements=[]):
 
 
 def add_dependency(element):
-	print("add_dependency(): NEEDS TO BE IMPLEMENTED")
+	
+
 
 
 
