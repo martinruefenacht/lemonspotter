@@ -9,28 +9,6 @@ import subprocess
 from src.MPI_Element import MPI_Element
 
 
-def main():
-
-	init = MPI_Element("MPI_Init()", "\tMPI_Init(&argc, &argv);\n")
-	finalize = MPI_Element("MPI_Finalize", "\tMPI_Finalize();\n")
-
-	finalize.add_dependency(init)
-
-
-
-	elements = [finalize]
-	elements2 = elements
-
-	for x in elements:
-		elements2.append(add_dependency(x))
-
-	generate_test("test.c", elements)
-	run_process("mpicc test.c -o test")
-	run_process("mpiexec -n 4 ./test")
-	clean_test("test.c")
-	clean_test("test")
-
-
 
 # Runs the paramter command passed as a string. 
 # Prints what would normally be output to terminal.
@@ -65,15 +43,29 @@ def generate_test(file_name, MPI_Elements=[]):
 	f.close()
 
 
-def add_dependency(element):
-	
-
-
 
 
 # Cleans up test after runtime
 def clean_test(file_name):
 	os.remove("tests/" + file_name)
+
+
+
+# Main runtime for LemonSpotter
+def main():
+
+	init = MPI_Element("MPI_Init()", "\tMPI_Init(&argc, &argv);\n")
+	finalize = MPI_Element("MPI_Finalize", "\tMPI_Finalize();\n")
+
+
+	elements = [init, finalize] 
+
+	generate_test("test.c", elements)
+	run_process("mpicc test.c -o test")
+	run_process("mpiexec -n 4 ./test")
+	clean_test("test.c")
+	clean_test("test")
+
 
 
 if __name__ == "__main__":
