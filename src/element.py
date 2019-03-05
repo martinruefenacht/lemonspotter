@@ -1,6 +1,6 @@
 import os
 
-class MPI_Element:
+class element:
 
 
 	def __init__(self, name, text):

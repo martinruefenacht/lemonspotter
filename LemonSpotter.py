@@ -6,7 +6,12 @@ import os
 import argparse
 import subprocess
 
-from src.MPI_Element import MPI_Element
+from src.element import element
+
+
+
+# Loads an element from JSON
+def load(file_path):
 
 
 
