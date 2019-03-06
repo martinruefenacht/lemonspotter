@@ -3,10 +3,10 @@ import os
 class element:
 
 
-	def __init__(self, name, text):
+	def __init__(self, name, text, dependencies=[]):
 		self.name = name
 		self.text = text
-		self.dependencies = []
+		self.dependencies = dependencies
 
 
 	def add_dependency(self, to_add):
