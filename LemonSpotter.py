@@ -3,6 +3,7 @@ LemonSpotter: An incremental test suite for the MPI standard
 '''
 
 import os
+import json
 import argparse
 import subprocess
 
@@ -10,8 +11,17 @@ from src.element import element
 
 
 
-# Loads an element from JSON
-def load(file_path):
+# Loads an element from JSON db
+# Returns an element object populated from json
+def load_element(file_path):
+	file = open(file_path)
+	json_obj = json.load(file)
+
+	name = json_obj["name"]
+	text = json_obj["text"]
+	dependencies = json_obj["dependencies"]
+
+	return element(name, text, dependencies)
 
 
 
@@ -27,7 +37,7 @@ def run_process(command):
 
 
 # Generates a test file that includes the MPI_Elements that are passed to it. 
-def generate_test(file_name, MPI_Elements=[]):
+def generate_test(file_name, elements=[]):
 
 	# Generates test file 
 	f = open("tests/" + file_name, "w+")
@@ -39,7 +49,7 @@ def generate_test(file_name, MPI_Elements=[]):
 	f.write("int main(int argc, char** argv) {\n")
 
 	# Writes the MPI elements to C test file
-	for element in MPI_Elements:
+	for element in elements:
 		f.write("\t"+element.text + "\n")
 
 	f.write("return 0;\n")
@@ -59,17 +69,18 @@ def clean_test(file_name):
 # Main runtime for LemonSpotter
 def main():
 
-	init = MPI_Element("MPI_Init()", "\tMPI_Init(&argc, &argv);\n")
-	finalize = MPI_Element("MPI_Finalize", "\tMPI_Finalize();\n")
-
-
+	'''
+	init = element("MPI_Init()", "\tMPI_Init(&argc, &argv);\n")
+	finalize = element("MPI_Finalize", "\tMPI_Finalize();\n")
 	elements = [init, finalize] 
-
 	generate_test("test.c", elements)
 	run_process("mpicc test.c -o test")
 	run_process("mpiexec -n 4 ./test")
 	clean_test("test.c")
 	clean_test("test")
+	'''
+
+
 
 
 
