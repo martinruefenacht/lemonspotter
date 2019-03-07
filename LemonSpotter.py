@@ -3,6 +3,7 @@ LemonSpotter: An incremental test suite for the MPI standard
 '''
 
 import os
+import json
 import argparse
 import subprocess
 
@@ -10,8 +11,21 @@ from src.element import element
 
 
 
-# Loads an element from JSON
-def load(file_path):
+# Loads an element from JSON db
+# Returns an element object populated from json
+def load_element(file_path):
+	file = open(file_path)
+	json_obj = json.load(file)
+
+	name = json_obj["name"]
+	text = json_obj["text"]
+	parameters = json_obj["parameters"]
+	dependencies = json_obj["dependencies"]
+	before = json_obj["before"]
+	after = json_obj["after"]
+	errors = json_obj["errors"]
+
+	return element(name, text, parameters, dependencies, before, after, errors)
 
 
 
@@ -27,7 +41,7 @@ def run_process(command):
 
 
 # Generates a test file that includes the MPI_Elements that are passed to it. 
-def generate_test(file_name, MPI_Elements=[]):
+def generate_test(file_name, elements=[]):
 
 	# Generates test file 
 	f = open("tests/" + file_name, "w+")
@@ -39,7 +53,7 @@ def generate_test(file_name, MPI_Elements=[]):
 	f.write("int main(int argc, char** argv) {\n")
 
 	# Writes the MPI elements to C test file
-	for element in MPI_Elements:
+	for element in elements:
 		f.write("\t"+element.text + "\n")
 
 	f.write("return 0;\n")
@@ -55,22 +69,44 @@ def clean_test(file_name):
 	os.remove("tests/" + file_name)
 
 
+''' Testname will be the name of the test case being tested
+	Testcases will be different scenarios of this testname. 
+	This could be MPI_Send() with different parameter combinations.
+	Results will store results of each test at its index in testcases list
+'''
+def log(testname, testcases = [], results=[]):
+
+	# Open log file for specific testcase
+	log_file = open("logs/" + testname + ".json", "w+")
+	
+	log_file.write("{\n\t\"" + testname + "\" : {\n")
+	for x in range(0, len(testcases)):
+		log_file.write("\t\t\"" + testcases[x] + "\" : {\n")
+		log_file.write("\t\t\t\"Result\" : \"" + results[x] + "\"\n")
+	
+		# Tests to see if on the last element on the list	
+		if (x < len(testcases)-1):
+			log_file.write("\t\t}, \n")
+		else:
+			log_file.write("\t\t}\n")
+	
+	log_file.write("\t}\n")
+	log_file.write("}")
+
+
+
+
+
+
 
 # Main runtime for LemonSpotter
 def main():
 
-	init = MPI_Element("MPI_Init()", "\tMPI_Init(&argc, &argv);\n")
-	finalize = MPI_Element("MPI_Finalize", "\tMPI_Finalize();\n")
+	testname = "Hello_world"
+	testcases = ["helloworld1", "helloworld2", "helloworld3"]
+	results = ["failed", "succeeded", "yeet"]
 
-
-	elements = [init, finalize] 
-
-	generate_test("test.c", elements)
-	run_process("mpicc test.c -o test")
-	run_process("mpiexec -n 4 ./test")
-	clean_test("test.c")
-	clean_test("test")
-
+	log(testname, testcases, results)
 
 
 if __name__ == "__main__":
