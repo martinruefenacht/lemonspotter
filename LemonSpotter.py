@@ -12,20 +12,18 @@ from src.element import element
 
 
 # Loads an element from JSON db
-# Returns an element object populated from json
+# Returns an element object populated from jsong
 def load_element(file_path):
 	file = open(file_path)
 	json_obj = json.load(file)
 
-	name = json_obj["name"]
-	text = json_obj["text"]
-	parameters = json_obj["parameters"]
-	dependencies = json_obj["dependencies"]
-	before = json_obj["before"]
-	after = json_obj["after"]
-	errors = json_obj["errors"]
+	name = json_obj["function_name"]
+	return_type = json_obj["return"]
+	parameters = json_obj["arguments"]
+	requires = json_obj["requires"]
 
-	return element(name, text, parameters, dependencies, before, after, errors)
+
+	return element(name, return_type, parameters, requires)
 
 
 
@@ -101,12 +99,8 @@ def log(testname, testcases = [], results=[]):
 
 # Main runtime for LemonSpotter
 def main():
-
-	testname = "Hello_world"
-	testcases = ["helloworld1", "helloworld2", "helloworld3"]
-	results = ["failed", "succeeded", "yeet"]
-
-	log(testname, testcases, results)
+	test_element = load_element("../lemonspotter-mpi1/mpi_1_0/functions/mpi_init.json")
+	print(test_element.get_arguments_list())
 
 
 if __name__ == "__main__":
