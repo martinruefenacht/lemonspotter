@@ -19,9 +19,13 @@ def load_element(file_path):
 
 	name = json_obj["name"]
 	text = json_obj["text"]
+	parameters = json_obj["parameters"]
 	dependencies = json_obj["dependencies"]
+	before = json_obj["before"]
+	after = json_obj["after"]
+	errors = json_obj["errors"]
 
-	return element(name, text, dependencies)
+	return element(name, text, parameters, dependencies, before, after, errors)
 
 
 
@@ -65,23 +69,44 @@ def clean_test(file_name):
 	os.remove("tests/" + file_name)
 
 
+''' Testname will be the name of the test case being tested
+	Testcases will be different scenarios of this testname. 
+	This could be MPI_Send() with different parameter combinations.
+	Results will store results of each test at its index in testcases list
+'''
+def log(testname, testcases = [], results=[]):
+
+	# Open log file for specific testcase
+	log_file = open("logs/" + testname + ".json", "w+")
+	
+	log_file.write("{\n\t\"" + testname + "\" : {\n")
+	for x in range(0, len(testcases)):
+		log_file.write("\t\t\"" + testcases[x] + "\" : {\n")
+		log_file.write("\t\t\t\"Result\" : \"" + results[x] + "\"\n")
+	
+		# Tests to see if on the last element on the list	
+		if (x < len(testcases)-1):
+			log_file.write("\t\t}, \n")
+		else:
+			log_file.write("\t\t}\n")
+	
+	log_file.write("\t}\n")
+	log_file.write("}")
+
+
+
+
+
+
 
 # Main runtime for LemonSpotter
 def main():
 
-	'''
-	init = element("MPI_Init()", "\tMPI_Init(&argc, &argv);\n")
-	finalize = element("MPI_Finalize", "\tMPI_Finalize();\n")
-	elements = [init, finalize] 
-	generate_test("test.c", elements)
-	run_process("mpicc test.c -o test")
-	run_process("mpiexec -n 4 ./test")
-	clean_test("test.c")
-	clean_test("test")
-	'''
+	testname = "Hello_world"
+	testcases = ["helloworld1", "helloworld2", "helloworld3"]
+	results = ["failed", "succeeded", "yeet"]
 
-
-
+	log(testname, testcases, results)
 
 
 if __name__ == "__main__":
