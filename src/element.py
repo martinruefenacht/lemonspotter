@@ -3,19 +3,26 @@ import os
 class element:
 
 
-	def __init__(self, name, text, dependencies=[]):
+	def __init__(self, name, text, params, dependencies=[], before=[], after=[]):
 		self.name = name
 		self.text = text
+		self.parameters = params
 		self.dependencies = dependencies
+		self.before = before
+		self.after = after
 
 
-	def add_dependency(self, to_add):
-		self.dependencies.append(to_add)
-
+	def get_parameters():
+		return self.parameters
 
 	def get_dependency_list(self):
 		return self.dependencies
 
-	def getName(self):
+	def get_before(self):
+		return self.before
+
+	def get_after(self):
+		return self.after
+
+	def get_name(self):
 		return self.name
-		
