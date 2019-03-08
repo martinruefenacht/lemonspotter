@@ -6,6 +6,7 @@ import os
 import json
 import argparse
 import subprocess
+from pathlib import Path
 
 from src.element import element
 
@@ -13,17 +14,26 @@ from src.element import element
 
 # Loads an element from JSON db
 # Returns an element object populated from jsong
-def load_element(file_path):
-	file = open(file_path)
-	json_obj = json.load(file)
+def load_element(db_path, name):
 
-	name = json_obj["function_name"]
-	return_type = json_obj["return"]
-	parameters = json_obj["arguments"]
-	requires = json_obj["requires"]
+	# Recursively loads all json files searching
+	# for a funciton with matching name
+	pathlist = Path(db_path).glob("**/*.json")
+	for path in pathlist:
+		print(str(path))
+		file = open(str(path))
+		json_obj = json.load(file)
 
+		# Loads all parameters from JSON
+		element_name = json_obj["name"]
 
-	return element(name, return_type, parameters, requires)
+		if element_name == name:
+			return_type = json_obj["return"]
+			parameters = json_obj["arguments"]
+			requires = json_obj["requires"]
+			return element(element_name, return_type, parameters, requires)
+
+	return element()
 
 
 
@@ -99,7 +109,7 @@ def log(testname, testcases = [], results=[]):
 
 # Main runtime for LemonSpotter
 def main():
-	test_element = load_element("../lemonspotter-mpi1/mpi_1_0/functions/mpi_init.json")
+	test_element = load_element("../lemonspotter-mpi1/mpi_1_0/", "MPI_Init")
 	print(test_element.get_arguments_list())
 
 
