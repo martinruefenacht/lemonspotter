@@ -20,18 +20,20 @@ def load_element(db_path, name):
 	# for a funciton with matching name
 	pathlist = Path(db_path).glob("**/*.json")
 	for path in pathlist:
-		print(str(path))
-		file = open(str(path))
-		json_obj = json.load(file)
+		try:
+			file = open(str(path))
+			json_obj = json.load(file)
 
-		# Loads all parameters from JSON
-		element_name = json_obj["name"]
+			# Loads all parameters from JSON
+			element_name = json_obj["name"]
 
-		if element_name == name:
-			return_type = json_obj["return"]
-			parameters = json_obj["arguments"]
-			requires = json_obj["requires"]
-			return element(element_name, return_type, parameters, requires)
+			if element_name == name:
+				return_type = json_obj["return"]
+				parameters = json_obj["arguments"]
+				requires = json_obj["requires"]
+				return element(element_name, return_type, parameters, requires)
+		except:
+			print("Error when loading json file: " + str(path))
 
 	return element()
 
@@ -61,8 +63,7 @@ def generate_test(file_name, elements=[]):
 	f.write("int main(int argc, char** argv) {\n")
 
 	# Writes the MPI elements to C test file
-	for element in elements:
-		f.write("\t"+element.text + "\n")
+
 
 	f.write("return 0;\n")
 	f.write("}\n")
@@ -100,10 +101,6 @@ def log(testname, testcases = [], results=[]):
 	
 	log_file.write("\t}\n")
 	log_file.write("}")
-
-
-
-
 
 
 
