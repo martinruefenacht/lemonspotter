@@ -11,8 +11,6 @@ from pathlib import Path
 from src.element import Element
 
 
-# Loads an element from JSON db
-# Returns an element object populated from jsong
 def load_element(db_path, name):
     """
     Crawls the loaded database and searches for entry that matches name
