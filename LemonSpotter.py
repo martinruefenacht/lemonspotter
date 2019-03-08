@@ -68,7 +68,6 @@ def run_process(command):
     print(stderr)
 
 
-# Generates a test file that includes the MPI_Elements that are passed to it.
 def generate_test(file_name, elements=[]):
     """
     Autogenerates the C test files for each test.
@@ -139,8 +138,6 @@ def log(testname, testcases=[], results=[]):
     log_file.write("}")
 
 
-
-# Main runtime for LemonSpotter
 def main():
     """
     Main runtime for Lemonspotter.
