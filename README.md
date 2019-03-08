@@ -17,11 +17,9 @@ python LemonSpotter.py
 ## Arguments
 
 #### Loading Custom Database:
-Use to load a  custom library from a JSON database:
 ```-l, --load database_path```
 
 #### Print Lemonspotter Version
-Prints Lemonspotter version:
 ```-v, --version```
 
 
