@@ -6,9 +6,12 @@ import os
 import json
 import argparse
 import subprocess
-from pathlib import Path
 
+from pathlib import Path
 from src.element import element
+
+
+
 
 
 
@@ -78,7 +81,8 @@ def clean_test(file_name):
 	os.remove("tests/" + file_name)
 
 
-''' Testname will be the name of the test case being tested
+''' 
+	Testname will be the name of the test case being tested
 	Testcases will be different scenarios of this testname. 
 	This could be MPI_Send() with different parameter combinations.
 	Results will store results of each test at its index in testcases list
@@ -106,7 +110,20 @@ def log(testname, testcases = [], results=[]):
 
 # Main runtime for LemonSpotter
 def main():
-	test_element = load_element("../lemonspotter-mpi1/mpi_1_0/", "MPI_Init")
+
+	# Parse CLI Arguments for more granular control
+	parser = argparse.ArgumentParser(description="Specify runtime variables", prog="Lemonspotter")
+
+	parser.add_argument('-l', "--load", metavar="db_path", nargs='?', const="../lemonspotter-mpi1/mpi_1_0/", 
+						default="../lemonspotter-mpi1/mpi_1_0/", help="specify relative path to database", dest="load")
+	parser.add_argument('-v', "--version", help="print version of Lemonspotter", action='version', version="%(prog)s 0.1")
+
+	db_path = parser.parse_args().load
+	
+
+
+
+	test_element = load_element(db_path, "MPI_Init")
 	print(test_element.get_arguments_list())
 
 
