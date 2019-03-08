@@ -8,7 +8,7 @@ import argparse
 import subprocess
 
 from pathlib import Path
-from src.element import element
+from src.element import Element
 
 
 # Loads an element from JSON db
@@ -40,11 +40,11 @@ def load_element(db_path, name):
                 return_type = json_obj["return"]
                 parameters = json_obj["arguments"]
                 requires = json_obj["requires"]
-                return element(element_name, return_type, parameters, requires)
+                return Element(element_name, return_type, parameters, requires)
         except ValueError:
             print("Error when loading json file: " + str(path))
 
-    return element()
+    return Element()
 
 
 
