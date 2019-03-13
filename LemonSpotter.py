@@ -23,8 +23,8 @@ def load_element(db_path, name):
     element: Returns an element loaded with information from database
     """
 
-	# Recursively loads all json files searching
-	# for a funciton with matching name
+    # Recursively loads all json files searching
+    # for a funciton with matching name
     pathlist = Path(db_path).glob("**/*.json")
     for path in pathlist:
         try:
@@ -66,6 +66,30 @@ def run_process(command):
     stdout, stderr = process.communicate()
     print(stdout)
     print(stderr)
+
+
+def generate_text(element):
+    """
+    Autogenerates the text for each individual function.
+    Returns a string of valid C code.
+
+    Parameters
+    element  (element)   : Gets all of the parameters needed to generate the text.
+    """
+    text = element.get_name() + "("
+    print(element.get_arguments_list())
+    argument_list = element.get_arguments_list()
+    for argument in argument_list:
+        if argument["pointer"] != 0:
+            text += "&"
+        text += argument["name"] + ", "
+          
+    # Removes extra comma that gets appended at the end
+    text = text[0:len(text)-2]  
+    text += ");"
+    return text
+
+
 
 
 def generate_test(file_name, elements=[]):
@@ -159,10 +183,12 @@ def main():
                         action='version',
                         version="%(prog)s 0.1")
 
+
+
     db_path = parser.parse_args().load
 
     test_element = load_element(db_path, "MPI_Init")
-    print(test_element.get_arguments_list())
+    print(generate_text(test_element))
 
 
 if __name__ == "__main__":
