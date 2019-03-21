@@ -77,15 +77,15 @@ def generate_text(element):
     element  (element)   : Gets all of the parameters needed to generate the text.
     """
     text = element.get_name() + "("
-    print(element.get_arguments_list())
     argument_list = element.get_arguments_list()
     for argument in argument_list:
         if argument["pointer"] != 0:
             text += "&"
         text += argument["name"] + ", "
-          
+
     # Removes extra comma that gets appended at the end
-    text = text[0:len(text)-2]  
+    if len(argument_list) != 0:
+        text = text[0:len(text)-2]
     text += ");"
     return text
 
@@ -101,8 +101,6 @@ def generate_test(file_name, elements=[]):
     elements  (string[]) : List of strings cooresponding to the elements to be included in test
     """
 
-    print(elements)
-
     # Generates test file
     file = open("tests/" + file_name, "w+")
 
@@ -110,12 +108,14 @@ def generate_test(file_name, elements=[]):
     file.write("#include \"mpi.h\"\n")
     file.write("#include <stdio.h>\n")
     file.write("#include <stdlib.h>\n\n\n")
-    file.write("int main(int argc, char** argv) {\n")
+    file.write("int main(int argument_count, char** argument_list) {\n")
 
     # Writes the MPI elements to C test file
+    for element in elements:
+        file.write("\t" + generate_text(element) + "\n")
 
 
-    file.write("return 0;\n")
+    file.write("\treturn 0;\n")
     file.write("}\n")
     file.close()
 
@@ -162,11 +162,11 @@ def log(testname, testcases=[], results=[]):
     log_file.write("}")
 
 
-def main():
+def parse_arguments():
     """
-    Main runtime for Lemonspotter.
+    Parses arguments from the command line launch command. Returns path to library
+    database
     """
-
     # Parse CLI Arguments for more granular control
     parser = argparse.ArgumentParser(description="Specify runtime variables", prog="Lemonspotter")
 
@@ -183,12 +183,31 @@ def main():
                         action='version',
                         version="%(prog)s 0.1")
 
-
-
     db_path = parser.parse_args().load
 
-    test_element = load_element(db_path, "MPI_Init")
-    print(generate_text(test_element))
+    return db_path
+
+
+def main():
+    """
+    Main runtime for Lemonspotter.
+    """
+
+    # There is likely a better way to parse these arguments, but it can be resolved later
+    db_path = parse_arguments()
+
+
+    init = load_element(db_path, "MPI_Init")
+    finalize = load_element(db_path, "MPI_Finalize")
+
+    element_list = []
+
+    element_list.append(init)
+    element_list.append(finalize)
+
+    generate_test("base_case.c", element_list)
+    run_process("mpicc base_case.c -o base_case")
+    run_process("mpiexec -n 1 ./base_case")
 
 
 if __name__ == "__main__":
