@@ -49,6 +49,8 @@ def load_element(db_path, name):
 # Runs the paramter command passed as a string.
 # Prints what would normally be output to terminal.
 # NOTE: commands must be run individually.
+# NOTE: not currently used by lemonspotter, but is useful
+#       to quickly run commands from code.
 def run_process(command):
     """
     Runs a CLI process; used for running C test files.
@@ -64,8 +66,52 @@ def run_process(command):
                                universal_newlines=True)
 
     stdout, stderr = process.communicate()
-    print(stdout)
-    print(stderr)
+    return stdout, stderr
+
+def run_test(test_name, max_proc_count=2, debug=False):
+    """
+    Runs the test that has been generated and has name test_name
+
+    Paramters
+    test_name      (string) : String containing the name of the test
+    max_proc_count (int)    : Int containing the maximum number of times
+                              run the test
+    Debug          (boolaen): If debug is enabled then test files will not
+                              be deleted
+    """
+
+    # Compiles test
+    command = "mpicc " + test_name + ".c" + " -o " + test_name
+    command  = command.split(" ")
+    process = subprocess.Popen(command,
+                               cwd="tests/",
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               universal_newlines=True)
+
+    stdout, stderr = process.communicate()
+    if stderr != "":
+        print(test_name + " : failed to compile")
+    
+    # Runs tests on as many processors as specified
+    proc_count = 2
+    while proc_count <= max_proc_count:
+        command = "mpiexec -n " + str(proc_count) + " ./" + test_name
+        command = command.split(" ")
+        process = subprocess.Popen(command,
+                                   cwd="tests/",
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   universal_newlines=True)
+        stdout, stderr = process.communicate()
+        # Do Logging step here
+        proc_count += 1
+
+    # Debug can be enabled to stop from deleting
+    # generated files.
+    if debug == False:
+        clean_file(test_name)
+        clean_file(test_name + ".c")
 
 
 def generate_text(element):
@@ -123,7 +169,7 @@ def generate_test(file_name, elements=[]):
 
 
 
-def clean_test(file_name):
+def clean_file(file_name):
     """
     Deletes the associated file_name from tests directory.
 
@@ -206,8 +252,9 @@ def main():
     element_list.append(finalize)
 
     generate_test("base_case.c", element_list)
-    run_process("mpicc base_case.c -o base_case")
-    run_process("mpiexec -n 1 ./base_case")
+    run_test("base_case")
+    # run_process("mpicc base_case.c -o base_case")
+    # run_process("mpiexec -n 1 ./base_case")
 
 
 if __name__ == "__main__":
