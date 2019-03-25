@@ -113,6 +113,8 @@ def run_test(test_name, max_proc_count=2, debug=False):
         clean_file(test_name)
         clean_file(test_name + ".c")
 
+    return stdout, stderr
+
 
 def generate_text(element):
     """
@@ -242,6 +244,20 @@ def main():
     # There is likely a better way to parse these arguments, but it can be resolved later
     db_path = parse_arguments()
 
+    pathlist = Path(db_path).glob("**/*.json")
+    for path in pathlist:
+        try:
+            file = open(str(path))
+            json_obj = json.load(file)
+
+            # Loads all parameters from JSON
+            name = json_obj["name"]
+            print(name)
+
+        except:
+            print("Something broke")
+
+
 
     init = load_element(db_path, "MPI_Init")
     finalize = load_element(db_path, "MPI_Finalize")
@@ -253,8 +269,6 @@ def main():
 
     generate_test("base_case.c", element_list)
     run_test("base_case")
-    # run_process("mpicc base_case.c -o base_case")
-    # run_process("mpiexec -n 1 ./base_case")
 
 
 if __name__ == "__main__":
