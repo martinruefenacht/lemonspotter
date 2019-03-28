@@ -38,7 +38,8 @@ def load_element(db_path, name):
                 return_type = json_obj["return"]
                 parameters = json_obj["arguments"]
                 requires = json_obj["requires"]
-                return Element(element_name, return_type, parameters, requires)
+                start = json_obj["start"]
+                return Element(element_name, return_type, parameters, requires, start)
         except ValueError:
             print("Error when loading json file: " + str(path))
 
@@ -113,6 +114,13 @@ def run_test(test_name, max_proc_count=2, debug=False):
         clean_file(test_name)
         clean_file(test_name + ".c")
 
+
+    # Cleans stdout/stderr
+    stdout = stdout.strip("\n")
+    stdout = stdout.strip("\r")
+    stderr = stderr.strip("\n")
+    stderr = stderr.strip("\n")
+
     return stdout, stderr
 
 
@@ -182,29 +190,16 @@ def clean_file(file_name):
 
 
 
-def log(testname, testcases=[], results=[]):
+def log(testname, results):
     """
     Logs output of all testcases for a specific test to a log file.
-
-    Parameters:
-    testname (string)   : String of type of test being run
-    tescases (string[]) : List of strings cooresponding to individual testcases
-    results  (string[]) : List of integers cooresponding to the results the testcases
     """
 
     # Open log file for specific testcase
     log_file = open("logs/" + testname + ".json", "w+")
 
     log_file.write("{\n\t\"" + testname + "\" : {\n")
-    for case, index in enumerate(testcases, 0):
-        log_file.write("\t\t\"" + case + "\" : {\n")
-        log_file.write("\t\t\t\"Result\" : \"" + results[index] + "\"\n")
-
-        # Tests to see if on the last element on the list
-        if index < len(testcases)-1:
-            log_file.write("\t\t}, \n")
-        else:
-            log_file.write("\t\t}\n")
+    log_file.write("\t\t\"status\" : " + "\"" + results + "\"\n")
 
     log_file.write("\t}\n")
     log_file.write("}")
@@ -252,10 +247,9 @@ def main():
 
             # Loads all parameters from JSON
             name = json_obj["name"]
-            print(name)
 
         except:
-            print("Something broke")
+            pass
 
 
 
@@ -268,7 +262,14 @@ def main():
     element_list.append(finalize)
 
     generate_test("base_case.c", element_list)
-    run_test("base_case")
+    stdout, stderr = run_test("base_case")
+
+    if stderr == "":
+        log("base_case", "pass")
+    else:
+        log("base_case", "fail")
+
+    
 
 
 if __name__ == "__main__":
