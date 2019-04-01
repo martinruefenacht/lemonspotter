@@ -42,7 +42,8 @@ def load_element(db_path, name):
                 end = json_obj["end"]
                 return Element(element_name, return_type, parameters, requires, start, end)
         except ValueError:
-            print("Error when loading json file: " + str(path))
+            #print("Error when loading json file: " + str(path))
+            pass
 
     return Element()
 
@@ -125,6 +126,28 @@ def run_test(test_name, max_proc_count=2, debug=False):
     return stdout, stderr
 
 
+def generate_parameters(element):
+    """
+    Autogenerates the text for each individual functions parameters.
+    Returns a string of valid C code.
+
+    Parameters
+    element  (element)   : Gets all of the parameters needed to generate the text.
+    """
+    text = ""
+    argument_list = element.get_arguments_list()
+
+    for argument in argument_list:
+        if argument["datatype"][:3] != "MPI":
+            try:
+                text += "\n\t" + argument["datatype"] + " " + argument["name"] + ";\n"
+            except:
+                pass
+
+    
+    return text
+
+
 def generate_text(element):
     """
     Autogenerates the text for each individual function.
@@ -132,13 +155,22 @@ def generate_text(element):
 
     Parameters
     element  (element)   : Gets all of the parameters needed to generate the text.
+
+    Notes:
+    Needs improvement. Current behavior is to interpret all MPI defined elements as MPI_COMM_WORLD
     """
     text = element.get_name() + "("
     argument_list = element.get_arguments_list()
     for argument in argument_list:
-        if argument["pointer"] != 0:
-            text += "&"
-        text += argument["name"] + ", "
+        try:
+            if argument["pointer"] != 0:
+                text += "&"
+        except:
+            pass
+        if argument["datatype"][:3] != "MPI":
+            text += argument["name"] + ", "
+        else:
+            text += "MPI_COMM_WORLD, "
 
     # Removes extra comma that gets appended at the end
     if len(argument_list) != 0:
@@ -168,14 +200,15 @@ def generate_test(file_name, elements=[]):
     file.write("int main(int argument_count, char** argument_list) {\n")
 
     # Writes the MPI elements to C test file
-    for element in elements:
+    for index, element in enumerate(elements):
+        if index != 0:
+            file.write("\t" + generate_parameters(element) + "\n")
         file.write("\t" + generate_text(element) + "\n")
 
 
     file.write("\treturn 0;\n")
     file.write("}\n")
     file.close()
-
 
 
 
@@ -271,13 +304,29 @@ def main():
             stdout, stderr = run_test(test_name)
 
             if stderr == "":
-                log(test_name, "pass")
+                log(start.get_name(), "pass")
+                log(end.get_name(), "pass")
             else:
-                log(test_name, "fail")
+                log(start.get_name(), "fail")
+                log(end.get_name(), "fail")
 
 
-    
-    
+    # Runs tests of all functions through all start/end points
+    for start in start_points:
+        for end in end_points:
+            for element in element_list:
+                
+                current_test = [start, element ,end]
+                test_name = element.get_name()
+
+                generate_test(test_name + ".c", current_test)
+                stdout, stderr = run_test(test_name)
+
+                if stderr == "":
+                    log(test_name, "pass")
+                else:
+                    log(test_name, "fail")
+
 
 
 if __name__ == "__main__":
