@@ -39,7 +39,8 @@ def load_element(db_path, name):
                 parameters = json_obj["arguments"]
                 requires = json_obj["requires"]
                 start = json_obj["start"]
-                return Element(element_name, return_type, parameters, requires, start)
+                end = json_obj["end"]
+                return Element(element_name, return_type, parameters, requires, start, end)
         except ValueError:
             print("Error when loading json file: " + str(path))
 
@@ -239,29 +240,37 @@ def main():
     # There is likely a better way to parse these arguments, but it can be resolved later
     db_path = parse_arguments()
 
+    element_list = []
+    start_points = []
+    end_points = []
+
     pathlist = Path(db_path).glob("**/*.json")
     for path in pathlist:
         try:
             file = open(str(path))
             json_obj = json.load(file)
-
-            # Loads all parameters from JSON
-            name = json_obj["name"]
+            element_list.append(load_element(db_path, json_obj["name"]))
 
         except:
             pass
 
+    for element in element_list:
+        if element.get_start() == True:
+            start_points.append(element)
 
+        if element.get_end() == True:
+            end_points.append(element)
+            
 
     init = load_element(db_path, "MPI_Init")
     finalize = load_element(db_path, "MPI_Finalize")
 
-    element_list = []
+    to_test = []
 
-    element_list.append(init)
-    element_list.append(finalize)
+    to_test.append(init)
+    to_test.append(finalize)
 
-    generate_test("base_case.c", element_list)
+    generate_test("base_case.c", to_test)
     stdout, stderr = run_test("base_case")
 
     if stderr == "":
