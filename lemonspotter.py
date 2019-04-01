@@ -240,6 +240,7 @@ def main():
     # There is likely a better way to parse these arguments, but it can be resolved later
     db_path = parse_arguments()
 
+    full_list = []
     element_list = []
     start_points = []
     end_points = []
@@ -249,35 +250,33 @@ def main():
         try:
             file = open(str(path))
             json_obj = json.load(file)
-            element_list.append(load_element(db_path, json_obj["name"]))
-
+            full_list.append(load_element(db_path, json_obj["name"]))
         except:
             pass
 
-    for element in element_list:
+    for element in full_list:
         if element.get_start() == True:
             start_points.append(element)
-
-        if element.get_end() == True:
+        elif element.get_end() == True:
             end_points.append(element)
-            
+        else:
+            element_list.append(element)
 
-    init = load_element(db_path, "MPI_Init")
-    finalize = load_element(db_path, "MPI_Finalize")
+    # Runs tests of all combinations of start/end points
+    for start in start_points:
+        for end in end_points:
+            endpoint_list = [start, end]
+            test_name = start.get_name() + "__" + end.get_name()
+            generate_test(test_name + ".c", endpoint_list)
+            stdout, stderr = run_test(test_name)
 
-    to_test = []
+            if stderr == "":
+                log(test_name, "pass")
+            else:
+                log(test_name, "fail")
 
-    to_test.append(init)
-    to_test.append(finalize)
 
-    generate_test("base_case.c", to_test)
-    stdout, stderr = run_test("base_case")
-
-    if stderr == "":
-        log("base_case", "pass")
-    else:
-        log("base_case", "fail")
-
+    
     
 
 
