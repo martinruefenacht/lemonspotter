@@ -5,7 +5,7 @@ class Element:
     Defines an element of a library that can be included in Lemonspotter tests.
     """
 
-    def __init__(self, name="ELEMENT_NOT_FOUND", return_type="", arguments=[], requires=[], start=False, validated=False):
+    def __init__(self, name="ELEMENT_NOT_FOUND", return_type="", arguments=[], requires=[], start=False, end=False, validated=False):
         """
         Initializes object of class Element.
 
@@ -20,6 +20,7 @@ class Element:
         self.return_type = return_type
         self.requires = requires
         self.start = start
+        self.end = end
         self.validated = validated
 
 
@@ -52,6 +53,12 @@ class Element:
         Returns boolean value if element is start point
         """
         return self.start
+
+    def get_end(self):
+        """
+        Returns boolean value if element is end point
+        """
+        return self.end
 
     def get_validation(self):
         """
