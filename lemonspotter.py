@@ -158,6 +158,7 @@ def generate_text(element):
 
     Notes:
     Needs improvement. Current behavior is to interpret all MPI defined elements as MPI_COMM_WORLD
+    Also could potentially try to generate more than one element of the same type. Needs to be iterative.
     """
     text = element.get_name() + "("
     argument_list = element.get_arguments_list()
