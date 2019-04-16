@@ -82,7 +82,7 @@ def run_test(test_name, max_proc_count=2, debug=False):
 
     # Compiles test
     command = "mpicc " + test_name + ".c" + " -o " + test_name
-    command  = command.split(" ")
+    command = command.split(" ")
     process = subprocess.Popen(command,
                                cwd="tests/",
                                stdout=subprocess.PIPE,
@@ -92,7 +92,7 @@ def run_test(test_name, max_proc_count=2, debug=False):
     stdout, stderr = process.communicate()
     if stderr != "":
         print(test_name + " : failed to compile")
-    
+
     # Runs tests on as many processors as specified
     proc_count = 2
     while proc_count <= max_proc_count:
@@ -109,25 +109,38 @@ def run_test(test_name, max_proc_count=2, debug=False):
 
     # Debug can be enabled to stop from deleting
     # generated files.
-    if debug == False:
+    if debug is False:
         clean_file(test_name)
         clean_file(test_name + ".c")
 
 
-def generate_text(element):
+def generate_text(element, test_number):
     """
     Autogenerates the text for each individual function.
     Returns a string of valid C code.
 
     Parameters
     element  (element)   : Gets all of the parameters needed to generate the text.
+    test_number (int)    : Needs a unique number so parameters are not generated redundantly
     """
-    text = element.get_name() + "("
+    text = ""
     argument_list = element.get_arguments_list()
+
+    #Generates parameters
+    for argument in argument_list:
+        text += "\t"+ argument["type"] + " "
+        if argument["pointer"] != 0:
+            for i in range(0, argument["pointer"]-1):
+                text += "*"
+        text += argument["name"] + str(test_number) + ";\n"
+
+
+    # Generates function call
+    text += "\t"+ element.get_name() + "("
     for argument in argument_list:
         if argument["pointer"] != 0:
             text += "&"
-        text += argument["name"] + ", "
+        text += argument["name"] + str(test_number) + ", "
 
     # Removes extra comma that gets appended at the end
     if len(argument_list) != 0:
@@ -147,6 +160,9 @@ def generate_test(file_name, elements=[]):
     elements  (string[]) : List of strings cooresponding to the elements to be included in test
     """
 
+    # To be used in paramter names to avoid conflicts
+    test_number = 0
+
     # Generates test file
     file = open("tests/" + file_name, "w+")
 
@@ -154,18 +170,16 @@ def generate_test(file_name, elements=[]):
     file.write("#include \"mpi.h\"\n")
     file.write("#include <stdio.h>\n")
     file.write("#include <stdlib.h>\n\n\n")
-    file.write("int main(int argument_count, char** argument_list) {\n")
+    file.write("int main() {\n")
 
     # Writes the MPI elements to C test file
     for element in elements:
-        file.write("\t" + generate_text(element) + "\n")
+        file.write(generate_text(element, test_number) + "\n\n")
 
 
     file.write("\treturn 0;\n")
     file.write("}\n")
     file.close()
-
-
 
 
 
@@ -252,9 +266,8 @@ def main():
     element_list.append(finalize)
 
     generate_test("base_case.c", element_list)
-    run_test("base_case")
-    # run_process("mpicc base_case.c -o base_case")
-    # run_process("mpiexec -n 1 ./base_case")
+    run_test("base_case", debug=True)
+
 
 
 if __name__ == "__main__":
