@@ -84,7 +84,7 @@ def run_test(test_name, max_proc_count=2, debug=False):
     """
 
     # Compiles test
-    command = "mpicc " + test_name + ".c" + " -o " + test_name
+    command = "mpicc " + test_name + ".c" + " -o " + test_name+"_binary"
     command = command.split(" ")
     process = subprocess.Popen(command,
                                cwd="tests/",
@@ -99,7 +99,7 @@ def run_test(test_name, max_proc_count=2, debug=False):
     # Runs tests on as many processors as specified
     proc_count = 2
     while proc_count <= max_proc_count:
-        command = "mpiexec -n " + str(proc_count) + " ./" + test_name
+        command = "mpiexec -n " + str(proc_count) + " ./" + test_name+"_binary"
         command = command.split(" ")
         process = subprocess.Popen(command,
                                    cwd="tests/",
