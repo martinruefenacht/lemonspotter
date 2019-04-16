@@ -130,7 +130,7 @@ def generate_text(element, test_number):
     for argument in argument_list:
         text += "\t"+ argument["type"] + " "
         if argument["pointer"] != 0:
-            for i in range(0, argument["pointer"]-1):
+            for _ in range(0, argument["pointer"]-1):
                 text += "*"
         text += argument["name"] + str(test_number) + ";\n"
 
@@ -238,14 +238,19 @@ def parse_arguments():
                         help="specify relative path to database",
                         dest="load")
 
+    parser.add_argument('-d', "--debug",
+                        metavar="True/False",
+                        nargs='?',
+                        default=False,
+                        help="specify true to keep generated files",
+                        dest="debug")
+
     parser.add_argument('-v', "--version",
                         help="print version of Lemonspotter",
                         action='version',
                         version="%(prog)s 0.1")
 
-    db_path = parser.parse_args().load
-
-    return db_path
+    return parser.parse_args()
 
 
 def main():
@@ -254,7 +259,9 @@ def main():
     """
 
     # There is likely a better way to parse these arguments, but it can be resolved later
-    db_path = parse_arguments()
+    db_path = parse_arguments().load
+
+    debug_state = parse_arguments().debug
 
 
     init = load_element(db_path, "MPI_Init")
@@ -266,7 +273,7 @@ def main():
     element_list.append(finalize)
 
     generate_test("base_case.c", element_list)
-    run_test("base_case", debug=True)
+    run_test("base_case", debug=debug_state)
 
 
 
