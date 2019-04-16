@@ -113,8 +113,11 @@ def run_test(test_name, max_proc_count=2, debug=False):
     # Debug can be enabled to stop from deleting
     # generated files.
     if debug is False:
-        clean_file(test_name)
-        clean_file(test_name + ".c")
+        try:
+            clean_file(test_name+"_binary")
+            clean_file(test_name + ".c")
+        except:
+            print("Some files could not be found. Might not be deleted.")
 
     # Cleans stdout/stderr
     stdout = stdout.strip("\n")
