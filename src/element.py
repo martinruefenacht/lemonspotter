@@ -60,6 +60,12 @@ class Element:
         """
         return self.end
 
+    def set_validation(self, validation):
+        """
+        Sets the validation state after testing
+        """
+        self.validated = validation
+
     def get_validation(self):
         """
         Returns validation state of each element

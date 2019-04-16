@@ -147,7 +147,7 @@ def generate_parameters(element):
     return text
 
 
-def generate_text(element):
+def generate_text(element, test_number):
     """
     Autogenerates the text for each individual function.
     Returns a string of valid C code.
@@ -165,7 +165,7 @@ def generate_text(element):
 
     #Generates parameters
     for argument in argument_list:
-        text += "\t"+ argument["type"] + " "
+        text += "\t"+ argument["datatype"] + " "
         if argument["pointer"] != 0:
             for _ in range(0, argument["pointer"]-1):
                 text += "*"
@@ -315,37 +315,46 @@ def main():
         else:
             element_list.append(element)
 
-    # Runs tests of all combinations of start/end points
+    # Ensures that all endpoints work. 
     for start in start_points:
         for end in end_points:
             endpoint_list = [start, end]
             test_name = start.get_name() + "__" + end.get_name()
             generate_test(test_name + ".c", endpoint_list)
-            stdout, stderr = run_test(test_name)
+            stdout, stderr = run_test(test_name, debug=debug_state)
 
             if stderr == "":
+                start.set_validation(True)
+                end.set_validation(True)
                 log(start.get_name(), "pass")
                 log(end.get_name(), "pass")
             else:
+                start.set_validation(False)
+                end.set_validation(False)
                 log(start.get_name(), "fail")
                 log(end.get_name(), "fail")
 
 
     # Runs tests of all functions through all start/end points
     for start in start_points:
-        for end in end_points:
-            for element in element_list:
-                
-                current_test = [start, element ,end]
-                test_name = element.get_name()
+        # Ensures that this start point is tested and valid
+        if start.get_validation():
+            
+            for end in end_points:
+                # Ensures that this endpoint is tested and valid
+                if end.get_validation():
 
-                generate_test(test_name + ".c", current_test)
-                stdout, stderr = run_test(test_name)
+                    for element in element_list:   
+                        current_test = [start, element ,end]
+                        test_name = element.get_name()
 
-                if stderr == "":
-                    log(test_name, "pass")
-                else:
-                    log(test_name, "fail")
+                        generate_test(test_name + ".c", current_test)
+                        stdout, stderr = run_test(test_name, debug=debug_state)
+
+                        if stderr == "":
+                            log(test_name, "pass")
+                        else:
+                            log(test_name, "fail")
 
 
 
