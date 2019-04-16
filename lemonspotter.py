@@ -38,9 +38,12 @@ def load_element(db_path, name):
                 return_type = json_obj["return"]
                 parameters = json_obj["arguments"]
                 requires = json_obj["requires"]
-                return Element(element_name, return_type, parameters, requires)
+                start = json_obj["start"]
+                end = json_obj["end"]
+                return Element(element_name, return_type, parameters, requires, start, end)
         except ValueError:
-            print("Error when loading json file: " + str(path))
+            #print("Error when loading json file: " + str(path))
+            pass
 
     return Element()
 
@@ -113,8 +116,38 @@ def run_test(test_name, max_proc_count=2, debug=False):
         clean_file(test_name)
         clean_file(test_name + ".c")
 
+    # Cleans stdout/stderr
+    stdout = stdout.strip("\n")
+    stdout = stdout.strip("\r")
+    stderr = stderr.strip("\n")
+    stderr = stderr.strip("\n")
 
-def generate_text(element, test_number):
+    return stdout, stderr
+
+
+def generate_parameters(element):
+    """
+    Autogenerates the text for each individual functions parameters.
+    Returns a string of valid C code.
+
+    Parameters
+    element  (element)   : Gets all of the parameters needed to generate the text.
+    """
+    text = ""
+    argument_list = element.get_arguments_list()
+
+    for argument in argument_list:
+        if argument["datatype"][:3] != "MPI":
+            try:
+                text += "\n\t" + argument["datatype"] + " " + argument["name"] + ";\n"
+            except:
+                pass
+
+    
+    return text
+
+
+def generate_text(element):
     """
     Autogenerates the text for each individual function.
     Returns a string of valid C code.
@@ -122,6 +155,10 @@ def generate_text(element, test_number):
     Parameters
     element  (element)   : Gets all of the parameters needed to generate the text.
     test_number (int)    : Needs a unique number so parameters are not generated redundantly
+
+    Notes:
+    Needs improvement. Current behavior is to interpret all MPI defined elements as MPI_COMM_WORLD
+    Also could potentially try to generate more than one element of the same type. Needs to be iterative.
     """
     text = ""
     argument_list = element.get_arguments_list()
@@ -138,9 +175,15 @@ def generate_text(element, test_number):
     # Generates function call
     text += "\t"+ element.get_name() + "("
     for argument in argument_list:
-        if argument["pointer"] != 0:
-            text += "&"
-        text += argument["name"] + str(test_number) + ", "
+        try:
+            if argument["pointer"] != 0:
+                text += "&"
+        except:
+            pass
+        if argument["datatype"][:3] != "MPI":
+            text += argument["name"] + str(test_number) + ", "
+        else:
+            text += "MPI_COMM_WORLD, "
 
     # Removes extra comma that gets appended at the end
     if len(argument_list) != 0:
@@ -177,10 +220,10 @@ def generate_test(file_name, elements=[]):
         file.write(generate_text(element, test_number) + "\n\n")
 
 
+
     file.write("\treturn 0;\n")
     file.write("}\n")
     file.close()
-
 
 
 def clean_file(file_name):
@@ -194,29 +237,16 @@ def clean_file(file_name):
 
 
 
-def log(testname, testcases=[], results=[]):
+def log(testname, results):
     """
     Logs output of all testcases for a specific test to a log file.
-
-    Parameters:
-    testname (string)   : String of type of test being run
-    tescases (string[]) : List of strings cooresponding to individual testcases
-    results  (string[]) : List of integers cooresponding to the results the testcases
     """
 
     # Open log file for specific testcase
     log_file = open("logs/" + testname + ".json", "w+")
 
     log_file.write("{\n\t\"" + testname + "\" : {\n")
-    for case, index in enumerate(testcases, 0):
-        log_file.write("\t\t\"" + case + "\" : {\n")
-        log_file.write("\t\t\t\"Result\" : \"" + results[index] + "\"\n")
-
-        # Tests to see if on the last element on the list
-        if index < len(testcases)-1:
-            log_file.write("\t\t}, \n")
-        else:
-            log_file.write("\t\t}\n")
+    log_file.write("\t\t\"status\" : " + "\"" + results + "\"\n")
 
     log_file.write("\t}\n")
     log_file.write("}")
@@ -263,17 +293,59 @@ def main():
 
     debug_state = parse_arguments().debug
 
-
-    init = load_element(db_path, "MPI_Init")
-    finalize = load_element(db_path, "MPI_Finalize")
-
+    full_list = []
     element_list = []
+    start_points = []
+    end_points = []
 
-    element_list.append(init)
-    element_list.append(finalize)
+    pathlist = Path(db_path).glob("**/*.json")
+    for path in pathlist:
+        try:
+            file = open(str(path))
+            json_obj = json.load(file)
+            full_list.append(load_element(db_path, json_obj["name"]))
+        except:
+            pass
 
-    generate_test("base_case.c", element_list)
-    run_test("base_case", debug=debug_state)
+    for element in full_list:
+        if element.get_start() == True:
+            start_points.append(element)
+        elif element.get_end() == True:
+            end_points.append(element)
+        else:
+            element_list.append(element)
+
+    # Runs tests of all combinations of start/end points
+    for start in start_points:
+        for end in end_points:
+            endpoint_list = [start, end]
+            test_name = start.get_name() + "__" + end.get_name()
+            generate_test(test_name + ".c", endpoint_list)
+            stdout, stderr = run_test(test_name)
+
+            if stderr == "":
+                log(start.get_name(), "pass")
+                log(end.get_name(), "pass")
+            else:
+                log(start.get_name(), "fail")
+                log(end.get_name(), "fail")
+
+
+    # Runs tests of all functions through all start/end points
+    for start in start_points:
+        for end in end_points:
+            for element in element_list:
+                
+                current_test = [start, element ,end]
+                test_name = element.get_name()
+
+                generate_test(test_name + ".c", current_test)
+                stdout, stderr = run_test(test_name)
+
+                if stderr == "":
+                    log(test_name, "pass")
+                else:
+                    log(test_name, "fail")
 
 
 
