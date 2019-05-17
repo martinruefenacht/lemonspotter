@@ -123,7 +123,7 @@ def run_test(test_name, max_proc_count=2, debug=False):
     stdout = stdout.strip("\n")
     stdout = stdout.strip("\r")
     stderr = stderr.strip("\n")
-    stderr = stderr.strip("\n")
+    stderr = stderr.strip("\r")
 
     return stdout, stderr
 
