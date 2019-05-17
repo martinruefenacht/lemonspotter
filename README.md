@@ -11,7 +11,7 @@ bad performance implementations.
 
 To run use the following command: 
 ```
-python LemonSpotter.py
+python lemonspotter.py
 ```
 
 ## Arguments
