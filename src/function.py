@@ -1,19 +1,20 @@
-"""Defines an element of a library that can be included in Lemonspotter tests."""
+"""Defines a function of a library that can be included in Lemonspotter tests."""
 
-class Element:
+class Function:
     """
     Defines an element of a library that can be included in Lemonspotter tests.
     """
 
-    def __init__(self, name="ELEMENT_NOT_FOUND", return_type="", arguments=[], requires=[], start=False, end=False, validated=False):
+    def __init__(self, name="FUNCTION_NOT_FOUND", return_type="", arguments=[], requires=[], start=False, end=False, validated=False):
         """
-        Initializes object of class Element.
+        Initializes function element.
 
         Parameters:
-        name        (string)    : Name of the element
-        return_type (string)    : Coorespondes to what this element is supposed to return
+        name        (string)    : Name of the function
+        return_type (string)    : Coorespondes to what this function is supposed to return
         arguments   (string[])  : List of items that this function takes as a parameter
-        requires    (string[])  : List of element names that current element needs to run
+        requires    (string[])  : List of element names that current function needs to run
+        validation  (boolean)   : Determines whether the constant has been validated
         """
         self.function_name = name
         self.arguments = arguments

@@ -352,7 +352,7 @@ def main():
 
                     for element in element_list: 
  
-                        current_test = [start, element ,end]
+                        current_test = [start, element, end]
 
                         """
                         TODO: Dependencies need to be loaded here.
