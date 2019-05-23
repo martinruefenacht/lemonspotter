@@ -18,7 +18,7 @@ def load_function(db_path, name):
     Crawls the loaded database and searches for entry that matches name
 
     Paramters:
-    db_path (string) : Path to the database to crawl
+    db_path (string) : Path to the function partition of database to crawl
     name    (string) : Name of the element to be loaded
 
     Returns:
@@ -269,8 +269,8 @@ def parse_arguments():
     parser.add_argument('-l', "--load",
                         metavar="db_path",
                         nargs='?',
-                        const="../lemonspotter-mpi1/mpi_1_0/",
-                        default="../lemonspotter-mpi1/mpi_1_0/",
+                        const="../lemonspotter-mpi1/mpi_1_3/",
+                        default="../lemonspotter-mpi1/mpi_1_3/",
                         help="specify relative path to database",
                         dest="load")
 
@@ -304,6 +304,10 @@ def main():
     start_points = []
     end_points = []
 
+    ###############################################################################
+    # This below needs to be modified to load in each type of elemment seperately #
+    ###############################################################################
+
     pathlist = Path(db_path).glob("**/*.json")
     for path in pathlist:
         try:
@@ -312,6 +316,10 @@ def main():
             full_list.append(load_function(db_path, json_obj["name"]))
         except:
             pass
+
+    ###############################################################################
+    # This above needs to be modified to load in each type of elemment seperately #
+    ###############################################################################
 
     for element in full_list:
         if element.get_start() == True:
