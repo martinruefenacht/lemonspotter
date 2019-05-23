@@ -8,10 +8,12 @@ import argparse
 import subprocess
 
 from pathlib import Path
-from src.element import Element
+from src.function import Function
+from src.constant import Constant
+from src.error    import Error
 
 
-def load_element(db_path, name):
+def load_function(db_path, name):
     """
     Crawls the loaded database and searches for entry that matches name
 
@@ -32,20 +34,20 @@ def load_element(db_path, name):
             json_obj = json.load(file)
 
             # Loads all parameters from JSON
-            element_name = json_obj["name"]
+            function_name = json_obj["name"]
 
-            if element_name == name:
+            if function_name == name:
                 return_type = json_obj["return"]
                 parameters = json_obj["arguments"]
                 requires = json_obj["requires"]
                 start = json_obj["start"]
                 end = json_obj["end"]
-                return Element(element_name, return_type, parameters, requires, start, end)
+                return Element(function_name, return_type, parameters, requires, start, end)
         except ValueError:
             #print("Error when loading json file: " + str(path))
             pass
 
-    return Element()
+    return Function()
 
 
 
@@ -70,6 +72,7 @@ def run_process(command):
 
     stdout, stderr = process.communicate()
     return stdout, stderr
+
 
 def run_test(test_name, max_proc_count=2, debug=False):
     """
@@ -261,7 +264,7 @@ def parse_arguments():
     database
     """
     # Parse CLI Arguments for more granular control
-    parser = argparse.ArgumentParser(description="Specify runtime variables", prog="Lemonspotter")
+    parser = argparse.ArgumentParser(description="Specify runtime variables", prog="LemonSpotter")
 
     parser.add_argument('-l', "--load",
                         metavar="db_path",
@@ -306,7 +309,7 @@ def main():
         try:
             file = open(str(path))
             json_obj = json.load(file)
-            full_list.append(load_element(db_path, json_obj["name"]))
+            full_list.append(load_function(db_path, json_obj["name"]))
         except:
             pass
 
@@ -347,8 +350,22 @@ def main():
                 # Ensures that this endpoint is tested and valid
                 if end.get_validation():
 
-                    for element in element_list:   
+                    for element in element_list: 
+ 
                         current_test = [start, element ,end]
+
+                        """
+                        TODO: Dependencies need to be loaded here.
+                              Can be done recursively from element. 
+                              Iterate across all elements that the function
+                              depends on. Then recursively do the same until there
+                              are no more. 
+
+                              A clean up step might be needed. Its possible that functions
+                              will be duplicated. 
+                        """ 
+
+
                         test_name = element.get_name()
 
                         generate_test(test_name + ".c", current_test)
