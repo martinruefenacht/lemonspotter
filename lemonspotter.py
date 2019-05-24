@@ -17,7 +17,7 @@ from src.type	  import Type
 from src.constant import Constant
 from src.error	  import Error
 
-def load_function(function_path):
+def load_function(defaults, function_path):
 	"""
 	Crawls the loaded database and searches for entry that matches name
 
@@ -34,13 +34,22 @@ def load_function(function_path):
 		function_file = open(str(function_path))
 		json_obj = json.load(function_file)
 
-		# Loads all parameters from JSON
+		# required function attributes
 		function_name = json_obj["name"]
 		return_type = json_obj["return"]
-		parameters = json_obj["arguments"]
-		requires = json_obj["requires"]
-		start = json_obj["start"]
-		end = json_obj["end"]
+		version = json_obj["version"]
+
+		# optional function attributes
+		#optionals = ['parameters', 'needs_any', 'needs_all', 'leads_any', 'leads_all']
+		#for optional in optionals:
+			
+		parameters = json_obj.get("parameters", defaults["parameters"])
+
+		needs_any = json_obj.get('needs_any', defaults['needs_any'])
+		needs_all = json_obj.get('needs_all', defaults['needs_all'])
+
+		leads_any = json_obj.get('leads_any', defaults['leads_any'])
+		leads_all = json_obj.get('leads_all', defaults['leads_all'])
 
 		return Function(function_name, return_type, parameters, requires, start, end)
 
@@ -142,6 +151,7 @@ def run_test(test_name, mpicc_command, max_proc_count=2, debug=False):
 	# Compiles test
 	command = mpicc_command + " " + test_name + ".c" + " -o " + test_name+"_binary"
 	command = command.split(" ")
+
 	process = subprocess.Popen(command,
 	                           cwd="tests/",
 	                           stdout=subprocess.PIPE,
@@ -361,30 +371,36 @@ def parse_arguments():
 
 	return arguments
 
-def parse_functions(path):
+def parse_functions(default_path, path):
 	"""
 	Parse all functions in the path given.
 	"""
+
+	print(default_path)
 
 	functions = []
 	start_points = []
 	end_points = []
 
-	function_pathlist = pathlib.Path(path).glob("**/*.json")
+	# parse fault function
+	with open(str(default_path)) as default_file:
+		defaults = json.load(default_file)
+	
+		function_pathlist = pathlib.Path(path).glob("**/*.json")
 
-	for function in function_pathlist:
-		try:
-			loaded = load_function(function)
+		for function in function_pathlist:
+			try:
+				loaded = load_function(defaults, function)
 
-			if loaded.get_start():
-				start_points.append(loaded)
-			elif loaded.get_end():
-				end_points.append(loaded)
-			else:
-				functions.append(loaded)
+				if loaded.get_start():
+					start_points.append(loaded)
+				elif loaded.get_end():
+					end_points.append(loaded)
+				else:
+					functions.append(loaded)
 
-		except:
-			pass
+			except:
+				pass
 
 	return functions, start_points, end_points
 
@@ -483,7 +499,10 @@ def main():
 	arguments = parse_arguments()
 
 	# parse given database
-	elements, start_points, end_points = parse_functions(arguments.load + 'functions')
+	elements, start_points, end_points = parse_functions(arguments.load + 'default_function.json', arguments.load + 'functions')
+
+	print(elements, start_points, end_points)
+	
 	types = parse_types(arguments.load + 'types')
 	constants = parse_constants(arguments.load + 'constants.json')
 	errors = parse_errors(arguments.load + 'errors.json')
