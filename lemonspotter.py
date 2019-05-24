@@ -13,13 +13,13 @@ from src.constant import Constant
 from src.error    import Error
 
 
-def load_function(db_path, name):
+def load_function(function_path):
     """
     Crawls the loaded database and searches for entry that matches name
 
     Paramters:
-    db_path (string) : Path to the function partition of database to crawl
-    name    (string) : Name of the element to be loaded
+    function_path (string) : Path to the function partition of database to crawl
+    name          (string) : Name of the element to be loaded
 
     Returns:
     element: Returns an element loaded with information from database
@@ -27,28 +27,50 @@ def load_function(db_path, name):
 
     # Recursively loads all json files searching
     # for a funciton with matching name
-    pathlist = Path(db_path).glob("**/*.json")
-    for path in pathlist:
-        try:
-            file = open(str(path))
-            json_obj = json.load(file)
+    try:
+        file = open(str(function_path))
+        json_obj = json.load(file)
 
-            # Loads all parameters from JSON
-            function_name = json_obj["name"]
+        # Loads all parameters from JSON
+        function_name = json_obj["name"]
 
-            if function_name == name:
-                return_type = json_obj["return"]
-                parameters = json_obj["arguments"]
-                requires = json_obj["requires"]
-                start = json_obj["start"]
-                end = json_obj["end"]
-                return Element(function_name, return_type, parameters, requires, start, end)
-        except ValueError:
-            #print("Error when loading json file: " + str(path))
-            pass
+        if function_name == name:
+            return_type = json_obj["return"]
+            parameters = json_obj["arguments"]
+            requires = json_obj["requires"]
+            start = json_obj["start"]
+            end = json_obj["end"]
+            return Function(function_name, return_type, parameters, requires, start, end)
+    except ValueError:
+        #print("Error when loading json file: " + str(path))
+        pass
+
 
     return Function()
 
+
+def load_constant(constant):
+    """
+    Loads the constants from the database
+
+    Paramters:
+    constant (dictionary): Json based dictionary storing a single constant
+
+    Returns a single consant object
+    """
+    return Constant(constant["classification"], constant["name"])
+
+
+def load_error(error):
+    """
+    Loads the errors from the database
+
+    Paramters:
+    error (dictionary): Json based dictionary storing a single error
+
+    Returns a single consant object
+    """
+    return Error(error["value"], error["symbol"])
 
 
 # Runs the paramter command passed as a string.
@@ -299,7 +321,9 @@ def main():
 
     debug_state = parse_arguments().debug
 
-    full_list = []
+    function_list = []
+    constant_list = []
+    error_list = []
     element_list = []
     start_points = []
     end_points = []
@@ -308,12 +332,27 @@ def main():
     # This below needs to be modified to load in each type of elemment seperately #
     ###############################################################################
 
-    pathlist = Path(db_path).glob("**/*.json")
-    for path in pathlist:
+    # Because functions are in different files, this must be done in a loop
+    function_pathlist = Path(db_path+"functions").glob("**/*.json")
+    for function in function_pathlist:
         try:
-            file = open(str(path))
-            json_obj = json.load(file)
-            full_list.append(load_function(db_path, json_obj["name"]))
+            function_list.append(load_function(function))
+        except:
+            pass
+
+    constant_file = open(db_path+"constants.json", "r")
+    json_obj = json.load(constant_file)
+    for constant in json_obj:
+        try:
+            constant_list.append(load_constant(constant))
+        except:
+            pass
+
+    error_file = open(db_path+"errors.json", "r")
+    json_obj = json.load(error_file)
+    for error in json_obj:
+        try:
+            error_list.append(load_error(error))
         except:
             pass
 
@@ -321,7 +360,7 @@ def main():
     # This above needs to be modified to load in each type of elemment seperately #
     ###############################################################################
 
-    for element in full_list:
+    for element in function_list:
         if element.get_start() == True:
             start_points.append(element)
         elif element.get_end() == True:
