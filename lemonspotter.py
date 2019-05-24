@@ -262,6 +262,10 @@ def generate_test(file_name, elements=[]):
     elements  (string[]) : List of strings cooresponding to the elements to be included in test
     """
 
+    # Environment setup
+    if (not os.path.exists("tests/")):
+        os.mkdir("tests")
+
     # To be used in paramter names to avoid conflicts
     test_number = 0
 
