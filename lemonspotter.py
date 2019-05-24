@@ -340,7 +340,6 @@ def parse_arguments():
                         version="%(prog)s 0.1")
 
     arguments = parser.parse_args()
-    print(arguments)
     if not arguments:
         parse.print_help()
         sys.exit(0)
