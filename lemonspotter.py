@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 '''
 LemonSpotter: An incremental test suite for the MPI standard
 '''
@@ -337,8 +339,13 @@ def parse_arguments():
                         action='version',
                         version="%(prog)s 0.1")
 
-    return parser.parse_args()
+    arguments = parser.parse_args()
+    print(arguments)
+    if not arguments:
+        parse.print_help()
+        sys.exit(0)
 
+    return arguments
 
 def main():
     """
@@ -346,9 +353,11 @@ def main():
     """
 
     # There is likely a better way to parse these arguments, but it can be resolved later
-    db_path = parse_arguments().load
+    arguments = parse_arguments()
 
-    debug_state = parse_arguments().debug
+    db_path = arguments.load
+
+    debug_state = arguments.debug
 
     function_list = []
     type_list = []
