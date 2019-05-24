@@ -12,10 +12,10 @@ import subprocess
 import pathlib
 import logging
 
-from lemonspotter.function import Function
-from lemonspotter.type	  import Type
-from lemonspotter.constant import Constant
-from lemonspotter.error	  import Error
+from src.function import Function
+from src.type	  import Type
+from src.constant import Constant
+from src.error	  import Error
 
 def load_function(function_path):
 	"""
@@ -438,9 +438,9 @@ def parse_errors(path):
 
 	return error_list
 
-def validate_start_end_elements(starts, ends):
-	for start in start_points:
-		for end in end_points:
+def validate_start_end_elements(starts, ends, mpicc, debug):
+	for start in starts:
+		for end in ends:
 			# this is the graph we are validating
 			endpoint_list = [start, end]
 
@@ -451,22 +451,26 @@ def validate_start_end_elements(starts, ends):
 			generate_test(test_name + ".c", endpoint_list)
 
 			stdout, stderr = run_test(test_name,
-			                          mpicc_command=arguments.mpi_command,
-			                          debug=arguments.debug)
+			                          mpicc_command=mpicc,
+			                          debug=debug)
 
 			if not stderr:
 				start.set_validation(True)
 				end.set_validation(True)
 
-				log(start.get_name(), "pass")
-				log(end.get_name(), "pass")
+				#log(start.get_name(), "pass")
+				logging.info('validated %s', start.get_name())
+				#log(end.get_name(), "pass")
+				logging.info('validated %s', end.get_name())
 
 			else:
 				start.set_validation(False)
 				end.set_validation(False)
 
-				log(start.get_name(), "fail")
-				log(end.get_name(), "fail")
+				#log(start.get_name(), "fail")
+				logging.warning('failed %s', start.get_name())
+				#log(end.get_name(), "fail")
+				logging.warning('failed %s', end.get_name())
 
 def main():
 	"""
@@ -479,11 +483,11 @@ def main():
 	# parse given database
 	elements, start_points, end_points = parse_functions(arguments.load + 'functions')
 	types = parse_types(arguments.load + 'types')
-	constants = parse_constants(arguments.load + 'types.json')
+	constants = parse_constants(arguments.load + 'constants.json')
 	errors = parse_errors(arguments.load + 'errors.json')
 
 	# validate start and end points
-	validate_start_end_elements()
+	validate_start_end_elements(start_points, end_points, arguments.mpi_command, arguments.debug)
 
 	# Runs tests of all functions through all start/end points
 	for start in start_points:
@@ -517,9 +521,11 @@ def main():
 						                          debug=arguments.debug)
 
 						if not stderr:
-							log(test_name, "pass")
+							#log(test_name, "pass")
+							logging.info('validated %s', test_name)
 						else:
-							log(test_name, "fail")
+							#log(test_name, "fail")
+							logging.warning('failed %s', test_name)
 
 if __name__ == "__main__":
 	main()
