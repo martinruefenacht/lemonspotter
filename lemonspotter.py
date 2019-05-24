@@ -125,7 +125,7 @@ def run_process(command):
     return stdout, stderr
 
 
-def run_test(test_name, max_proc_count=2, debug=False):
+def run_test(test_name, max_proc_count=2, mpicc_command, debug=False):
     """
     Runs the test that has been generated and has name test_name
 
@@ -138,7 +138,7 @@ def run_test(test_name, max_proc_count=2, debug=False):
     """
 
     # Compiles test
-    command = "mpicc " + test_name + ".c" + " -o " + test_name+"_binary"
+    command = mpicc_command + " " + test_name + ".c" + " -o " + test_name+"_binary"
     command = command.split(" ")
     process = subprocess.Popen(command,
                                cwd="tests/",
@@ -332,6 +332,13 @@ def parse_arguments():
                         help="specify true to keep generated files",
                         dest="debug")
 
+    parser.add_argument('-m', "--mpi",
+                        metavar="mpid_path",
+                        nargs='?',
+                        default=mpicc,
+                        help="Can define a different command to compile mpi programs",
+                        dest="mpi_command")
+
     parser.add_argument('-v', "--version",
                         help="print version of Lemonspotter",
                         action='version',
@@ -405,7 +412,7 @@ def main():
             endpoint_list = [start, end]
             test_name = start.get_name() + "__" + end.get_name()
             generate_test(test_name + ".c", endpoint_list)
-            stdout, stderr = run_test(test_name, debug=debug_state)
+            stdout, stderr = run_test(test_name, mpicc_command=mpi_command,debug=debug_state)
 
             if stderr == "":
                 start.set_validation(True)
