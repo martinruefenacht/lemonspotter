@@ -149,7 +149,8 @@ def run_test(test_name, mpicc_command, max_proc_count=2, debug=False):
 	                           universal_newlines=True)
 
 	stdout, stderr = process.communicate()
-	if not stderr:
+
+	if stderr:
 		print(test_name + " : failed to compile")
 
 	# Runs tests on as many processors as specified
@@ -165,6 +166,7 @@ def run_test(test_name, mpicc_command, max_proc_count=2, debug=False):
 		                           universal_newlines=True)
 
 		stdout, stderr = process.communicate()
+
 		# Do Logging step here
 		proc_count += 1
 
@@ -334,9 +336,7 @@ def parse_arguments():
 	                    dest="load")
 
 	parser.add_argument('-d', "--debug",
-	                    metavar="True/False",
-	                    nargs='?',
-	                    default=False,
+	                    action='store_true',
 	                    help="specify true to keep generated files",
 	                    dest="debug")
 
@@ -471,6 +471,8 @@ def validate_start_end_elements(starts, ends, mpicc, debug):
 				logging.warning('failed %s', start.get_name())
 				#log(end.get_name(), "fail")
 				logging.warning('failed %s', end.get_name())
+
+				logging.warning(stderr)
 
 def main():
 	"""
