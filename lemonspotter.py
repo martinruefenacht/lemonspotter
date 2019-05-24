@@ -7,8 +7,9 @@ import json
 import argparse
 import subprocess
 
-from pathlib import Path
+from pathlib      import Path
 from src.function import Function
+from src.type     import Type
 from src.constant import Constant
 from src.error    import Error
 
@@ -19,10 +20,9 @@ def load_function(function_path):
 
     Paramters:
     function_path (string) : Path to the function partition of database to crawl
-    name          (string) : Name of the element to be loaded
 
     Returns:
-    element: Returns an element loaded with information from database
+    Function: Returns an fuction object loaded with information from database
     """
 
     # Recursively loads all json files searching
@@ -33,20 +33,49 @@ def load_function(function_path):
 
         # Loads all parameters from JSON
         function_name = json_obj["name"]
-
-        if function_name == name:
-            return_type = json_obj["return"]
-            parameters = json_obj["arguments"]
-            requires = json_obj["requires"]
-            start = json_obj["start"]
-            end = json_obj["end"]
-            return Function(function_name, return_type, parameters, requires, start, end)
+        return_type = json_obj["return"]
+        parameters = json_obj["arguments"]
+        requires = json_obj["requires"]
+        start = json_obj["start"]
+        end = json_obj["end"]
+        return Function(function_name, return_type, parameters, requires, start, end)
     except ValueError:
         #print("Error when loading json file: " + str(path))
         pass
 
 
     return Function()
+
+def load_type(type_path):
+    """
+    Crawls the loaded database and searches for entry that matches name
+
+    Paramters:
+    type_path (string) : Path to the function partition of database to crawl
+
+    Returns:
+    Type: Returns an type object loaded with information from database
+    """
+
+    # Recursively loads all json files searching
+    # for a funciton with matching name
+    try:
+        file = open(str(type_path))
+        json_obj = json.load(file)
+
+        # Loads all parameters from JSON
+        type_name = json_obj["name"]
+        placeholder = json_obj["placeholder"]
+        lower_range = json_obj["lower_range"]
+        upper_range = json_obj["upper_range"]
+        classification = json_obj["type"]
+        return Type(classification, lower_range, upper_range, type_name, placeholder)
+    except ValueError:
+        #print("Error when loading json file: " + str(path))
+        pass
+
+
+    return Type()
 
 
 def load_constant(constant):
@@ -322,21 +351,26 @@ def main():
     debug_state = parse_arguments().debug
 
     function_list = []
+    type_list = []
     constant_list = []
     error_list = []
     element_list = []
     start_points = []
     end_points = []
 
-    ###############################################################################
-    # This below needs to be modified to load in each type of elemment seperately #
-    ###############################################################################
-
     # Because functions are in different files, this must be done in a loop
     function_pathlist = Path(db_path+"functions").glob("**/*.json")
     for function in function_pathlist:
         try:
             function_list.append(load_function(function))
+        except:
+            pass
+
+    # Because functions are in different files, this must be done in a loop
+    type_pathlist = Path(db_path+"types").glob("**/*.json")
+    for type_element in type_pathlist:
+        try:
+            type_list.append(load_type(type_element))
         except:
             pass
 
@@ -356,9 +390,6 @@ def main():
         except:
             pass
 
-    ###############################################################################
-    # This above needs to be modified to load in each type of elemment seperately #
-    ###############################################################################
 
     for element in function_list:
         if element.get_start() == True:
