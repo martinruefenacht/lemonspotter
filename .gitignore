@@ -1,6 +1,7 @@
-.DS_Store
-__pycache__
+**/.DS_Store
+**/__pycache__
+
 *.pyc
-*.json
-*_binary
-*.c
+**/*.json
+**/*_binary
+**/*.c
