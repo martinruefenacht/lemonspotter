@@ -42,7 +42,7 @@ def load_function(defaults, function_path):
             # optional function attributes
             #optionals = ['parameters', 'needs_any', 'needs_all', 'leads_any', 'leads_all']
             #for optional in optionals:
-                
+
             parameters = json_obj.get("parameters", defaults["parameters"])
 
             needs_any = json_obj.get('needs_any', defaults['needs_any'])
@@ -51,7 +51,8 @@ def load_function(defaults, function_path):
             leads_any = json_obj.get('leads_any', defaults['leads_any'])
             leads_all = json_obj.get('leads_all', defaults['leads_all'])
 
-            return Function(function_name, return_type, parameters, requires, start, end)
+            #return Function(function_name, return_type, parameters, requires, start, end)
+            return Function(function_name, return_type, parameters, needs_any, needs_all, leads_any, leads_all)
 
     except ValueError:
         logging.error("Loading of %s failed.", function_path);
@@ -82,9 +83,7 @@ def load_type(type_path):
         return Type(classification, lower_range, upper_range, type_name, placeholder)
 
     except ValueError:
-        #print("Error when loading json file: " + str(path))
-        pass
-
+        logging.error("Failed to load %s.", path)
 
     return Type()
 
@@ -375,30 +374,21 @@ def parse_functions(default_path, path):
     print(default_path)
 
     functions = []
-    start_points = []
-    end_points = []
 
     # parse fault function
-    with open(str(default_path)) as default_file:
+    with open(default_path) as default_file:
         defaults = json.load(default_file)
     
         function_pathlist = pathlib.Path(path).glob("**/*.json")
 
         for function in function_pathlist:
             try:
-                loaded = load_function(defaults, function)
-
-                if loaded.get_start():
-                    start_points.append(loaded)
-                elif loaded.get_end():
-                    end_points.append(loaded)
-                else:
-                    functions.append(loaded)
+                functions.append(load_function(defaults, function))
 
             except:
-                pass
+                logging.error("failed to load function.")
 
-    return functions, start_points, end_points
+    return functions
 
 def parse_types(path):
     """
@@ -495,54 +485,65 @@ def main():
     arguments = parse_arguments()
 
     # parse given database
-    elements, start_points, end_points = parse_functions(arguments.load + 'default_function.json', arguments.load + 'functions')
-
-    print(elements, start_points, end_points)
+    functions = parse_functions(arguments.load + 'default_function.json', arguments.load + 'functions')
     
     types = parse_types(arguments.load + 'types')
     constants = parse_constants(arguments.load + 'constants.json')
     errors = parse_errors(arguments.load + 'errors.json')
 
+    print(functions)
+
+    starts = filter(lambda f: not f._needs_all and not f._needs_any, functions)
+    print(list(starts))
+
+    ends = filter(lambda f: not f._leads_all and not f._leads_any, functions)
+    print(list(ends))
+
+    intermediate = filter(lambda f: (f._needs_all or f._needs_any) and
+                                    (f._leads_all or f._leads_any),
+                                    functions)
+    print(list(intermediate))
+
     # validate start and end points
-    validate_start_end_elements(start_points, end_points, arguments.mpi_command, arguments.debug)
+    #validate_start_end_elements(start_points, end_points, arguments.mpi_command, arguments.debug)
 
     # Runs tests of all functions through all start/end points
-    for start in start_points:
-        # Ensures that this start point is tested and valid
-        if start.get_validation():
-
-            for end in end_points:
-                # Ensures that this endpoint is tested and valid
-                if end.get_validation():
-
-                    for element in elements:
-                        current_test = [start, element, end]
-
-                        """
-                        TODO: Dependencies need to be loaded here.
-                              Can be done recursively from element.
-                              Iterate across all elements that the function
-                              depends on. Then recursively do the same until there
-                              are no more.
-
-                              A clean up step might be needed. Its possible that functions
-                              will be duplicated.
-                        """
-
-                        test_name = element.get_name()
-
-                        generate_test(test_name + ".c", current_test)
-
-                        stdout, stderr = run_test(test_name,
-                                                  mpicc_command=arguments.mpi_command,
-                                                  debug=arguments.debug)
-
-                        if not stderr:
-                            #log(test_name, "pass")
-                            logging.info('validated %s', test_name)
-                        else:
-                            #log(test_name, "fail")
-                            logging.warning('failed %s', test_name)
+#    for start in start_points:
+#        # Ensures that this start point is tested and valid
+#        if start.get_validation():
+#
+#            for end in end_points:
+#                # Ensures that this endpoint is tested and valid
+#                if end.get_validation():
+#
+#                    for element in elements:
+#                        current_test = [start, element, end]
+#
+#                        """
+#                        TODO: Dependencies need to be loaded here.
+#                              Can be done recursively from element.
+#                              Iterate across all elements that the function
+#                              depends on. Then recursively do the same until there
+#                              are no more.
+#
+#                              A clean up step might be needed. Its possible that functions
+#                              will be duplicated.
+#                        """
+#
+#                        test_name = element.get_name()
+#
+#                        generate_test(test_name + ".c", current_test)
+#
+#                        stdout, stderr = run_test(test_name,
+#                                                  mpicc_command=arguments.mpi_command,
+#                                                  debug=arguments.debug)
+#
+#                        if not stderr:
+#                            #log(test_name, "pass")
+#                            logging.info('validated %s', test_name)
+#                        else:
+#                            #log(test_name, "fail")
+#                            logging.warning('failed %s', test_name)
 
 if __name__ == "__main__":
     main()

@@ -5,7 +5,8 @@ class Function:
     Defines an element of a library that can be included in Lemonspotter tests.
     """
 
-    def __init__(self, name="FUNCTION_NOT_FOUND", return_type="", arguments=[], requires=[], start=False, end=False, validated=False):
+    #def __init__(self, name="FUNCTION_NOT_FOUND", return_type="", arguments=[], requires=[], start=False, end=False, validated=False):
+    def __init__(self, name, return_type, parameters, needs_any, needs_all, leads_any, leads_all):
         """
         Initializes function element.
 
@@ -16,59 +17,80 @@ class Function:
         requires    (string[])  : List of element names that current function needs to run
         validation  (boolean)   : Determines whether the constant has been validated
         """
-        self.function_name = name
-        self.arguments = arguments
-        self.return_type = return_type
-        self.requires = requires
-        self.start = start
-        self.end = end
-        self.validated = validated
+        self._function_name = name
+        self._parameters = parameters
+        self._return_type = return_type
 
+        #self.requires = requires
+        #self.start = start
+        #self.end = end
 
-    def get_name(self):
-        """
-	    Returns the name of the element.
-        """
-        return self.function_name
+        self._needs_any = needs_any
+        self._needs_all = needs_all
 
-    def get_arguments_list(self):
+        self._leads_any = leads_any
+        self._leads_all = leads_all
+
+        self._attempted = False
+        self._validated = False
+
+    def is_attempted(self):
+        return self._attempted
+
+    def is_validated(self):
+        return self._validated
+
+    def __repr__(self):
+        return self._function_name
+
+    def __str__(self):
+        return self._function_name
+
+    @property
+    def function_name(self):
         """
-        Returns the list of arguments that an element takes.
+        Returns the name of the element.
         """
-        return self.arguments
+        return self._function_name
 
     def get_return_type(self):
         """
         Returns the return type of the element.
         """
-        return self.return_type
+        return self._return_type
 
-    def get_dependency_list(self):
+    def get_parameters(self):
         """
-        Returns the dependency list for an element.
+        Returns the list of arguments that an element takes.
         """
-        return self.requires
+        return self._parameters
 
-    def get_start(self):
-        """
-        Returns boolean value if element is start point
-        """
-        return self.start
+#    def get_dependency_list(self):
+#        """
+#        Returns the dependency list for an element.
+#        """
+#        return self.requires
+#
+#    def get_start(self):
+#        """
+#        Returns boolean value if element is start point
+#        """
+#        return self.start
+#
+#    def get_end(self):
+#        """
+#        Returns boolean value if element is end point
+#        """
+#        return self.end
 
-    def get_end(self):
-        """
-        Returns boolean value if element is end point
-        """
-        return self.end
-
-    def set_validation(self, validation):
-        """
-        Sets the validation state after testing
-        """
-        self.validated = validation
-
-    def get_validation(self):
-        """
-        Returns validation state of each element
-        """
-        return self.validated
+#    def set_validation(self, validation):
+#        """
+#        Sets the validation state after testing
+#        """
+#        self.validated = validation
+#
+#    def get_validation(self):
+#        """
+#        Returns validation state of each element
+#        """
+#        return self.validated
