@@ -40,6 +40,12 @@ class Function:
     def is_validated(self):
         return self._validated
 
+    def validate(self):
+        self._validated = True
+
+    def attempt(self):
+        self._attempted = True
+
     def __repr__(self):
         return self._function_name
 
@@ -53,13 +59,15 @@ class Function:
         """
         return self._function_name
 
-    def get_return_type(self):
+    @property
+    def return_type(self):
         """
         Returns the return type of the element.
         """
         return self._return_type
 
-    def get_parameters(self):
+    @property
+    def parameters(self):
         """
         Returns the list of arguments that an element takes.
         """

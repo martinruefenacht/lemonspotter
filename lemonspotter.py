@@ -30,32 +30,37 @@ def load_function(defaults, function_path):
 
     # Recursively loads all json files searching
     # for a funciton with matching name
-    try:
-        with open(function_path, 'r') as function_file:
-            json_obj = json.load(function_file)
+    with open(function_path, 'r') as function_file:
+        json_obj = json.load(function_file)
 
-            # required function attributes
-            function_name = json_obj["name"]
-            return_type = json_obj["return"]
-            version = json_obj["version"]
+        # required function attributes
+        function_name = json_obj["name"]
+        logging.info("function loading: %s", function_name)
 
-            # optional function attributes
-            #optionals = ['parameters', 'needs_any', 'needs_all', 'leads_any', 'leads_all']
-            #for optional in optionals:
+        return_type = json_obj["return"]
+        version = json_obj["version"]
 
-            parameters = json_obj.get("parameters", defaults["parameters"])
+        parameters = json_obj.get("parameters", defaults['function']['parameters'])
+        
+        # for each parameter
+        for parameter in parameters:
+            # complete parameter definition from default
+            if 'pointer' not in parameter:
+                parameter['pointer'] = defaults['parameter']['pointer']
 
-            needs_any = json_obj.get('needs_any', defaults['needs_any'])
-            needs_all = json_obj.get('needs_all', defaults['needs_all'])
+            if 'const' not in parameter:
+                parameter['const'] = defaults['parameter']['const']
 
-            leads_any = json_obj.get('leads_any', defaults['leads_any'])
-            leads_all = json_obj.get('leads_all', defaults['leads_all'])
+            if 'direction' not in parameter:
+                parameter['direction'] = defaults['parameter']['direction']
 
-            #return Function(function_name, return_type, parameters, requires, start, end)
-            return Function(function_name, return_type, parameters, needs_any, needs_all, leads_any, leads_all)
+        needs_any = json_obj.get('needs_any', defaults['function']['needs_any'])
+        needs_all = json_obj.get('needs_all', defaults['function']['needs_all'])
 
-    except ValueError:
-        logging.error("Loading of %s failed.", function_path);
+        leads_any = json_obj.get('leads_any', defaults['function']['leads_any'])
+        leads_all = json_obj.get('leads_all', defaults['function']['leads_all'])
+
+        return Function(function_name, return_type, parameters, needs_any, needs_all, leads_any, leads_all)
 
 def load_type(type_path):
     """
@@ -229,7 +234,7 @@ def generate_text(element, test_number):
     Needs to be iterative.
     """
     text = ""
-    argument_list = element.get_arguments_list()
+    argument_list = element.parameters
 
     #Generates parameters
     for argument in argument_list:
@@ -241,7 +246,7 @@ def generate_text(element, test_number):
 
 
     # Generates function call
-    text += "\t"+ element.get_name() + "("
+    text += "\t"+ element.function_name + "("
     for argument in argument_list:
         try:
             if argument["pointer"] != 0:
@@ -287,8 +292,6 @@ def generate_test(file_name, elements=None):
     # Writes the MPI elements to C test file
     for element in elements:
         test_file.write(generate_text(element, test_number) + "\n\n")
-
-
 
     test_file.write("\treturn 0;\n")
     test_file.write("}\n")
@@ -371,8 +374,6 @@ def parse_functions(default_path, path):
     Parse all functions in the path given.
     """
 
-    print(default_path)
-
     functions = []
 
     # parse fault function
@@ -381,13 +382,11 @@ def parse_functions(default_path, path):
     
         function_pathlist = pathlib.Path(path).glob("**/*.json")
 
-        for function in function_pathlist:
-            try:
-                functions.append(load_function(defaults, function))
-
-            except:
-                logging.error("failed to load function.")
-
+        for function_path in function_pathlist:
+            func = load_function(defaults, function_path)
+            if func:
+                functions.append(func)
+    
     return functions
 
 def parse_types(path):
@@ -441,13 +440,19 @@ def parse_errors(path):
     return error_list
 
 def validate_start_end_elements(starts, ends, mpicc, debug):
+    # TODO filter those starts/ends that have not been attempted
+
     for start in starts:
         for end in ends:
+            start.attempt()
+            end.attempt()
+
             # this is the graph we are validating
+            # sub graph generation via walking database graph
             endpoint_list = [start, end]
 
-            # hash
-            test_name = start.get_name() + "__" + end.get_name()
+            # hash, unique name no other test has
+            test_name = start.function_name + "__" + end.function_name
 
             # 
             generate_test(test_name + ".c", endpoint_list)
@@ -457,24 +462,15 @@ def validate_start_end_elements(starts, ends, mpicc, debug):
                                       debug=debug)
 
             if not stderr:
-                start.set_validation(True)
-                end.set_validation(True)
+                start.validate()
+                end.validate()
 
-                #log(start.get_name(), "pass")
-                logging.info('validated %s', start.get_name())
-                #log(end.get_name(), "pass")
-                logging.info('validated %s', end.get_name())
+                logging.warning('validated %s', start.function_name)
+                logging.warning('validated %s', end.function_name)
 
             else:
-                start.set_validation(False)
-                end.set_validation(False)
-
-                #log(start.get_name(), "fail")
-                logging.warning('failed %s', start.get_name())
-                #log(end.get_name(), "fail")
-                logging.warning('failed %s', end.get_name())
-
-                logging.warning(stderr)
+                logging.warning('failed %s', start.function_name)
+                logging.warning('failed %s', end.function_name)
 
 def main():
     """
@@ -485,27 +481,23 @@ def main():
     arguments = parse_arguments()
 
     # parse given database
-    functions = parse_functions(arguments.load + 'default_function.json', arguments.load + 'functions')
+    functions = parse_functions(arguments.load + 'defaults.json', arguments.load + 'functions')
     
     types = parse_types(arguments.load + 'types')
     constants = parse_constants(arguments.load + 'constants.json')
     errors = parse_errors(arguments.load + 'errors.json')
 
-    print(functions)
-
     starts = filter(lambda f: not f._needs_all and not f._needs_any, functions)
-    print(list(starts))
-
     ends = filter(lambda f: not f._leads_all and not f._leads_any, functions)
-    print(list(ends))
-
     intermediate = filter(lambda f: (f._needs_all or f._needs_any) and
                                     (f._leads_all or f._leads_any),
                                     functions)
-    print(list(intermediate))
+
+    #constructors = filter(lambda f: f.pa
+    #print(list(constructors))
 
     # validate start and end points
-    #validate_start_end_elements(start_points, end_points, arguments.mpi_command, arguments.debug)
+    validate_start_end_elements(starts, ends, arguments.mpi_command, arguments.debug)
 
     # Runs tests of all functions through all start/end points
 #    for start in start_points:
