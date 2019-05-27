@@ -421,7 +421,8 @@ def parse_errors(path):
     return error_list
 
 def validate_start_end_elements(starts, ends, mpicc, debug):
-    # TODO filter those starts/ends that have not been attempted
+    starts = filter(lambda f: not f.is_attempted() and not f.is_validated(), starts)
+    ends   = filter(lambda f: not f.is_attempted() and not f.is_validated(), ends)
 
     for start in starts:
         for end in ends:
@@ -435,7 +436,7 @@ def validate_start_end_elements(starts, ends, mpicc, debug):
             # hash, unique name no other test has
             test_name = start.function_name + "__" + end.function_name
 
-            #
+            # Generates test based on the current subgraph
             generate_test(test_name + ".c", endpoint_list)
 
             stdout, stderr = run_test(test_name,
