@@ -28,8 +28,6 @@ def load_function(defaults, function_path):
     Function: Returns an fuction object loaded with information from database
     """
 
-    # Recursively loads all json files searching
-    # for a funciton with matching name
     with open(function_path, 'r') as function_file:
         json_obj = json.load(function_file)
 
@@ -306,26 +304,6 @@ def clean_file(file_name):
     """
     os.remove("tests/" + file_name)
 
-#def log(testname, results):
-#   """
-#   Logs output of all testcases for a specific test to a log file.
-#   """
-#
-#   # TODO replace with Logger object
-#
-#   # create tests directory
-#   if not os.path.isdir("logs"):
-#       os.mkdir("logs")
-#
-#   # Open log file for specific testcase
-#   log_file = open("logs/" + testname + ".json", "w+")
-#
-#   log_file.write("{\n\t\"" + testname + "\" : {\n")
-#   log_file.write("\t\t\"status\" : " + "\"" + results + "\"\n")
-#
-#   log_file.write("\t}\n")
-#   log_file.write("}")
-
 def parse_arguments():
     """
     Parses arguments from the command line launch command. Returns path to library
@@ -359,6 +337,9 @@ def parse_arguments():
                         help="print version of Lemonspotter",
                         action='version',
                         version="%(prog)s 0.1")
+
+    parser.add_argument('--log',
+                        default="warning")
 
     arguments = parser.parse_args()
 
@@ -479,6 +460,13 @@ def main():
 
     # parse arguments from command line
     arguments = parse_arguments()
+
+    # set logging level
+    loglevel = arguments.log
+    numeric_level = getattr(logging, loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: %s' % loglevel)
+    logging.basicConfig(level=numeric_level)
 
     # parse given database
     functions = parse_functions(arguments.load + 'defaults.json', arguments.load + 'functions')
