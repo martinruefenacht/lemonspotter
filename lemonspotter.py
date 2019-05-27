@@ -39,7 +39,7 @@ def load_function(defaults, function_path):
         version = json_obj["version"]
 
         parameters = json_obj.get("parameters", defaults['function']['parameters'])
-        
+
         # for each parameter
         for parameter in parameters:
             # complete parameter definition from default
@@ -360,14 +360,14 @@ def parse_functions(default_path, path):
     # parse fault function
     with open(default_path) as default_file:
         defaults = json.load(default_file)
-    
+
         function_pathlist = pathlib.Path(path).glob("**/*.json")
 
         for function_path in function_pathlist:
             func = load_function(defaults, function_path)
             if func:
                 functions.append(func)
-    
+
     return functions
 
 def parse_types(path):
@@ -435,7 +435,7 @@ def validate_start_end_elements(starts, ends, mpicc, debug):
             # hash, unique name no other test has
             test_name = start.function_name + "__" + end.function_name
 
-            # 
+            #
             generate_test(test_name + ".c", endpoint_list)
 
             stdout, stderr = run_test(test_name,
@@ -470,7 +470,7 @@ def main():
 
     # parse given database
     functions = parse_functions(arguments.load + 'defaults.json', arguments.load + 'functions')
-    
+
     types = parse_types(arguments.load + 'types')
     constants = parse_constants(arguments.load + 'constants.json')
     errors = parse_errors(arguments.load + 'errors.json')
