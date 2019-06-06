@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-
-from lemonspotter import LemonSpotter
-
-if __name__ == '__main__':
-    LemonSpotter()

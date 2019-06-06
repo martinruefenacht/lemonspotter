@@ -1,27 +1,78 @@
-class MPIParser:
-    def __init__(self, database_path):
-        self.database_path = database_path
+import os
+import pathlib
+import json
 
-    def parse_constants(self):
-        raise NotImplementedError
+from core.database import Database
+
+class MPIParser:
+#    def __call__(self, database_path: str) -> Database:
+    def __call__(self, database_path):
+        self.parse(database_path)
+        
+#    def parse(self, database_path: str) -> Database:
+    def parse(self, path):
+        database = Database()
+
+        self.parse_types(path, database)
+        #self.parse_errors(path, database)
+        #self.parse_constants(path, database)
+        self.parse_functions(path, database)
+
+        print(database.types)
+        print(database.functions)
+
+        # TODO generate objects
+
+        return database
+
+    def parse_constants(self, path):
+        raise NotImplementedError 
        
     def parse_single_constant(self):
         raise NotImplementedError 
 
-    def parse_functions(self):
-        raise NotImplementedError
+    def parse_functions(self, path, database):
+        # load single file
+        # TODO
 
-    def parse_single_function(self):
-        raise NotImplementedError
+        # load directory function definitions
+        functions_directory = path + 'functions/'
+        if os.path.isdir(functions_directory):
+            files = pathlib.Path(functions_directory).glob('**/*.json')
 
-    def parse_errors(self):
+            for path in files:
+                func = self.parse_single_function(path.absolute())
+                database.functions[func['name']] = func
+
+    def parse_single_function(self, path):
+        with open(path) as funcfile:
+            return json.load(funcfile)
+
+    def parse_errors(self, path, database):
         raise NotImplementedError
 
     def parse_single_error(self):
         raise NotImplementedError
 
-    def parse_types(self):
-        raise NotImplementedError
+    def parse_types(self, path, database):
+        # load single file definitions
+        types_filename = path + 'types.json'
+        if os.path.isfile(types_filename):
+            with open(types_filename) as types_file:
+                type_array = json.load(types_file)
 
-    def parse_single_type(self):
-        raise NotImplementedError
+                for mpi_type in type_array:
+                    database.types[mpi_type['abstract_type']] = mpi_type
+        
+        # load directory definitions
+        types_directory = path + 'types/'
+        if os.path.isdir(types_directory):
+            files = pathlib.Path(types_directory).glob('**/*.json')
+
+            for path in files:
+                mpi_type = self.parse_single_type(path)
+                database.types[mpi_type['abstract_type']] = mpi_type
+
+    def parse_single_type(self, path):
+        with open(path) as typefile:
+            return json.loads(typefile)

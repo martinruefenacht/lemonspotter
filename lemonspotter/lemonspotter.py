@@ -2,12 +2,14 @@ import sys
 import argparse
 import logging
 
-import lemonspotter.core as core
-import lemonspotter.parsers as parsers
-import lemonspotter.generators as generators
+import core
+import parsers.mpiparser
+import generators
 
 class LemonSpotter:
     def __init__(self):
+        """Construct the LemonSpotter runtime."""
+
         self.database = None
 
         self.parse_arguments()
@@ -18,6 +20,8 @@ class LemonSpotter:
         #TODO self.extract_constants()
         
     def parse_arguments(self):
+        """Parse the arguments given on the command line."""
+
         parser = argparse.ArgumentParser(prog='LemonSpotter')
 
         # general flags
@@ -62,6 +66,8 @@ class LemonSpotter:
             sys.exit(0)
 
     def set_logging_level(self):
+        """Set the logging level to the one specified on the command line."""
+
         numeric_level = getattr(logging, self.arguments.log.upper(), None)
         
         if not isinstance(numeric_level, int):
@@ -70,11 +76,18 @@ class LemonSpotter:
         logging.basicConfig(level=numeric_level)
 
     def parse_database(self):
-        parser = parsers.MPIParser(self.arguments.database)
+        """Parse the database pointed to by the command line argument."""
 
-        self.database = parser.load_database()
+        parser = parsers.mpiparser.MPIParser()
+
+        self.database = parser(self.arguments.database)
 
     def extract_constants(self):
+        """
+        Generate and run an extraction program to determine the values of
+        constants and errors.
+        """
+        
         raise NotImplementedError
 
     def generate_tests(self):
@@ -88,3 +101,6 @@ class LemonSpotter:
 
     def run_tests(self):
         raise NotImplementedError
+
+if __name__ == '__main__':
+    LemonSpotter()

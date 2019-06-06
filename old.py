@@ -550,5 +550,5 @@ def main():
 #                            #log(test_name, "fail")
 #                            logging.warning('failed %s', test_name)
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()

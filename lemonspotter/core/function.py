@@ -40,6 +40,9 @@ class Function:
     def is_validated(self):
         return self._validated
 
+    def has_failed(self):
+        return self._attempted and not self._validated
+
     def validate(self):
         self._validated = True
 
