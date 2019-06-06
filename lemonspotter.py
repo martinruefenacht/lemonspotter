@@ -4,18 +4,18 @@
 LemonSpotter: An incremental test suite for the MPI standard
 '''
 
-import sys
+#import sys
 import os
-import json
-import argparse
+#import json
+#import argparse
 import subprocess
 import pathlib
 import logging
 
-from src.function import Function
-from src.type     import Type
-from src.constant import Constant
-from src.error    import Error
+#from src.function import Function
+#from src.type     import Type
+#from src.constant import Constant
+#from src.error    import Error
 
 def load_function(defaults, function_path):
     """
@@ -304,51 +304,55 @@ def clean_file(file_name):
     """
     os.remove("tests/" + file_name)
 
-def parse_arguments():
-    """
-    Parses arguments from the command line launch command. Returns path to library
-    database
-    """
-
-    # Parse CLI Arguments for more granular control
-    parser = argparse.ArgumentParser(description="Specify runtime variables", prog="LemonSpotter")
-
-    parser.add_argument('-l', "--load",
-                        metavar="db_path",
-                        nargs='?',
-                        const="../lemonspotter-mpi1/mpi_1_3/",
-                        default="../lemonspotter-mpi1/mpi_1_3/",
-                        help="specify relative path to database",
-                        dest="load")
-
-    parser.add_argument('-d', "--debug",
-                        action='store_true',
-                        help="specify true to keep generated files",
-                        dest="debug")
-
-    parser.add_argument('-m', "--mpi",
-                        metavar="mpid_path",
-                        nargs='?',
-                        default="mpicc",
-                        help="Can define a different command to compile mpi programs",
-                        dest="mpi_command")
-
-    parser.add_argument('-v', "--version",
-                        help="print version of Lemonspotter",
-                        action='version',
-                        version="%(prog)s 0.1")
-
-    parser.add_argument('--log',
-                        default="warning")
-
-    arguments = parser.parse_args()
-
-    # check that arguments were given
-    if not arguments:
-        parser.print_help()
-        sys.exit(0)
-
-    return arguments
+#def parse_arguments():
+#    """
+#    Parses arguments from the command line launch command. Returns path to library
+#    database
+#    """
+#
+#    # Parse CLI Arguments for more granular control
+#    parser = argparse.ArgumentParser(description="Specify runtime variables", prog="LemonSpotter")
+#
+#    parser.add_argument('-l', "--load",
+#                        metavar="db_path",
+#                        nargs='?',
+#                        const="../lemonspotter-mpi1/mpi_1_3/",
+#                        default="../lemonspotter-mpi1/mpi_1_3/",
+#                        help="specify relative path to database",
+#                        dest="load")
+#
+#    parser.add_argument('-d', "--debug",
+#                        action='store_true',
+#                        help="specify true to keep generated files",
+#                        dest="debug")
+#
+#    parser.add_argument('-m', "--mpi",
+#                        metavar="mpid_path",
+#                        nargs='?',
+#                        default="mpicc",
+#                        help="Can define a different command to compile mpi programs",
+#                        dest="mpi_command")
+#
+#    # don't run tests, just output c files
+#    #parser.add_argument('-d', '--dry-run',
+#    #                    action='store_true')
+#
+#    parser.add_argument('-v', "--version",
+#                        help="print version of Lemonspotter",
+#                        action='version',
+#                        version="%(prog)s 0.1")
+#
+#    parser.add_argument('--log',
+#                        default="warning")
+#
+#    arguments = parser.parse_args()
+#
+#    # check that arguments were given
+#    if not arguments:
+#        parser.print_help()
+#        sys.exit(0)
+#
+#    return arguments
 
 def parse_functions(default_path, path):
     """
@@ -375,17 +379,35 @@ def parse_types(path):
     Parse all types given by the path.
     """
 
-    type_list = []
+    types = {}
 
-    type_pathlist = pathlib.Path(path).glob("**/*.json")
+    # load types from file types.json
+    types_filename = path + 'types.json'
 
-    for type_element in type_pathlist:
-        try:
-            type_list.append(load_type(type_element))
-        except:
-            pass
+    if os.path.isfile(types_filename):
+        with open(types_filename) as data:
+            json_list = json.loads(data)
 
-    return type_list
+            for json in json_list:
+                if json['abstract_type'] in types:
+                    raise NotImplementedError
+
+                types[json['abstract_type']] = json
+    
+    # load types from directory types/
+    # find all type files in types directory
+    types_directory = path + 'types/'
+    if os.path.isdir(types_directory):
+        pass
+        #type_pathlist = pathlib.Path(path).glob("**/*.json")
+
+        #for type_element in type_pathlist:
+        #    try:
+        #        type_list.append(load_type(type_element))
+        #    except:
+        #        pass
+
+    return types
 
 def parse_constants(path):
     """
@@ -431,6 +453,7 @@ def validate_start_end_elements(starts, ends, mpicc, debug):
 
             # this is the graph we are validating
             # sub graph generation via walking database graph
+            # TODO MR: can we abstract this?
             endpoint_list = [start, end]
 
             # hash, unique name no other test has
@@ -460,16 +483,17 @@ def main():
     """
 
     # parse arguments from command line
-    arguments = parse_arguments()
+    #arguments = parse_arguments()
 
     # set logging level
-    loglevel = arguments.log
-    numeric_level = getattr(logging, loglevel.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError('Invalid log level: %s' % loglevel)
-    logging.basicConfig(level=numeric_level)
+    #loglevel = arguments.log
+    #numeric_level = getattr(logging, loglevel.upper(), None)
+    #if not isinstance(numeric_level, int):
+    #    raise ValueError('Invalid log level: %s' % loglevel)
+    #logging.basicConfig(level=numeric_level)
 
     # parse given database
+    # json files should contain labeled functions, types, constants...
     functions = parse_functions(arguments.load + 'defaults.json', arguments.load + 'functions')
 
     types = parse_types(arguments.load + 'types')
