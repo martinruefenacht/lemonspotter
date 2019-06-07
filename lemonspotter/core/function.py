@@ -1,12 +1,11 @@
-"""Defines a function of a library that can be included in Lemonspotter tests."""
+"""    Defines an function object that can be included in Lemonspotter tests."""
 
 class Function:
     """
-    Defines an element of a library that can be included in Lemonspotter tests.
+    Defines an function object that can be included in Lemonspotter tests.
     """
 
-    #def __init__(self, name="FUNCTION_NOT_FOUND", return_type="", arguments=[], requires=[], start=False, end=False, validated=False):
-    def __init__(self, name, return_type, parameters, needs_any, needs_all, leads_any, leads_all):
+    def __init__(self, name, return_type, arguments, needs_any, needs_all, leads_any, leads_all):
         """
         Initializes function element.
 
@@ -14,8 +13,10 @@ class Function:
         name        (string)    : Name of the function
         return_type (string)    : Coorespondes to what this function is supposed to return
         arguments   (string[])  : List of items that this function takes as a parameter
-        requires    (string[])  : List of element names that current function needs to run
-        validation  (boolean)   : Determines whether the constant has been validated
+        needs_any   (string[])  : TODO
+        needs_all   (string[])  : TODO
+        leads_any   (string[])  : TODO
+        leads_all   (string[])  : TODO
         """
         self.function_name = name
         self.parameters = parameters
@@ -34,23 +35,52 @@ class Function:
         self._attempted = False
         self._validated = False
 
-    def is_attempted(self):
-        return self._attempted
-
-    def is_validated(self):
-        return self._validated
-
-    def has_failed(self):
-        return self._attempted and not self._validated
-
-    def validate(self):
-        self._validated = True
-
-    def attempt(self):
-        self._attempted = True
-
     def __repr__(self):
+        """
+        Defines informal string behavior for function type
+        """
         return self.function_name
 
     def __str__(self):
+        """
+        Defines formal string behavior for function type
+        """
         return self.function_name
+
+    def is_attempted(self):
+        """
+        Sets attempted variable
+        """
+        return self._attempted
+
+    def is_validated(self):
+        """
+        Sets validated variable
+        """
+        return self._validated
+
+    def has_failed(self):
+        """
+        Deterministic test to determine if function has failed tests
+        """
+        return self._attempted and not self._validated
+
+    def validate(self):
+        """
+        Sets the validation state of the function to true
+        """
+        self._validated = True
+
+    def invalidate(self):
+        """
+        Sets the validation state of the function to false
+        """
+        self._validated = True
+
+    def attempt(self):
+        """
+        Sets the attempt state of the function
+        """
+        self._attempted = True
+
+    
