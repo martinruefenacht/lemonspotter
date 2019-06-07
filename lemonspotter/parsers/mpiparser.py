@@ -23,6 +23,7 @@ class MPIParser:
         print()
         print(database.functions)
         print()
+
         print(database.constants)
 
         # TODO generate objects
@@ -47,9 +48,40 @@ class MPIParser:
         constants_directory = path + 'constants/'
         if os.path.isdir(constants_directory):
             raise NotImplementedError
+    """
+    def parse_constants(self, path):
+        # load single file definitions
+        constants_filename = path + 'constants.json'
+        if os.path.isfile(types_filename):
+            with open(constants_filename) as constants_file:
+                constants_array = json.load(constants_file)
+
+                for mpi_constant in constants_array:
+
+                    constant_name = mpi_constant['name']
+                    constant_classification = mpi_constant['classification']
+                    constant_obj = Constant(constant_classification, constant_name)
+
+                    database.constants[constant_name] = constant_obj
+        
+        # load directory definitions
+        types_directory = path + 'constants/'
+        if os.path.isdir(types_directory):
+            files = pathlib.Path(types_directory).glob('**/*.json')
+
+            for path in files:
+                mpi_constant = self.parse_single_constant(path)
+                
+                constant_name = mpi_constant['name']
+                constant_classification = mpi_constant['classification']
+                constant_obj = Constant(constant_classification, constant_name)
+
+                database.constants[constant_name] = constant_obj
+    """
        
     def parse_single_constant(self):
-        raise NotImplementedError 
+        with open(path) as constantfile:
+            return json.loads(constantfile) 
 
     def default_function(self, func, defaults):
         # default function level
@@ -105,10 +137,6 @@ class MPIParser:
             return json.load(funcfile)
 
     def parse_types(self, path, database):
-        # load defaults
-        with open(path + 'defaults.json') as default_file:
-            defaults = json.load(default_file)
-
         # load single file definitions
         types_filename = path + 'types.json'
         if os.path.isfile(types_filename):
@@ -128,7 +156,7 @@ class MPIParser:
 
                     type_obj = Type(type_classification,
                                     type_source,
-                                    [type_lower_range, type_upper_range], 
+                                    [type_lower_range, type_upper_range],
                                     type_name)
 
                     database.types[mpi_type['name']] = type_obj
@@ -155,11 +183,7 @@ class MPIParser:
                                 [type_lower_range, type_upper_range], 
                                 type_name)
 
-                database.types[mpi_type['name']] = type_obj
-
-
-
-
+                database.types[type_name] = type_obj
 
     def parse_single_type(self, path):
         with open(path) as typefile:
