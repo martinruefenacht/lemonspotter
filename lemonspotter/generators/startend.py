@@ -76,7 +76,6 @@ class StartEndGenerator:
 
         # add errorcode
         errorcode = self.database.types_by_abstract_type[element.return_type].ctype
-        #print(errorcode)
         line.append(errorcode)
 
         # add function name
@@ -94,7 +93,8 @@ class StartEndGenerator:
             argument.append(' ')
 
             # add argument pointer level
-            argument.append('*' * parameter['pointer'])
+            # TODO needs to consider previous one...
+            argument.append('&' * parameter['pointer'])
             
             # add argument name
             argument.append(parameter['name'])
@@ -105,8 +105,6 @@ class StartEndGenerator:
 
             line.append(argument)
 
-        line.append(')')
-
-        #print(line)
+        line.append(');')
 
         return line
