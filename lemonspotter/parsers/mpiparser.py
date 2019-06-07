@@ -14,19 +14,37 @@ class MPIParser:
         database = Database()
 
         self.parse_types(path, database)
-        #self.parse_errors(path, database)
-        #self.parse_constants(path, database)
+        self.parse_constants(path, database)
         self.parse_functions(path, database)
 
         print(database.types)
+        print()
         print(database.functions)
+        print()
+        print(database.constants)
 
         # TODO generate objects
+        # translate info object links instead of indirection look ups
 
         return database
 
-    def parse_constants(self, path):
-        raise NotImplementedError 
+    def parse_constants(self, path, database):
+        # parse single file
+        constants_filename = path + 'constants.json'
+        if os.path.isfile(constants_filename):
+            with open(constants_filename) as constants_file:
+                constants_array = json.load(constants_file)
+                
+                for constant in constants_array:
+                    if constant['abstract_type'] not in database.constants:
+                        database.constants[constant['abstract_type']] = []
+
+                    database.constants[constant['abstract_type']].append(constant)
+
+        # parse subdirectory of constants
+        constants_directory = path + 'constants/'
+        if os.path.isdir(constants_directory):
+            raise NotImplementedError
        
     def parse_single_constant(self):
         raise NotImplementedError 
@@ -49,7 +67,9 @@ class MPIParser:
             defaults = json.load(default_file)
 
         # load single file
-        # TODO
+        function_filename = path + 'functions.json'
+        if os.path.isfile(function_filename):
+            raise NotImplementedError
 
         # load directory function definitions
         functions_directory = path + 'functions/'
@@ -66,12 +86,6 @@ class MPIParser:
     def parse_single_function(self, path):
         with open(path) as funcfile:
             return json.load(funcfile)
-
-    def parse_errors(self, path, database):
-        raise NotImplementedError
-
-    def parse_single_error(self):
-        raise NotImplementedError
 
     def parse_types(self, path, database):
         # load single file definitions
