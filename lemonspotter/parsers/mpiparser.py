@@ -10,7 +10,7 @@ from core.constant import Constant
 class MPIParser:
 #    def __call__(self, database_path: str) -> Database:
     def __call__(self, database_path):
-        self.parse(database_path)
+        return self.parse(database_path)
         
 #    def parse(self, database_path: str) -> Database:
     def parse(self, path):
@@ -19,15 +19,6 @@ class MPIParser:
         self.parse_types(path, database)
         self.parse_constants(path, database)
         self.parse_functions(path, database)
-
-        print(database.types)
-        print()
-        print(database.functions)
-        print()
-        print(database.constants)
-
-        # TODO generate objects
-        # translate info object links instead of indirection look ups
 
         return database
 
@@ -39,15 +30,11 @@ class MPIParser:
                 constants_array = json.load(constants_file)
                 
                 for constant in constants_array:
-                    if constant['abstract_type'] not in database.constants:
-                        database.constants[constant['abstract_type']] = []
-
                     constant_name = constant['name']
                     constant_abstract_type = constant['abstract_type']
                     constant_obj = Constant(constant_abstract_type, constant_name)
 
-                    database.constants[constant_abstract_type].append(constant_obj)
-
+                    database.add_constant(constant_obj)
 
         # parse subdirectory of constants
         constants_directory = path + 'constants/'
@@ -115,7 +102,8 @@ class MPIParser:
                                         func_leads_any,
                                         func_leads_all)
 
-                database.functions[func_name] = func_obj
+                #database.functions[func_name] = func_obj
+                database.add_function(func_obj)
 
     def parse_single_function(self, path):
         with open(path) as funcfile:
@@ -144,7 +132,8 @@ class MPIParser:
                                     [type_lower_range, type_upper_range],
                                     type_name)
 
-                    database.types[mpi_type['name']] = type_obj
+                    #database.types[mpi_type['name']] = type_obj
+                    database.add_type(type_obj)
         
         # load directory definitions
         types_directory = path + 'types/'
@@ -159,16 +148,17 @@ class MPIParser:
                 
                 type_source = mpi_type['source']
                 for source in type_source:
-                    if source == "range":   
+                    if source == "range":
                         type_lower_range = mpi_type['range'][0]
                         type_upper_range = mpi_type['range'][1]
 
                 type_obj = Type(type_classification,
                                 type_source,
+                                mpi_type['ctype']
                                 [type_lower_range, type_upper_range], 
                                 type_name)
 
-                database.types[type_name] = type_obj
+                database.add_type(type_obj)
 
     def parse_single_type(self, path):
         with open(path) as typefile:

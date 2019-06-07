@@ -4,7 +4,7 @@ import logging
 
 import core
 import parsers.mpiparser
-import generators
+import generators.startend as startend
 
 class LemonSpotter:
     def __init__(self):
@@ -54,6 +54,11 @@ class LemonSpotter:
                             type=str,
                             help='Use specific mpiexec.')
 
+        # test flags
+        parser.add_argument('--tests',
+                            type=str,
+                            help='Comma separated list of generators.')
+
         # database arguments
         parser.add_argument('database',
                             type=str,
@@ -94,7 +99,13 @@ class LemonSpotter:
         # use generator to generate C source code
         # as string
         # output to file if wanted/needed
-        raise NotImplementedError
+
+        generator = startend.StartEndGenerator(self.database)
+
+        sources = generator.generate()
+        
+        for source in sources:
+            print(source.source_lines)
 
     def build_tests(self):
         raise NotImplementedError
@@ -103,4 +114,6 @@ class LemonSpotter:
         raise NotImplementedError
 
 if __name__ == '__main__':
-    LemonSpotter()
+    ls = LemonSpotter()
+
+    ls.generate_tests()

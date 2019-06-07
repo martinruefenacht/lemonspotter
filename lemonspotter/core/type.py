@@ -4,7 +4,7 @@ class Type:
     """
     Defines an element of a library that can be included in Lemonspotter tests.
     """
-    def __init__(self, classification, source, range=[], name="CONSTANT_UNDEFINED", placeholder="UNDEFINED", validated=False):
+    def __init__(self, classification, source, ctype, range=[], name="CONSTANT_UNDEFINED", placeholder="UNDEFINED"):
         """
         Initializes object of class Constant.
 
@@ -16,9 +16,10 @@ class Type:
         self.name = name
         self.placeholder = placeholder
         self.classification = classification
+        self.ctype = ctype 
         self.source = source
         self.range = range
-        self.validated = validated
+        self.validated = False
 
     def __str__(self):
         return self.name

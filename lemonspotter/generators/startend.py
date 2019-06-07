@@ -1,7 +1,7 @@
 #from typing import Set, List
 import logging
 
-from lemonspotter.core import Test
+from core.source import Source
 
 class StartEndGenerator:
     """
@@ -12,7 +12,7 @@ class StartEndGenerator:
     def __init__(self, database):
         self.database = database
 
-#    def generate(self) -> Set[Test]:
+#    def generate(self) -> Set[Source]:
     def generate(self):
         """
         Generate all possible C programs for all initiators and finalizers. 
@@ -22,9 +22,9 @@ class StartEndGenerator:
 
         # determine all start and ends
         starts = filter(lambda f: not f._needs_all and not f._needs_any,
-                        self.database.function_set)
+                        self.database.functions)
         ends   = filter(lambda f: not f._leads_all and not f._leads_any,
-                        self.database.function_set)
+                        self.database.functions)
 
         # for all combinations
         for start in starts:
@@ -39,7 +39,7 @@ class StartEndGenerator:
 
                 # generate individual test
                 path = (start, end)
-                source = generate_source(path)
+                source = self.generate_source(path)
                 sources.add(source)
 
         return sources
@@ -50,36 +50,37 @@ class StartEndGenerator:
         Generate C source code for a given path between initiator and finalizer.
         """
         
-        test = Test(''.join(path))
+        source = Source(''.join([func.function_name for func in path]))
 
         # add include directives
-        test.source_lines.append('#include <mpi.h>')
-        test.source_lines.append('#include <stdio.h>')
-        test.source_lines.append('#include <stdlib.h>')
+        source.source_lines.append('#include <mpi.h>')
+        source.source_lines.append('#include <stdio.h>')
+        source.source_lines.append('#include <stdlib.h>')
         
         # TODO can we abstract this?
         # add main entry
-        test.source_lines.append('int main(int argument_count, char **argument_list) {')
+        source.source_lines.append('int main(int argument_count, char **argument_list) {')
 
         for element in path:
-            test.source_lines.append(generate_element(element))
+            source.source_lines.append(self.generate_element(element))
 
         # add closing block
-        test.source_lines.append('return 0;')
-        test.source_lines.append('}')
+        source.source_lines.append('return 0;')
+        source.source_lines.append('}')
 
-        return test
+        return source
 
 #    def generate_element(self, element: Function) -> str:
     def generate_element(self, element):
         line = []
 
         # add errorcode
-        errorcode = self.database.types[element['return']]['ctype']
+        errorcode = self.database.types_by_abstract_type[element.return_type].ctype
+        print(errorcode)
         line.append(errorcode)
 
         # add function name
-        line.append(element['name'])
+        line.append(element.function_name)
         line.append('(')
 
         # add arguments
@@ -87,11 +88,11 @@ class StartEndGenerator:
             argument = []
             
             # add argument type
-            argument.append(argtype)
+            argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].ctype)
             argument.append(' ')
 
             # add argument pointer level
-            argument.append('*' * parameter.pointer)
+            argument.append('*' * parameter['pointer'])
             
             # add argument name
             argument.append(parameter['name'])
@@ -103,5 +104,7 @@ class StartEndGenerator:
             line.append(argument)
 
         line.append(')')
+
+        print(line)
 
         return line
