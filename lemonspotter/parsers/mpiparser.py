@@ -24,7 +24,6 @@ class MPIParser:
         print()
         print(database.functions)
         print()
-
         print(database.constants)
 
         # TODO generate objects
@@ -40,17 +39,14 @@ class MPIParser:
                 constants_array = json.load(constants_file)
                 
                 for constant in constants_array:
-                    """
                     if constant['abstract_type'] not in database.constants:
                         database.constants[constant['abstract_type']] = []
 
-                    database.constants[constant['abstract_type']].append(constant)
-                    """
                     constant_name = constant['name']
                     constant_abstract_type = constant['abstract_type']
                     constant_obj = Constant(constant_abstract_type, constant_name)
 
-                    database.constants[constant_name] = constant_obj
+                    database.constants[constant_abstract_type].append(constant_obj)
 
 
         # parse subdirectory of constants
