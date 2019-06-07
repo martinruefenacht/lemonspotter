@@ -18,8 +18,8 @@ class MPIParser:
         #self.parse_constants(path, database)
         self.parse_functions(path, database)
 
-        print(database.types)
-        print(database.functions)
+        #print(database.types)
+        #print(database.functions)
 
         # TODO generate objects
 
@@ -81,7 +81,7 @@ class MPIParser:
                 type_array = json.load(types_file)
 
                 for mpi_type in type_array:
-                    database.types[mpi_type['abstract_type']] = mpi_type
+                    database.types[mpi_type['name']] = mpi_type
         
         # load directory definitions
         types_directory = path + 'types/'
