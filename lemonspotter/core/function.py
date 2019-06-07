@@ -22,10 +22,6 @@ class Function:
         self.parameters = parameters
         self.return_type = return_type
 
-        #self.requires = requires
-        #self.start = start
-        #self.end = end
-
         self._needs_any = needs_any
         self._needs_all = needs_all
 
