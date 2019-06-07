@@ -76,7 +76,7 @@ class StartEndGenerator:
 
         # add errorcode
         errorcode = self.database.types_by_abstract_type[element.return_type].ctype
-        print(errorcode)
+        #print(errorcode)
         line.append(errorcode)
 
         # add function name
@@ -87,6 +87,8 @@ class StartEndGenerator:
         for parameter in element.parameters:
             argument = []
             
+            print(self.database.types_by_abstract_type[parameter['abstract_type']].classification)
+
             # add argument type
             argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].ctype)
             argument.append(' ')
@@ -105,6 +107,6 @@ class StartEndGenerator:
 
         line.append(')')
 
-        print(line)
+        #print(line)
 
         return line

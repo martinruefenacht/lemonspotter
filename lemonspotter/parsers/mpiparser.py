@@ -120,7 +120,8 @@ class MPIParser:
 
                     type_name = mpi_type['name']
                     type_classification = mpi_type['abstract_type']
-                    
+                    type_ctype = mpi_type['ctype']
+
                     type_source = mpi_type['source']
                     for source in type_source:
                         if source == "range":   
@@ -129,6 +130,7 @@ class MPIParser:
 
                     type_obj = Type(type_classification,
                                     type_source,
+                                    type_ctype,
                                     [type_lower_range, type_upper_range],
                                     type_name)
 
@@ -145,7 +147,8 @@ class MPIParser:
                 
                 type_name = mpi_type['name']
                 type_classification = mpi_type['abstract_type']
-                
+                type_ctype = mpi_type['ctype']
+
                 type_source = mpi_type['source']
                 for source in type_source:
                     if source == "range":
@@ -154,7 +157,7 @@ class MPIParser:
 
                 type_obj = Type(type_classification,
                                 type_source,
-                                mpi_type['ctype']
+                                type_ctype,
                                 [type_lower_range, type_upper_range], 
                                 type_name)
 
