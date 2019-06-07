@@ -5,6 +5,7 @@ import json
 from core.database import Database
 from core.function import Function
 from core.type     import Type
+from core.constant import Constant
 
 class MPIParser:
 #    def __call__(self, database_path: str) -> Database:
@@ -39,45 +40,33 @@ class MPIParser:
                 constants_array = json.load(constants_file)
                 
                 for constant in constants_array:
+                    """
                     if constant['abstract_type'] not in database.constants:
                         database.constants[constant['abstract_type']] = []
 
                     database.constants[constant['abstract_type']].append(constant)
+                    """
+                    constant_name = constant['name']
+                    constant_abstract_type = constant['abstract_type']
+                    constant_obj = Constant(constant_abstract_type, constant_name)
+
+                    database.constants[constant_name] = constant_obj
+
 
         # parse subdirectory of constants
         constants_directory = path + 'constants/'
         if os.path.isdir(constants_directory):
-            raise NotImplementedError
-    """
-    def parse_constants(self, path):
-        # load single file definitions
-        constants_filename = path + 'constants.json'
-        if os.path.isfile(types_filename):
-            with open(constants_filename) as constants_file:
-                constants_array = json.load(constants_file)
-
-                for mpi_constant in constants_array:
-
-                    constant_name = mpi_constant['name']
-                    constant_classification = mpi_constant['classification']
-                    constant_obj = Constant(constant_classification, constant_name)
-
-                    database.constants[constant_name] = constant_obj
-        
-        # load directory definitions
-        types_directory = path + 'constants/'
-        if os.path.isdir(types_directory):
             files = pathlib.Path(types_directory).glob('**/*.json')
 
             for path in files:
-                mpi_constant = self.parse_single_constant(path)
+                constant = self.parse_single_constant(path)
                 
-                constant_name = mpi_constant['name']
-                constant_classification = mpi_constant['classification']
-                constant_obj = Constant(constant_classification, constant_name)
+                constant_name = constant['name']
+                constant_abstract_type = constant['abstract_type']
+                constant_obj = Constant(constant_abstract_type, constant_name)
 
                 database.constants[constant_name] = constant_obj
-    """
+                database.constants[constant_name] = constant_obj
        
     def parse_single_constant(self):
         with open(path) as constantfile:

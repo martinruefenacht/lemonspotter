@@ -4,7 +4,7 @@ class Constant:
     """
     Defines an element of a library that can be included in Lemonspotter tests.
     """
-    def __init__(self, classification, name="CONSTANT_UNDEFINED", validated=False):
+    def __init__(self, abstract_type, name="CONSTANT_UNDEFINED", validated=False):
         """
         Initializes object of class Constant.
 
@@ -14,7 +14,7 @@ class Constant:
         validation     (boolean)   : Determines whether the constant has been validated
         """
         self.name = name
-        self.classification = classification
+        self.abstract_type = abstract_type
         self.validated = validated
 
     def __repr__(self):
@@ -29,11 +29,11 @@ class Constant:
         """
         return self.name
 
-    def get_classification(self):
+    def get_abstract_type(self):
         """
-        Gets the classification(type) of the constant
+        Gets the abstract_type(type) of the constant
         """
-        return self.classification
+        return self.abstract_type
 
     def get_validation(self):
         """
@@ -47,11 +47,11 @@ class Constant:
         """
         self.name = name
 
-    def set_classification(self, classification):
+    def set_abstract_type(self, abstract_type):
         """
-        Sets the classification(type) of the constant
+        Sets the abstract_type(type) of the constant
         """
-        self.classification = classification
+        self.abstract_type = abstract_type
 
     def set_validation(self, validated):
         """
