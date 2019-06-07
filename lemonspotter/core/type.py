@@ -4,7 +4,7 @@ class Type:
     """
     Defines an element of a library that can be included in Lemonspotter tests.
     """
-    def __init__(self, classification, lower_range, upper_range, name="CONSTANT_UNDEFINED", placeholder="UNDEFINED", validated=False):
+    def __init__(self, classification, source, range=[], name="CONSTANT_UNDEFINED", placeholder="UNDEFINED", validated=False):
         """
         Initializes object of class Constant.
 
@@ -16,8 +16,8 @@ class Type:
         self.name = name
         self.placeholder = placeholder
         self.classification = classification
-        self.lower_range = lower_range
-        self.upper_range = upper_range
+        self.source = source
+        self.range = range
         self.validated = validated
 
     def get_name(self):
@@ -42,13 +42,13 @@ class Type:
         """
         Gets the lower range of the constant
         """
-        return self.lower_range
+        return self.range[0]
 
     def get_upper_range(self):
         """
         Gets the upper range of the constant
         """
-        return self.upper_range
+        return self.range[1]
 
     def get_validation(self):
         """
@@ -78,13 +78,13 @@ class Type:
         """
         Sets the lower range of the constant
         """
-        self.lower_range = lower_range
+        self.range[0] = lower_range
 
     def set_upper_range(self, upper_range):
         """
         Sets the upper range of the constant
         """
-        self.upper_range = upper_range
+        self.range[1] = upper_range
 
     def set_validation(self, validated):
         """
