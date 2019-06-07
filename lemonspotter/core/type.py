@@ -1,30 +1,37 @@
-"""Defines a type of a library that can be included in Lemonspotter tests."""
+"""Defines a type object of from library that can be included in Lemonspotter tests."""
 
 class Type:
     """
-    Defines an element of a library that can be included in Lemonspotter tests.
+    Defines a type object of from library that can be included in Lemonspotter tests.
     """
-    def __init__(self, classification, source, ctype, range=[], name="CONSTANT_UNDEFINED", placeholder="UNDEFINED"):
+    def __init__(self, abstract_type, source, ctype, range=[], name="CONSTANT_UNDEFINED"):
         """
-        Initializes object of class Constant.
+        Initializes object of class Type.
 
         Parameters:
+        abstract_type  (string)    : Coorespondes to what this type is classified as
+        source         (list)      : Holds information about type
+        ctype          (string)    : Holds the c-style datatype of the type
+        range          (list)      : Holds lower & upper bounds of type 
         name           (string)    : Name of the type
-        classification (string)    : Coorespondes to what this type is classified as
-        validation     (boolean)   : Determines whether the type has been validated
         """
         self.name = name
-        self.placeholder = placeholder
-        self.classification = classification
+        self.abstract_type = abstract_type
         self.ctype = ctype 
         self.source = source
         self.range = range
         self.validated = False
 
     def __str__(self):
+        """
+        Defines formal string represenation of Type
+        """
         return self.name
     
     def __repr__(self):
+        """
+        Defines informal string represenation of Type
+        """
         return self.name
 
     def get_name(self):
@@ -33,17 +40,11 @@ class Type:
         """
         return self.name
 
-    def get_placeholder(self):
+    def get_abstract_type(self):
         """
-        Gets the placeholder of the type
+        Gets the abstract_type of the type
         """
-        return self.placeholder
-
-    def get_classification(self):
-        """
-        Gets the classification(type) of the type
-        """
-        return self.classification
+        return self.abstract_type
 
     def get_lower_range(self):
         """
@@ -69,17 +70,11 @@ class Type:
         """
         self.name = name
 
-    def set_placeholder(self, placeholder):
+    def set_abstract_type(self, abstract_type):
         """
-        Sets the placeholder of the constant
+        Sets the abstract_type of the constant
         """
-        self.placeholder = placeholder
-
-    def set_classification(self, classification):
-        """
-        Sets the classification(type) of the constant
-        """
-        self.classification = classification
+        self.abstract_type = abstract_type
 
     def set_lower_range(self, lower_range):
         """
