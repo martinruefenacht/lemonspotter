@@ -31,7 +31,23 @@ class MPIParser:
     def parse_single_constant(self):
         raise NotImplementedError 
 
+    def default_function(self, func, defaults):
+        # default function level
+        for key in defaults['function'].keys():
+            if key not in func:
+                func[key] = defaults['function'][key] 
+        
+        # default parameter level
+        for parameter in func['parameters']:
+            for key in defaults['parameter'].keys():
+                if key not in parameter:
+                    parameter[key] = defaults['parameter'][key]
+
     def parse_functions(self, path, database):
+        # load defaults
+        with open(path + 'defaults.json') as default_file:
+            defaults = json.load(default_file)
+
         # load single file
         # TODO
 
@@ -42,6 +58,9 @@ class MPIParser:
 
             for path in files:
                 func = self.parse_single_function(path.absolute())
+
+                self.default_function(func, defaults)
+                
                 database.functions[func['name']] = func
 
     def parse_single_function(self, path):
