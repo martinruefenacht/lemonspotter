@@ -111,13 +111,6 @@ class StartEndGenerator:
 
             argument = []
             
-            print(self.database.types_by_abstract_type[parameter['abstract_type']].abstract_type)
-
-            # add argument type
-            argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].ctype)
-            argument.append(' ')
-
-
             # add argument pointer level
             level_difference = parameter['pointer'] - variable.pointer_level
             if level_difference > 0:
@@ -138,9 +131,8 @@ class StartEndGenerator:
 
         # return variable output
         return_variable = Variable(self.database.types_by_abstract_type[element.return_type], return_name) 
-        variables[return_name] = return_variable
     
-        lines.append(return_variable.generate_print())
+        lines.append(self.generate_print_variable(return_variable))
 
         return lines
 
@@ -149,4 +141,4 @@ class StartEndGenerator:
             return 'printf("%i\\n", ' + variable.name + ');'
 
         else:
-            raise ValueError('Variable has type ' + self.typeof.abstract_type + ' is     not known to print.')
+            raise ValueError('Variable has type ' + variable.typeof.abstract_type + ' is     not known to print.')
