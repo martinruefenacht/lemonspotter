@@ -5,18 +5,18 @@ class Function:
     Defines an function object that can be included in Lemonspotter tests.
     """
 
-    def __init__(self, name, return_type, arguments, needs_any, needs_all, leads_any, leads_all):
+    def __init__(self, name, return_type, parameters, needs_any, needs_all, leads_any, leads_all):
         """
         Initializes function element.
 
         Parameters:
-        name        (string)    : Name of the function
-        return_type (string)    : Coorespondes to what this function is supposed to return
-        arguments   (string[])  : List of items that this function takes as a parameter
-        needs_any   (string[])  : TODO
-        needs_all   (string[])  : TODO
-        leads_any   (string[])  : TODO
-        leads_all   (string[])  : TODO
+        name         (string)    : Name of the function
+        return_type  (string)    : Coorespondes to what this function is supposed to return
+        parameters   (string[])  : List of items that this function takes as a parameter
+        needs_any    (string[])  : TODO
+        needs_all    (string[])  : TODO
+        leads_any    (string[])  : TODO
+        leads_all    (string[])  : TODO
         """
         self.function_name = name
         self.parameters = parameters

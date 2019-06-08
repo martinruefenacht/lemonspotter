@@ -119,7 +119,7 @@ class MPIParser:
                 for mpi_type in type_array:
 
                     type_name = mpi_type['name']
-                    type_classification = mpi_type['abstract_type']
+                    type_abstract_type = mpi_type['abstract_type']
                     type_ctype = mpi_type['ctype']
 
                     type_source = mpi_type['source']
@@ -128,7 +128,7 @@ class MPIParser:
                             type_lower_range = mpi_type['range'][0]
                             type_upper_range = mpi_type['range'][1]
 
-                    type_obj = Type(type_classification,
+                    type_obj = Type(type_abstract_type,
                                     type_source,
                                     type_ctype,
                                     [type_lower_range, type_upper_range],
@@ -146,7 +146,7 @@ class MPIParser:
                 mpi_type = self.parse_single_type(path)
                 
                 type_name = mpi_type['name']
-                type_classification = mpi_type['abstract_type']
+                type_abstract_type = mpi_type['abstract_type']
                 type_ctype = mpi_type['ctype']
 
                 type_source = mpi_type['source']
@@ -155,7 +155,7 @@ class MPIParser:
                         type_lower_range = mpi_type['range'][0]
                         type_upper_range = mpi_type['range'][1]
 
-                type_obj = Type(type_classification,
+                type_obj = Type(type_abstract_type,
                                 type_source,
                                 type_ctype,
                                 [type_lower_range, type_upper_range], 
