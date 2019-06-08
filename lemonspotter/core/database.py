@@ -23,7 +23,7 @@ class Database:
         self.functions.add(function)
         
         # add to function lookup
-        self.functions_by_name[function.function_name] = function 
+        self.functions_by_name[function.name] = function 
 
     def add_type(self, type_obj):
         # add to set of types
