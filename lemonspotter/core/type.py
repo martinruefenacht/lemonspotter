@@ -12,12 +12,12 @@ class Type:
         abstract_type  (string)    : Coorespondes to what this type is classified as
         source         (list)      : Holds information about type
         ctype          (string)    : Holds the c-style datatype of the type
-        range          (list)      : Holds lower & upper bounds of type 
+        range          (list)      : Holds lower & upper bounds of type
         name           (string)    : Name of the type
         """
         self._name = name
         self._abstract_type = abstract_type
-        self._ctype = ctype 
+        self._ctype = ctype
         self._source = source
         self._range = range
         self._validation = False
@@ -27,7 +27,7 @@ class Type:
         Defines formal string represenation of Type
         """
         return self._name
-    
+
     def __repr__(self):
         """
         Defines informal string represenation of Type
@@ -37,14 +37,14 @@ class Type:
     @property
     def name(self):
         return self._name
-    
+
     @name.setter
     def name(self, name):
         self._name = name
 
     @name.deleter
     def name(self):
-        del self._name    
+        del self._name
 
     @property
     def abstract_type(self):
@@ -53,12 +53,12 @@ class Type:
     @abstract_type.setter
     def abstract_type(self, abstract_type):
         self._abstract_type = abstract_type
-    
+
     @abstract_type.deleter
     def abstract_type(self):
         del self._abstract_type
 
-    @property    
+    @property
     def ctype(self):
         return self._ctype
 
@@ -69,7 +69,7 @@ class Type:
     @ctype.deleter
     def ctype(self):
         del self._ctype
-    
+
     @property
     def lower_range(self):
         return self._range[0]
@@ -89,7 +89,7 @@ class Type:
     @property
     def validation(self):
         return self._validation
-    
+
     @validation.setter
     def validation(self, validation):
         self._validation = validation
@@ -97,4 +97,3 @@ class Type:
     @validation.deleter
     def validation(self):
         del self.validation
-

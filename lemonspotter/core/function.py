@@ -1,5 +1,9 @@
 """    Defines an function object that can be included in Lemonspotter tests."""
 
+from typing import List
+
+from core.variable import Variable
+
 class Function:
     """
     Defines an function object that can be included in Lemonspotter tests.
@@ -18,6 +22,7 @@ class Function:
         leads_any    (string[])  : TODO
         leads_all    (string[])  : TODO
         """
+
         self._name = name
         self._parameters = parameters
         self._return_type = return_type
@@ -31,17 +36,20 @@ class Function:
         self._attempted = False
         self._validated = False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Defines informal string behavior for function type
         """
         return self._name
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Defines formal string behavior for function type
         """
         return self._name
+
+    def generate_function_expression(self, variables: List[Variable]) -> str:
+        raise NotImplementedError
 
     @property
     def name(self):

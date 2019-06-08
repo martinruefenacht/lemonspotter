@@ -2,13 +2,14 @@ import sys
 import argparse
 import logging
 
-import core
-import parsers.mpiparser
-import generators.startend as startend
+from parsers.mpiparser import MPIParser
+from generators.startend import StartEndGenerator
 
 class LemonSpotter:
     def __init__(self):
-        """Construct the LemonSpotter runtime."""
+        """
+        Construct the LemonSpotter runtime.
+        """
 
         self.database = None
 
@@ -18,9 +19,11 @@ class LemonSpotter:
         self.parse_database()
 
         #TODO self.extract_constants()
-        
+
     def parse_arguments(self):
-        """Parse the arguments given on the command line."""
+        """
+        Parse the arguments given on the command line.
+        """
 
         parser = argparse.ArgumentParser(prog='LemonSpotter')
 
@@ -32,7 +35,7 @@ class LemonSpotter:
 
         parser.add_argument('--log',
                             default='warning',
-                            type=str, 
+                            type=str,
                             help='Set the python logging level.')
 
         parser.add_argument('--keep',
@@ -42,8 +45,8 @@ class LemonSpotter:
         parser.add_argument('--dry-run',
                             action='store_true',
                             help='Do everything except execute tests.')
-        
-        # mpi flags 
+
+        # mpi flags
         parser.add_argument('--mpicc',
                             default='mpicc',
                             type=str,
@@ -71,19 +74,23 @@ class LemonSpotter:
             sys.exit(0)
 
     def set_logging_level(self):
-        """Set the logging level to the one specified on the command line."""
+        """
+        Set the logging level to the one specified on the command line.
+        """
 
         numeric_level = getattr(logging, self.arguments.log.upper(), None)
-        
+
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % self.arguments.log)
-        
+
         logging.basicConfig(level=numeric_level)
 
     def parse_database(self):
-        """Parse the database pointed to by the command line argument."""
+        """
+        Parse the database pointed to by the command line argument.
+        """
 
-        parser = parsers.mpiparser.MPIParser()
+        parser = MPIParser()
 
         self.database = parser(self.arguments.database)
 
@@ -92,14 +99,14 @@ class LemonSpotter:
         Generate and run an extraction program to determine the values of
         constants and errors.
         """
-        
+
         raise NotImplementedError
 
     def generate_tests(self):
-        generator = startend.StartEndGenerator(self.database)
+        generator = StartEndGenerator(self.database)
 
         sources = generator.generate()
-        
+
         for source in sources:
             print('\n'.join(source.source_lines))
 
@@ -109,7 +116,12 @@ class LemonSpotter:
     def run_tests(self):
         raise NotImplementedError
 
-if __name__ == '__main__':
-    ls = LemonSpotter()
+def main():
+    """
+    
+    """
+    runtime = LemonSpotter()
+    runtime.generate_tests()
 
-    ls.generate_tests()
+if __name__ == '__main__':
+    main()
