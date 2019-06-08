@@ -96,10 +96,6 @@ class LemonSpotter:
         raise NotImplementedError
 
     def generate_tests(self):
-        # use generator to generate C source code
-        # as string
-        # output to file if wanted/needed
-
         generator = startend.StartEndGenerator(self.database)
 
         sources = generator.generate()

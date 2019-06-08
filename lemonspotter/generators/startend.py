@@ -94,7 +94,7 @@ class StartEndGenerator:
 
         # catch return
         #line.append(element.return_type.ctype + ' = ');
-        return_name = 'ret' + str(self.elements_generated)
+        return_name = 'return_' + element.name + '_' + str(self.elements_generated)
         line.append(self.database.types_by_abstract_type[element.return_type]._ctype + ' ' + return_name + ' = ');
 
         # add function name
@@ -138,7 +138,7 @@ class StartEndGenerator:
 
     def generate_print_variable(self, variable):
         if variable.typeof._ctype == 'int':
-            return 'printf("%i\\n", ' + variable.name + ');'
+            return 'printf("' + variable.name + ' %i\\n", ' + variable.name + ');'
 
         else:
             raise ValueError('Variable has type ' + variable.typeof.abstract_type + ' is     not known to print.')
