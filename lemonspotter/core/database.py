@@ -13,10 +13,10 @@ class Database:
         self.constants.add(constant)
 
         # add to lookup
-        if constant.get_abstract_type() not in self.constants_by_abstract_type:
-            self.constants_by_abstract_type[constant.get_abstract_type()] = []
+        if constant.abstract_type not in self.constants_by_abstract_type:
+            self.constants_by_abstract_type[constant.abstract_type] = []
 
-        self.constants_by_abstract_type[constant.get_abstract_type()].append(constant)
+        self.constants_by_abstract_type[constant.abstract_type].append(constant)
 
     def add_function(self, function):
         # add to set of functions

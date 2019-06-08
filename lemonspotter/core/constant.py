@@ -30,41 +30,53 @@ class Constant:
         """
         return self._name
 
-    def get_name(self):
-        """
-        Gets the name of the constant
-        """
+    @property
+    def name(self):
         return self._name
+    
+    @name.setter
+    def name(self, name):
+        self._name = name
 
-    def set_name(self, name):
-        """
-        Sets the name of the constant
-        """
-        self.name = _name
-
-    def get_abstract_type(self):
-        """
-        Gets the abstract_type(type) of the constant
-        """
+    @name.deleter
+    def name(self):
+        del self._name
+    
+    @property
+    def abstract_type(self):
         return self._abstract_type
 
-    def set_abstract_type(self, abstract_type):
-        """
-        Sets the abstract_type(type) of the constant
-        """
+    @abstract_type.setter
+    def abstract_type(self, abstract_type):
         self._abstract_type = abstract_type
+    
+    @abstract_type.deleter
+    def abstract_type(self):
+        del self._abstract_type
 
-    def is_attempted(self):
-        """
-        Sets attempted variable
-        """
+    @property
+    def validated(self):
+        return self._validated
+
+    @validated.setter
+    def validated(self, validated):
+        self._validated = validated
+
+    @validated.deleter
+    def validated(self):
+        del self._validated
+
+    @property
+    def attempted(self):
         return self._attempted
 
-    def is_validated(self):
-        """
-        Sets validated variable
-        """
-        return self._validated
+    @attempted.setter
+    def attempted(self, attempted):
+        self._attempted = attempted
+
+    @attempted.deleter
+    def attempted(self):
+        del self._attempted
 
     def has_failed(self):
         """
