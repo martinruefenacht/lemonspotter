@@ -86,10 +86,10 @@ class StartEndGenerator:
         for parameter in element.parameters:
             argument = []
             
-            print(self.database.types_by_abstract_type[parameter['abstract_type']].get_abstract_type())
+            print(self.database.types_by_abstract_type[parameter['abstract_type']].abstract_type)
 
             # add argument type
-            argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].get_ctype())
+            argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].ctype)
             argument.append(' ')
 
             # add argument pointer level
