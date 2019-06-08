@@ -16,11 +16,11 @@ class Type:
         name           (string)    : Name of the type
         """
         self._name = name
-        self.abstract_type = abstract_type
+        self._abstract_type = abstract_type
         self._ctype = ctype 
-        self.source = source
-        self.range = range
-        self.validated = False
+        self._source = source
+        self._range = range
+        self._validation = False
 
     def __str__(self):
         """
@@ -34,74 +34,67 @@ class Type:
         """
         return self._name
 
-    def get_name(self):
-        """
-        Gets the name of the type
-        """
+    @property
+    def name(self):
         return self._name
-
-    def get_abstract_type(self):
-        """
-        Gets the abstract_type of the type
-        """
-        return self._abstract_type
-
-    def get_ctype(self):
-        """
-        Gets the cstyle type for a variable
-        """
-        return self._ctype
-
-    def get_lower_range(self):
-        """
-        Gets the lower range of the constant
-        """
-        return self.range[0]
-
-    def get_upper_range(self):
-        """
-        Gets the upper range of the constant
-        """
-        return self.range[1]
-
-    def get_validation(self):
-        """
-        Gets the validation status for the constant
-        """
-        return self.validated
-
-    def set_name(self, name):
-        """
-        Sets the name of the constant
-        """
+    
+    @name.setter
+    def name(self, name):
         self._name = name
 
-    def set_abstract_type(self, abstract_type):
-        """
-        Sets the abstract_type of the constant
-        """
-        self._abstract_type = abstract_type
+    @name.deleter
+    def name(self):
+        del self._name    
 
-    def set_ctype(self, ctype):
-        """
-        Sets the ctype for type
-        """
+    @property
+    def abstract_type(self):
+        return self._abstract_type
+
+    @abstract_type.setter
+    def abstract_type(self, abstract_type):
+        self._abstract_type = abstract_type
+    
+    @abstract_type.deleter
+    def abstract_type(self):
+        del self._abstract_type
+
+    @property    
+    def ctype(self):
+        return self._ctype
+
+    @ctype.setter
+    def ctype(self, ctype):
         self._ctype = ctype
 
-    def set_lower_range(self, lower_range):
-        """
-        Sets the lower range of the constant
-        """
-        self.range[0] = lower_range
+    @ctype.deleter
+    def ctype(self):
+        del self._ctype
+    
+    @property
+    def lower_range(self):
+        return self._range[0]
 
-    def set_upper_range(self, upper_range):
-        """
-        Sets the upper range of the constant
-        """
-        self.range[1] = upper_range
+    @lower_range.setter
+    def lower_range(self, lower_range):
+        self._range[0] = lower_range
 
-    def set_validation(self, validated):
-        """
-        Sets the validation status for the constant
-        """
-        self.validated = validated
+    @property
+    def upper_range(self):
+        return self._range[1]
+
+    @lower_range.setter
+    def upper_range(self, upper_range):
+        self._range[1] = upper_range
+
+    @property
+    def validation(self):
+        return self._validation
+    
+    @validation.setter
+    def validation(self, validation):
+        self._validation = validation
+
+    @validation.deleter
+    def validation(self):
+        del self.validation
+

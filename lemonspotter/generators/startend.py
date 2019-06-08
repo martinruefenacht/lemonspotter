@@ -52,7 +52,7 @@ class StartEndGenerator:
         Generate C source code for a given path between initiator and finalizer.
         """
         
-        source = Source(''.join([func.function_name for func in path]))
+        source = Source(''.join([func.name for func in path]))
 
         variables = {}
         v1 = Variable(self.database.types_by_abstract_type['INT'], 'argument_count')
@@ -98,7 +98,7 @@ class StartEndGenerator:
         line.append(self.database.types_by_abstract_type[element.return_type]._ctype + ' ' + return_name + ' = ');
 
         # add function name
-        line.append(element.function_name)
+        line.append(element.name)
         line.append('(')
 
         # add arguments
@@ -111,6 +111,13 @@ class StartEndGenerator:
 
             argument = []
             
+            print(self.database.types_by_abstract_type[parameter['abstract_type']].abstract_type)
+
+            # add argument type
+            argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].ctype)
+            argument.append(' ')
+
+
             # add argument pointer level
             level_difference = parameter['pointer'] - variable.pointer_level
             if level_difference > 0:
