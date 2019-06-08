@@ -134,6 +134,9 @@ class StartEndGenerator:
     
         lines.append(self.generate_print_variable(return_variable))
 
+        # return variable check
+        lines.append(self.generate_return_check(return_variable))
+
         return lines
 
     def generate_print_variable(self, variable):
@@ -142,3 +145,10 @@ class StartEndGenerator:
 
         else:
             raise ValueError('Variable has type ' + variable.typeof.abstract_type + ' is     not known to print.')
+    
+    def generate_return_check(self, variable):
+        if variable.typeof.abstract_type == 'ERRORCODE':
+            return 'if(' + variable.name + ' != MPI_SUCCESS) exit(0);'
+
+        else:
+            return ''
