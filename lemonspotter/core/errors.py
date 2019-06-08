@@ -18,6 +18,12 @@ class Error:
         self._value = value
         self._validated = False
 
+    def __str__(self):
+        return self._symbol
+
+    def __repr__(self):
+        return self._symbol
+
     @property
     def symbol(self):
         return self._symbol
