@@ -89,7 +89,7 @@ class StartEndGenerator:
             print(self.database.types_by_abstract_type[parameter['abstract_type']].get_abstract_type())
 
             # add argument type
-            argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].ctype)
+            argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].get_ctype())
             argument.append(' ')
 
             # add argument pointer level
