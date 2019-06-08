@@ -104,15 +104,13 @@ class StartEndGenerator:
             
             argument = []
             
-<<<<<<< HEAD
             print(self.database.types_by_abstract_type[parameter['abstract_type']].abstract_type)
 
             # add argument type
             argument.append(self.database.types_by_abstract_type[parameter['abstract_type']].ctype)
             argument.append(' ')
 
-=======
->>>>>>> 6a97101967b1fe4896d375bc0cdd0b8b2fdf8339
+
             # add argument pointer level
             level_difference = parameter['pointer'] - variable.pointer_level
             argument.append('&' * level_difference)
