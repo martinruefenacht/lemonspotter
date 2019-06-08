@@ -104,6 +104,11 @@ class StartEndGenerator:
         # add arguments
         for parameter in element.parameters:
             # match parameter with available variable
+            if parameter['name'] not in variables:
+                raise NotImplementedError
+                # generate variable, causes additional paths!
+                # how do we handle branching points?
+
             variable = variables[parameter['name']]
 
             if variable.typeof.abstract_type != parameter['abstract_type']:
