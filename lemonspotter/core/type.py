@@ -15,9 +15,9 @@ class Type:
         range          (list)      : Holds lower & upper bounds of type 
         name           (string)    : Name of the type
         """
-        self.name = name
+        self._name = name
         self.abstract_type = abstract_type
-        self.ctype = ctype 
+        self._ctype = ctype 
         self.source = source
         self.range = range
         self.validated = False
@@ -26,25 +26,31 @@ class Type:
         """
         Defines formal string represenation of Type
         """
-        return self.name
+        return self._name
     
     def __repr__(self):
         """
         Defines informal string represenation of Type
         """
-        return self.name
+        return self._name
 
     def get_name(self):
         """
         Gets the name of the type
         """
-        return self.name
+        return self._name
 
     def get_abstract_type(self):
         """
         Gets the abstract_type of the type
         """
-        return self.abstract_type
+        return self._abstract_type
+
+    def get_ctype(self):
+        """
+        Gets the cstyle type for a variable
+        """
+        return self._ctype
 
     def get_lower_range(self):
         """
@@ -68,13 +74,19 @@ class Type:
         """
         Sets the name of the constant
         """
-        self.name = name
+        self._name = name
 
     def set_abstract_type(self, abstract_type):
         """
         Sets the abstract_type of the constant
         """
-        self.abstract_type = abstract_type
+        self._abstract_type = abstract_type
+
+    def set_ctype(self, ctype):
+        """
+        Sets the ctype for type
+        """
+        self._ctype = ctype
 
     def set_lower_range(self, lower_range):
         """
