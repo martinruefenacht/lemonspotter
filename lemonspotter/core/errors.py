@@ -4,7 +4,7 @@ class Error:
     """
     Defines a constant of a library that can be included in Lemonspotter tests.
     """
-    def __init__(self, value, symbol="ERROR_UNDEFINED", validated=False):
+    def __init__(self, value, symbol="ERROR_UNDEFINED"):
         """
         Initializes object of class Element.
 
@@ -14,42 +14,42 @@ class Error:
         arguments   (string[])  : List of items that this function takes as a parameter
         requires    (string[])  : List of element names that current element needs to run
         """
-        self.symbol = symbol
-        self.value = value
-        self.validated = validated
+        self._symbol = symbol
+        self._value = value
+        self._validated = False
 
-    def get_symbol(self):
-        """
-        Gets the symbol of the constant
-        """
-        return self.symbol
+    @property
+    def symbol(self):
+        return self._symbol
 
-    def get_value(self):
-        """
-        Gets the value of the constant
-        """
-        return self.value
+    @symbol.setter
+    def symbol(self, symbol):
+        self._symbol = symbol
 
-    def get_validation(self):
-        """
-        Gets the validation status for the error
-        """
-        return self.validated
+    @symbol.deleter
+    def symbol(self, symbol):
+        del self._symbol
 
-    def set_symbol(self, symbol):
-        """
-        Sets the symbol of the constant
-        """
-        self.symbol = symbol
+    @property
+    def value(self):
+        return self._value
+    
+    @value.setter
+    def value(self, value):
+        self._value = value
 
-    def set_value(self, value):
-        """
-        Sets the value of the constant
-        """
-        self.value = value
+    @value.deleter
+    def value(self, value):
+        del self._value
 
-    def set_validation(self, validated):
-        """
-        Sets the validation status for the error
-        """
-        self.validated = validated
+    @property
+    def validated(self):
+        return self._validated
+    
+    @validated.setter
+    def validated(self, validated):
+        self._validated = validated
+
+    @validated.deleter
+    def validated(self):
+        del validated
