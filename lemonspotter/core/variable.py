@@ -3,4 +3,3 @@ class Variable:
         self.typeof = typeof
         self.name = name
         self.pointer_level = pointer_level
-        
