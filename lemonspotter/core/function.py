@@ -4,6 +4,11 @@ from typing import List
 
 from core.variable import Variable
 
+class FunctionExpression:
+    def __init__(self, variables: List[Variable], expressions: List[str]):
+        self.variables = variables
+        self.expression = expression
+
 class Function:
     """
     Defines an function object that can be included in Lemonspotter tests.
@@ -48,7 +53,25 @@ class Function:
         """
         return self._name
 
-    def generate_function_expression(self, variables: List[Variable]) -> str:
+    def generate_function_expression(self, variables: List[Variable]) -> FunctionExpression:
+        """
+        Generates a compilable expression of the function with the given arguments.
+        """
+
+        # catch return
+            # generate return name
+            # return_type
+            # return expression segment
+            # create variable
+
+        # function call construction
+            # function_name
+            # variables as arguments
+
+        # return output
+    
+        # return check
+
         raise NotImplementedError
 
     @property

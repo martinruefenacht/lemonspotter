@@ -57,6 +57,9 @@ class StartEndGenerator:
 
         source = Source(''.join([func.name for func in path]))
 
+
+        #### template
+
         variables = {}
         argument_count = Variable(self.database.types_by_abstract_type['INT'], 'argument_count')
         variables[argument_count.name] = argument_count
@@ -74,7 +77,15 @@ class StartEndGenerator:
         # TODO can we abstract this? partially with variables
         source.source_lines.append('int main(int argument_count, char **argument_list) {\n')
 
+        ####
+
         for element in path:
+            # we have a current set of variables
+            
+            # explore all partitions for this element
+            # deepcopy current source, this goes exponential
+            # for each source:variables combination generate a function expression
+
             # TODO generate variables from parameters
             lines = self.instantiate_element(element, variables)
 
@@ -83,6 +94,7 @@ class StartEndGenerator:
                 source.source_lines.append('')
 
         # add closing block
+        # TEMPLATE
         source.source_lines.append('return 0;')
         source.source_lines.append('}')
 
