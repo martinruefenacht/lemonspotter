@@ -108,7 +108,7 @@ class LemonSpotter:
         sources = generator.generate()
 
         for source in sources:
-            print('\n'.join(source.source_lines))
+            source.write()
 
     def build_tests(self):
         raise NotImplementedError
