@@ -10,7 +10,7 @@ class Source:
     @property
     def name(self):
         return self._name
- 
+
     @name.setter
     def name(self, name):
         self._name = name
@@ -35,7 +35,7 @@ class Source:
 
     def get_source(self) -> str:
         """
-        Combines the front and back lines into a single string. 
+        Combines the front and back lines into a single string.
         """
 
         lines = '\n'.join(self._front_lines) + '\n'
@@ -45,10 +45,10 @@ class Source:
 
     def write(self):
         """
-        Writes source object to file that can be compiled/run 
+        Writes source object to file that can be compiled/run
         by executors.
         """
-        
+
         if not os.path.isdir('../tests'):
             os.makedirs("../tests")
 

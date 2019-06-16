@@ -119,7 +119,7 @@ class LemonSpotter:
 
     def build_tests(self):
         executor = MPIExecutor()
-        executor.build() 
+        executor.build()
 
     def run_tests(self):
         executor = MPIExecutor()
@@ -127,11 +127,11 @@ class LemonSpotter:
 
         for key, value in results.items():
             print(key + ", " + value[0])
-        
+
 
 def main():
     """
-    
+
     """
     runtime = LemonSpotter()
 

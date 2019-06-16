@@ -40,7 +40,7 @@ class MPIExecutor:
         for test in files:
             test_name = str(test)[len(self._test_directory): len(str(test))-2]
 
-            # Generate MPICC command that compiles test excutable             
+            # Generate MPICC command that compiles test excutable
             mpicc = ["mpicc", str(test)] + args + ["-o", self.test_directory, test_name]
 
             process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
@@ -57,6 +57,6 @@ class MPIExecutor:
             mpiexec = ["mpiexec"] + args + [self.test_directory + test_name]
             process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
-            self.results[test_name] =  [str(stdout), str(stderr)]
+            self.results[test_name] = [str(stdout), str(stderr)]
 
         return self.results
