@@ -60,19 +60,23 @@ class StartEndGenerator(Generator):
         source_name = ''.join([func.name for func in path])
         source = self.generate_main(source_name)
 
-#        for element in path:
-#            # we have a current set of variables
-#            
-#            # explore all partitions for this element
-#            # deepcopy current source, this goes exponential
-#            # for each source:variables combination generate a function expression
-#
-#            # TODO generate variables from parameters
-#            # this is a functionexpression
-#            lines = self.instantiate_element(element, source.variables)
-#
-#            for line in lines:
-#                source.add_at_start(line)
+        for element in path:
+            pass
+            # we have a current set of variables
+            
+            # explore all partitions for this element
+            # deepcopy current source, this goes exponential
+            # for each source:variables combination generate a function expression
+
+            # TODO generate variables from parameters
+            # this is a functionexpression
+            
+            # TODO how do we add to the BlockStatement?
+
+            #lines = self.instantiate_element(element, source.variables)
+
+            #for line in lines:
+            #    source.add_at_start(line)
 
         return source
 

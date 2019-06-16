@@ -4,8 +4,8 @@ from typing import Dict
 from core.database import Database
 from core.source import Source
 from core.variable import Variable
-from core.statement import IncludeStatement, ReturnStatement, BlockStatement
-from core.function import MainFunctionStatement
+from core.statement import IncludeStatement, ReturnStatement
+from core.function import MainDefinitionStatement
 
 class Generator:
     """
@@ -29,9 +29,8 @@ class Generator:
         source.add_at_start(IncludeStatement('mpi.h'))
 
         # add main function
-        source.add_at_start(MainFunctionStatement(self._database))
+        block_main = MainDefinitionStatement(self._database)
         
-        block_main = BlockStatement()
         block_main.add_at_end(ReturnStatement('0'))
 
         source.add_at_start(block_main)

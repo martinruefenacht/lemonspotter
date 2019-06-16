@@ -1,6 +1,6 @@
 from typing import Union, Dict
 
-from core.statement import Statement
+from core.statement import Statement, BlockStatement
 from core.variable import Variable
 
 class Source:
@@ -22,7 +22,9 @@ class Source:
         """
 
         self._front_statements.append(statement)
-        self._variables.update(statement.variables)
+
+        if not issubclass(type(statement), BlockStatement):
+            self._variables.update(statement.variables)
 
     def add_at_end(self, statement: Statement) -> None:
         """

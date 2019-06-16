@@ -5,13 +5,14 @@ from typing import Dict, List
 from core.variable import Variable
 from core.statement import Statement
 from core.database import Database
+from core.statement import BlockStatement
 
 class FunctionStatement(Statement):
     def __init__(self, variables: Dict[str, Variable], expressions: List[str]):
         self._variables = variables
         self._expressions.extend(expressions)
 
-class MainFunctionStatement(Statement):
+class MainDefinitionStatement(BlockStatement):
     def __init__(self, database: Database):
         super().__init__()
 
