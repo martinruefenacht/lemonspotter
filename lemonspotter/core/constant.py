@@ -15,6 +15,7 @@ class Constant:
 
         self._name = name
         self._abstract_type = abstract_type
+
         self._attempted = False
         self._validated = False
 

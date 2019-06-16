@@ -9,8 +9,9 @@ from core.source import Source
 from core.variable import Variable
 from core.database import Database
 from core.function import Function
+from core.generator import Generator
 
-class StartEndGenerator:
+class StartEndGenerator(Generator):
     """
     Source code generator for initiator and finalizer functions.
     """
@@ -55,29 +56,8 @@ class StartEndGenerator:
         Generate C source code for a given path between initiator and finalizer.
         """
 
-        source = Source(''.join([func.name for func in path]))
-
-
-        #### template
-
-        variables = {}
-        argument_count = Variable(self.database.types_by_abstract_type['INT'], 'argument_count')
-        variables[argument_count.name] = argument_count
-
-        argument_list = Variable(self.database.types_by_abstract_type['CHAR'], 'argument_list', 2)
-        variables[argument_list.name] = argument_list
-
-        # add include directives
-        ### this is essentially the template
-        # TODO is it possible to abstract this?
-        source.source_lines.append('#include <mpi.h>')
-        source.source_lines.append('#include <stdio.h>')
-        source.source_lines.append('#include <stdlib.h>')
-
-        # TODO can we abstract this? partially with variables
-        source.source_lines.append('int main(int argument_count, char **argument_list) {\n')
-
-        ####
+        source_name = ''.join([func.name for func in path])
+        source, variables = self.generate_main(source_name)
 
         for element in path:
             # we have a current set of variables
@@ -90,13 +70,7 @@ class StartEndGenerator:
             lines = self.instantiate_element(element, variables)
 
             for line in lines:
-                source.source_lines.append(line)
-                source.source_lines.append('')
-
-        # add closing block
-        # TEMPLATE
-        source.source_lines.append('return 0;')
-        source.source_lines.append('}')
+                source.add_at_start(line)
 
         return source
 
