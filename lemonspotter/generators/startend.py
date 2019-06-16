@@ -17,7 +17,8 @@ class StartEndGenerator(Generator):
     """
 
     def __init__(self, database: Database) -> None:
-        self.database = database
+        super().__init__(database)
+
         self.elements_generated = 0
 
     def generate(self) -> Set[Source]:
@@ -29,9 +30,9 @@ class StartEndGenerator(Generator):
 
         # determine all start and ends
         starts = filter(lambda f: not f.needs_all and not f.needs_any,
-                        self.database.functions)
+                        self._database.functions)
         ends = filter(lambda f: not f.leads_all and not f.leads_any,
-                      self.database.functions)
+                      self._database.functions)
 
         # for all combinations
         for start in starts:
@@ -57,20 +58,21 @@ class StartEndGenerator(Generator):
         """
 
         source_name = ''.join([func.name for func in path])
-        source, variables = self.generate_main(source_name)
+        source = self.generate_main(source_name)
 
-        for element in path:
-            # we have a current set of variables
-            
-            # explore all partitions for this element
-            # deepcopy current source, this goes exponential
-            # for each source:variables combination generate a function expression
-
-            # TODO generate variables from parameters
-            lines = self.instantiate_element(element, variables)
-
-            for line in lines:
-                source.add_at_start(line)
+#        for element in path:
+#            # we have a current set of variables
+#            
+#            # explore all partitions for this element
+#            # deepcopy current source, this goes exponential
+#            # for each source:variables combination generate a function expression
+#
+#            # TODO generate variables from parameters
+#            # this is a functionexpression
+#            lines = self.instantiate_element(element, source.variables)
+#
+#            for line in lines:
+#                source.add_at_start(line)
 
         return source
 
@@ -88,7 +90,7 @@ class StartEndGenerator(Generator):
         # catch return
         return_name = 'return_' + element.name + '_' + str(self.elements_generated)
         return_expression = []
-        return_expression.append(self.database.types_by_abstract_type[element.return_type].ctype)
+        return_expression.append(self._database.types_by_abstract_type[element.return_type].ctype)
         return_expression.append(return_name)
         return_expression.append('=')
 
@@ -134,7 +136,7 @@ class StartEndGenerator(Generator):
 
         # return variable output
         # TODO change to element.return_type without lookup
-        return_variable = Variable(self.database.types_by_abstract_type[element.return_type], return_name)
+        return_variable = Variable(self._database.types_by_abstract_type[element.return_type], return_name)
 
         lines.append(return_variable.generate_print_expression())
 

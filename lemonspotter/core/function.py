@@ -1,13 +1,30 @@
 """    Defines an function object that can be included in Lemonspotter tests."""
 
-from typing import List
+from typing import Dict, List
 
 from core.variable import Variable
+from core.statement import Statement
+from core.database import Database
 
-class FunctionExpression:
-    def __init__(self, variables: List[Variable], expressions: List[str]):
-        self.variables = variables
-        self.expression = expression
+class FunctionStatement(Statement):
+    def __init__(self, variables: Dict[str, Variable], expressions: List[str]):
+        self._variables = variables
+        self._expressions.extend(expressions)
+
+class MainFunctionStatement(Statement):
+    def __init__(self, database: Database):
+        super().__init__()
+
+        argc = Variable(database.types_by_abstract_type['INT'],
+                        'argument_count')
+        argv = Variable(database.types_by_abstract_type['CHAR'],
+                        'argument_list',
+                        2)
+
+        self._variables[argc.name] = argc
+        self._variables[argv.name] = argv
+
+        self._statement = 'int main(int argument_count, char **argument_list)'
 
 class Function:
     """
@@ -38,6 +55,10 @@ class Function:
         self._leads_any = leads_any
         self._leads_all = leads_all
 
+        # TODO think about how to handle this
+        # present vs not present is a boolean
+        # validated is true for certain arguments, but not others
+        # attempted is really quite useless
         self._attempted = False
         self._validated = False
 
@@ -53,13 +74,12 @@ class Function:
         """
         return self._name
 
-    def generate_function_expression(self, variables: List[Variable]) -> FunctionExpression:
+    def generate_function_expression(self, variables: List[Variable], return_name: str) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
 
         # catch return
-            # generate return name
             # return_type
             # return expression segment
             # create variable
@@ -68,9 +88,9 @@ class Function:
             # function_name
             # variables as arguments
 
-        # return output
+        # output return
     
-        # return check
+        # check return
 
         raise NotImplementedError
 
@@ -205,5 +225,3 @@ class Function:
         Sets the attempt state of the function
         """
         self._attempted = True
-
-    

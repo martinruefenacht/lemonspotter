@@ -9,13 +9,13 @@ from core.source import Source
 from core.generator import Generator
 
 class PresenceGenearator(Generator):
-    def __init__(self, database: Database):
-        self.database = database
-
     def generate(self) -> Set[Source]:
         sources = set()
 
-        for func in self.database.functions:
+        # TODO this needs to be rethought
+        functions = filter(lambda f: not f._attempted, self._database.functions)
+
+        for func in functions:
             sources.add(self.generate_source(func))
 
         return sources

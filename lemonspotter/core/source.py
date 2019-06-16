@@ -1,30 +1,48 @@
+from typing import Union, Dict
+
+from core.statement import Statement
+from core.variable import Variable
+
 class Source:
     def __init__(self, name: str):
-        self._name = name
+        self._name: str = name
 
-        self._front_lines = []
-        self._back_lines = []
+        self._variables: Dict[str, Variable] = {}
 
-    def add_at_start(self, line: str) -> None:
+        self._front_statements = []
+        self._back_statements = []
+
+    @property
+    def variables(self) -> Dict[str, Variable]:
+        return self._variables
+
+    def add_at_start(self, statement: Statement) -> None:
         """
         Adds a generated string to the fron of the source code.
         """
 
-        self._front_lines.append(line)
+        self._front_statements.append(statement)
+        self._variables.update(statement.variables)
 
-    def add_at_end(self, line: str) -> None:
+    def add_at_end(self, statement: Statement) -> None:
         """
         Adds a generated string to the back of the source code.
         """
 
-        self._back_lines.append(line)
+        self._back_statements.append(statement)
+        self._variables.update(statement.variables)
 
     def get_source(self) -> str:
         """
         Combines the front and back lines into a single string. 
         """
 
-        lines = '\n'.join(self._front_lines) + '\n'
-        lines = lines + '\n'.join(self._back_lines)
+        code = ''
+        
+        for statement in self._front_statements:
+            code += statement.express() + '\n'
 
-        return lines
+        for statement in self._back_statements:
+            code += statement.express() + '\n'
+
+        return code

@@ -1,8 +1,11 @@
 import logging
-from typing import Tuple, Dict
+from typing import Dict
 
+from core.database import Database
 from core.source import Source
 from core.variable import Variable
+from core.statement import IncludeStatement, ReturnStatement, BlockStatement
+from core.function import MainFunctionStatement
 
 class Generator:
     """
@@ -10,34 +13,27 @@ class Generator:
     generation.
     """
 
-    def generate_main(self, name: str) -> Tuple[Source, Dict[str, Variable]]:
+    def __init__(self, database: Database) -> None:
+        self._database = database
+
+    def generate_main(self, name: str) -> Source:
         """
         This function generates the main function for the test.
         """
 
         source = Source(name) 
-        variables = {}
 
         # add include statements
-        source.add_at_start('#include <mpi.h>')
-        source.add_at_start('#include <stdio.h>')
-        source.add_at_start('#include <stdlib.h>')
+        source.add_at_start(IncludeStatement('stdio.h'))
+        source.add_at_start(IncludeStatement('stdlib.h'))
+        source.add_at_start(IncludeStatement('mpi.h'))
 
         # add main function
-        source.add_at_start('int main(int argument_count, char **argument_list) {')
+        source.add_at_start(MainFunctionStatement(self._database))
+        
+        block_main = BlockStatement()
+        block_main.add_at_end(ReturnStatement('0'))
 
-        # add variables
-        argument_count = Variable(self.database.types_by_abstract_type['INT'],
-                                  'argument_count')
-        variables[argument_count.name] = argument_count
+        source.add_at_start(block_main)
 
-        argument_list = Variable(self.database.types_by_abstract_type['CHAR'],
-                                 'argument_list',
-                                 2)
-        variables[argument_list.name] = argument_list
-
-        # add closing statements
-        source.add_at_end('return 0;')
-        source.add_at_end('}')
-
-        return (source, variables)
+        return source
