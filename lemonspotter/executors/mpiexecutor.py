@@ -31,7 +31,7 @@ class MPIExecutor:
     def test_directory(self):
         del self._test_directory
 
-    def build(self):
+    def build(self, args=[]):
         if not os.path.isdir(self.test_directory):
             os.makedirs(test_directory)
 
@@ -39,21 +39,24 @@ class MPIExecutor:
 
         for test in files:
             test_name = str(test)[len(self._test_directory): len(str(test))-2]
-            mpicc = "mpicc " + str(test) + " -o " + self.test_directory + test_name
+
+            # Generate MPICC command that compiles test excutable             
+            mpicc = ["mpicc", str(test)] + args + ["-o", self.test_directory, test_name]
+
             process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
 
-    def run(self):
+    def run(self, args=[]):
 
         if not os.path.isdir(self.test_directory):
             os.makedirs(test_directory)
         files = pathlib.Path(self.test_directory).glob('**/*.c')
+
         for test in files:
             test_name = str(test)[len(self._test_directory): len(str(test))-2]
-            mpiexec = "mpiexec " + self.test_directory + test_name
+            mpiexec = ["mpiexec"] + args + [self.test_directory + test_name]
             process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
             self.results[test_name] =  [str(stdout), str(stderr)]
-
 
         return self.results
