@@ -21,7 +21,7 @@ class Source:
 
     def add_at_start(self, line: str) -> None:
         """
-        Adds a generated string to the fron of the source code.
+        Adds a generated string to the front of the source code.
         """
 
         self._front_lines.append(line)
@@ -48,13 +48,14 @@ class Source:
         Writes source object to file that can be compiled/run 
         by executors.
         """
+        
         if not os.path.isdir('../tests'):
             os.makedirs("../tests")
 
         file_name = self.name + ".c"
         test_file = open("../tests/" + file_name, "w+")
 
-        for line in self.source_lines:
+        for line in self.get_source():
             test_file.write(line+"\n")
 
         test_file.close()
