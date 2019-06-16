@@ -56,6 +56,6 @@ class Source:
         test_file = open("../tests/" + file_name, "w+")
 
         for line in self.get_source():
-            test_file.write(line+"\n")
+            test_file.write(line)
 
         test_file.close()
