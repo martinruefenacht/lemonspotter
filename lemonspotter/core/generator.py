@@ -30,8 +30,9 @@ class Generator:
 
         # add main function
         block_main = MainDefinitionStatement(self._database)
-        
+
         block_main.add_at_end(ReturnStatement('0'))
+        #block_main.add_at_end(ReturnStatement(block_main.variables['argument_count'].name))
 
         source.add_at_start(block_main)
 

@@ -60,8 +60,7 @@ class StartEndGenerator(Generator):
         source_name = ''.join([func.name for func in path])
         source = self.generate_main(source_name)
 
-        for element in path:
-            pass
+        for function in path:
             # we have a current set of variables
             
             # explore all partitions for this element
@@ -69,84 +68,103 @@ class StartEndGenerator(Generator):
             # for each source:variables combination generate a function expression
 
             # TODO generate variables from parameters
-            # this is a functionexpression
-            
-            # TODO how do we add to the BlockStatement?
+            # or pass from variables
 
-            #lines = self.instantiate_element(element, source.variables)
+            # TODO this is temporary, we will want to do partitioning
+            # TODO how to access latest block??
+            arguments = [source.get_variable('argument_count'),
+                         source.get_variable('argument_list')]
 
-            #for line in lines:
-            #    source.add_at_start(line)
+            # add function call
+            self.elements_generated += 1
+            return_name = 'return_' + function.name + '_'
+            return_name += str(self.elements_generated)
+
+            function_call = function.generate_function_statement(arguments,
+                                                                 return_name)
+            source.add_at_start(function_call)
+
+            # add return output
+            for name, variable in function_call.variables.items():
+                source.add_at_start(variable.generate_print_statement())
+
+            # add return check
+            for name, variable in function_call.variables.items():
+                source.add_at_start(variable.generate_check_statement())
 
         return source
 
-    def instantiate_element(self, element: Function, variables: Dict[str, Variable]) -> List[str]:
-        """
-        Generate an expression which executes the given function using
-        the given variables.
-        """
-
-        self.elements_generated += 1
-
-        lines = []
-        line = []
-
-        # catch return
-        return_name = 'return_' + element.name + '_' + str(self.elements_generated)
-        return_expression = []
-        return_expression.append(self._database.types_by_abstract_type[element.return_type].ctype)
-        return_expression.append(return_name)
-        return_expression.append('=')
-
-        line.append(' '.join(return_expression))
-
-        # add function name
-        line.append(' ')
-        line.append(element.name)
-        line.append('(')
-
-        # add arguments
-        for parameter in element.parameters:
-            # match parameter with available variable
-            if parameter['name'] not in variables:
-                raise NotImplementedError
-                # generate variable, causes additional paths!
-                # how do we handle branching points?
-
-            variable = variables[parameter['name']]
-
-            if variable.kind.abstract_type != parameter['abstract_type']:
-                raise ValueError('Mismatch between abstract types of parameter and variable.')
-
-            argument = []
-
-            # add argument pointer level
-            level_difference = parameter['pointer'] - variable.pointer_level
-            if level_difference > 0:
-                argument.append('&' * level_difference)
-
-            # add argument name
-            argument.append(variable.name)
-
-            # add comma
-            if parameter is not element.parameters[-1]:
-                argument.append(',')
-
-            line.append(''.join(argument))
-
-        line.append(');')
-
-        lines.append(''.join(line))
-
-        # return variable output
-        # TODO change to element.return_type without lookup
-        return_variable = Variable(self._database.types_by_abstract_type[element.return_type], return_name)
-
-        lines.append(return_variable.generate_print_expression())
-
-        # return variable check
-        check_expression = return_variable.generate_check_expression()
-        if check_expression:
-            lines.append(check_expression)
-
-        return lines
+#    def instantiate_element(self, element: Function, variables: Dict[str, Variable]) -> List[str]:
+#        """
+#        Generate an expression which executes the given function using
+#        the given variables.
+#        """
+#
+#        # TODO move to Function
+#        # catch return
+#        return_name = 'return_' + element.name + '_' + str(self.elements_generated)
+#        return_expression = []
+#        return_expression.append(self._database.types_by_abstract_type[element.return_type].ctype)
+#        return_expression.append(return_name)
+#        return_expression.append('=')
+#
+#        line.append(' '.join(return_expression))
+#
+#        # add function name
+#        line.append(' ')
+#        line.append(element.name)
+#        line.append('(')
+#
+#        # add arguments
+#        for parameter in element.parameters:
+#            # match parameter with available variable
+#            if parameter['name'] not in variables:
+#                raise NotImplementedError
+#                # generate variable, causes additional paths!
+#                # how do we handle branching points?
+#
+#            variable = variables[parameter['name']]
+#
+#            if variable.kind.abstract_type != parameter['abstract_type']:
+#                raise ValueError('Mismatch between abstract types of parameter and variable.')
+#
+#            argument = []
+#
+#            # add argument pointer level
+#            level_difference = parameter['pointer'] - variable.pointer_level
+#            if level_difference > 0:
+#                argument.append('&' * level_difference)
+#
+#            # add argument name
+#            argument.append(variable.name)
+#
+#            # add comma
+#            if parameter is not element.parameters[-1]:
+#                argument.append(',')
+#
+#            line.append(''.join(argument))
+#
+#        line.append(');')
+#
+#        lines.append(''.join(line))
+#
+#
+#
+#
+#
+#        # TODO where do these move?
+#        # in the generator...
+#
+#
+#        # return variable output
+#        # TODO change to element.return_type without lookup
+#        return_variable = Variable(self._database.types_by_abstract_type[element.return_type], return_name)
+#
+#        lines.append(return_variable.generate_print_expression())
+#
+#        # return variable check
+#        check_expression = return_variable.generate_check_expression()
+#        if check_expression:
+#            lines.append(check_expression)
+#
+#        return lines

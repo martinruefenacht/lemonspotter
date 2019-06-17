@@ -8,12 +8,13 @@ from core.database import Database
 from core.statement import BlockStatement
 
 class FunctionStatement(Statement):
-    def __init__(self, variables: Dict[str, Variable], expressions: List[str]):
-        self._variables = variables
-        self._expressions.extend(expressions)
+    def __init__(self, variables: Dict[str, Variable], statement: str):
+        super().__init__(variables)
+
+        self._statement: str = statement
 
 class MainDefinitionStatement(BlockStatement):
-    def __init__(self, database: Database):
+    def __init__(self, database: Database) -> str:
         super().__init__()
 
         argc = Variable(database.types_by_abstract_type['INT'],
@@ -26,6 +27,9 @@ class MainDefinitionStatement(BlockStatement):
         self._variables[argv.name] = argv
 
         self._statement = 'int main(int argument_count, char **argument_list)'
+
+    def express(self) -> str:
+        return self._statement + '\n' + super().express()
 
 class Function:
     """
@@ -75,10 +79,18 @@ class Function:
         """
         return self._name
 
-    def generate_function_expression(self, variables: List[Variable], return_name: str) -> FunctionStatement:
+    def generate_function_statement(self, arguments: List[Variable], return_name: str) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
+
+        statement = ''
+
+        #statement += self.return_type.kind + ' ' + return_name
+        statement += self.return_type + ' ' + return_name
+
+        return_variable = Variable(self.return_type, return_name)
+        #return_variable = Variable(self.return_type.kind, return_name)
 
         # catch return
             # return_type
@@ -89,11 +101,19 @@ class Function:
             # function_name
             # variables as arguments
 
-        # output return
-    
-        # check return
+        statement += ' '
+        statement += self.name + '('
 
-        raise NotImplementedError
+        # add arguments
+        for idx, argument in enumerate(arguments):
+            statement += argument.name
+
+            if (idx + 1) != len(arguments):
+                statement += ','
+
+        statement += ');'
+
+        return FunctionStatement({return_name, return_variable}, statement)
 
     @property
     def name(self):

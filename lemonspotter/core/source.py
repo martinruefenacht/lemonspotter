@@ -16,15 +16,33 @@ class Source:
     def variables(self) -> Dict[str, Variable]:
         return self._variables
 
+    def get_variable(self, name: str) -> Variable:
+        if name in self._variables:
+            return self._variables[name]
+
+        else:
+            for statement in self._front_statements:
+                if issubclass(type(statement), BlockStatement):
+                    if name in statement.variables:
+                        return statement.variables[name]
+
     def add_at_start(self, statement: Statement) -> None:
         """
         Adds a generated string to the fron of the source code.
         """
+        
+        # TODO currently only able to add to nested block
+        if self._front_statements and issubclass(type(self._front_statements[-1]),
+                                                 BlockStatement):
+            self._front_statements[-1].add_at_start(statement)
 
-        self._front_statements.append(statement)
+        else:
+            self._front_statements.append(statement)
 
-        if not issubclass(type(statement), BlockStatement):
-            self._variables.update(statement.variables)
+            # TODO how to handle this internally?
+            # how do statements have access to whole global variables?
+            if not issubclass(type(statement), BlockStatement):
+                self._variables.update(statement.variables)
 
     def add_at_end(self, statement: Statement) -> None:
         """

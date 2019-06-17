@@ -3,8 +3,8 @@ from typing import Dict
 from core.variable import Variable
 
 class Statement:
-    def __init__(self):
-        self._variables = {}
+    def __init__(self, variables: Dict[str, Variable] = {}):
+        self._variables = variables
 
     @property
     def variables(self) -> Dict[str, Variable]:
@@ -25,12 +25,19 @@ class ReturnStatement(Statement):
 
         self._statement = 'return ' + expression + ';'
 
+#class AssignmentStatement(Statement):
+#    def __init__(self, name: str):
+#        super().__init__()
+
 class BlockStatement(Statement):
     def __init__(self):
         super().__init__()
 
         self._front_statements = []
         self._back_statements = []
+
+    def add_at_start(self, statement: Statement):
+        self._front_statements.append(statement)
 
     def add_at_end(self, statement: Statement):
         self._back_statements.append(statement)
@@ -47,3 +54,5 @@ class BlockStatement(Statement):
         code += '}'
 
         return code
+
+#class FunctionDefinitionStatement(BlockStatement):
