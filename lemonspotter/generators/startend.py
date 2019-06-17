@@ -72,8 +72,10 @@ class StartEndGenerator(Generator):
 
             # TODO this is temporary, we will want to do partitioning
             # TODO how to access latest block??
-            arguments = [source.get_variable('argument_count'),
-                         source.get_variable('argument_list')]
+
+            arguments = []
+            for parameter in function.parameters:
+                arguments.append(source.get_variable(parameter['name']))
 
             # add function call
             self.elements_generated += 1
@@ -81,39 +83,27 @@ class StartEndGenerator(Generator):
             return_name += str(self.elements_generated)
 
             function_call = function.generate_function_statement(arguments,
-                                                                 return_name)
+                                                                 return_name,
+                                                                 self._database)
             source.add_at_start(function_call)
 
+            # TODO set???
             # add return output
-            for name, variable in function_call.variables.items():
-                source.add_at_start(variable.generate_print_statement())
+            #for name, variable in function_call.variables.items():
+            #    source.add_at_start(variable.generate_print_statement())
 
             # add return check
-            for name, variable in function_call.variables.items():
-                source.add_at_start(variable.generate_check_statement())
+            #for name, variable in function_call.variables.items():
+            #    source.add_at_start(variable.generate_check_statement())
 
         return source
 
-#    def instantiate_element(self, element: Function, variables: Dict[str, Variable]) -> List[str]:
-#        """
-#        Generate an expression which executes the given function using
-#        the given variables.
-#        """
-#
-#        # TODO move to Function
 #        # catch return
 #        return_name = 'return_' + element.name + '_' + str(self.elements_generated)
 #        return_expression = []
 #        return_expression.append(self._database.types_by_abstract_type[element.return_type].ctype)
 #        return_expression.append(return_name)
 #        return_expression.append('=')
-#
-#        line.append(' '.join(return_expression))
-#
-#        # add function name
-#        line.append(' ')
-#        line.append(element.name)
-#        line.append('(')
 #
 #        # add arguments
 #        for parameter in element.parameters:

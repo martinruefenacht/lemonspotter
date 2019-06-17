@@ -4,6 +4,7 @@ import logging
 
 from parsers.mpiparser import MPIParser
 from generators.startend import StartEndGenerator
+from executors.mpiexecutor import MPIExecutor
 
 class LemonSpotter:
     def __init__(self):
@@ -17,6 +18,10 @@ class LemonSpotter:
         self.set_logging_level()
 
         self.parse_database()
+
+        self.generate_tests()
+        self.build_tests()
+        self.run_tests()
 
         #TODO self.extract_constants()
 
@@ -110,19 +115,25 @@ class LemonSpotter:
         # TODO remove, this is for debugging
         for source in sources:
             print(source.get_source())
+            source.write()
 
     def build_tests(self):
-        raise NotImplementedError
+        executor = MPIExecutor()
+        executor.build() 
 
     def run_tests(self):
-        raise NotImplementedError
+        executor = MPIExecutor()
+        results = executor.run()
+
+        for key, value in results.items():
+            print(key + ", " + value[0])
+        
 
 def main():
     """
     
     """
     runtime = LemonSpotter()
-    runtime.generate_tests()
 
 if __name__ == '__main__':
     main()

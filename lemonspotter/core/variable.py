@@ -36,6 +36,7 @@ class Variable:
 
         if self.kind.abstract_type == 'ERRORCODE':
             # TODO this is an if statement
+            # TODO hard coded error success
             return 'if(' + self.name + ' != MPI_SUCCESS) exit(0);'
 
         raise NotImplementedError

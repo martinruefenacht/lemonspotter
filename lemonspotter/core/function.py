@@ -79,7 +79,7 @@ class Function:
         """
         return self._name
 
-    def generate_function_statement(self, arguments: List[Variable], return_name: str) -> FunctionStatement:
+    def generate_function_statement(self, arguments: List[Variable], return_name: str, database: Database) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
@@ -87,7 +87,7 @@ class Function:
         statement = ''
 
         #statement += self.return_type.kind + ' ' + return_name
-        statement += self.return_type + ' ' + return_name
+        statement += database.types_by_abstract_type[self.return_type].ctype + ' ' + return_name
 
         return_variable = Variable(self.return_type, return_name)
         #return_variable = Variable(self.return_type.kind, return_name)
@@ -101,7 +101,7 @@ class Function:
             # function_name
             # variables as arguments
 
-        statement += ' '
+        statement += ' = '
         statement += self.name + '('
 
         # add arguments
@@ -109,7 +109,7 @@ class Function:
             statement += argument.name
 
             if (idx + 1) != len(arguments):
-                statement += ','
+                statement += ', '
 
         statement += ');'
 

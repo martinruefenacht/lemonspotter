@@ -1,4 +1,5 @@
 from typing import Union, Dict
+import os
 
 from core.statement import Statement, BlockStatement
 from core.variable import Variable
@@ -26,9 +27,21 @@ class Source:
                     if name in statement.variables:
                         return statement.variables[name]
 
+    @property
+    def name(self):
+        return self._name
+ 
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+    @name.deleter
+    def name(self):
+        del self._name
+
     def add_at_start(self, statement: Statement) -> None:
         """
-        Adds a generated string to the fron of the source code.
+        Adds a generated string to the front of the source code.
         """
         
         # TODO currently only able to add to nested block
@@ -66,3 +79,22 @@ class Source:
             code += statement.express() + '\n'
 
         return code
+
+    def write(self):
+        """
+        Writes source object to file that can be compiled/run 
+        by executors.
+        """
+
+        # TODO this is hard coding paths
+        
+        if not os.path.isdir('../tests'):
+            os.makedirs("../tests")
+
+        file_name = self.name + ".c"
+        test_file = open("../tests/" + file_name, "w+")
+
+        for line in self.get_source():
+            test_file.write(line+"\n")
+
+        test_file.close()

@@ -1,9 +1,10 @@
 from typing import Dict
+import os
 
 from core.variable import Variable
 
 class Statement:
-    def __init__(self, variables: Dict[str, Variable] = {}):
+    def __init__(self, variables: Dict[str, Variable] = dict()):
         self._variables = variables
 
     @property
