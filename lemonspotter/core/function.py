@@ -5,16 +5,10 @@ from typing import Dict, List
 from core.variable import Variable
 from core.statement import Statement
 from core.database import Database
-from core.statement import BlockStatement
-
-class FunctionStatement(Statement):
-    def __init__(self, variables: Dict[str, Variable], statement: str):
-        super().__init__(variables)
-
-        self._statement: str = statement
+from core.statement import BlockStatement, FunctionStatement
 
 class MainDefinitionStatement(BlockStatement):
-    def __init__(self, database: Database) -> str:
+    def __init__(self, database: Database) -> None:
         super().__init__()
 
         argc = Variable(database.types_by_abstract_type['INT'],
@@ -89,23 +83,15 @@ class Function:
         #statement += self.return_type.kind + ' ' + return_name
         statement += database.types_by_abstract_type[self.return_type].ctype + ' ' + return_name
 
-        return_variable = Variable(self.return_type, return_name)
-        #return_variable = Variable(self.return_type.kind, return_name)
-
-        # catch return
-            # return_type
-            # return expression segment
-            # create variable
-
-        # function call construction
-            # function_name
-            # variables as arguments
+        return_variable = Variable(database.types_by_abstract_type[self.return_type], return_name)
 
         statement += ' = '
         statement += self.name + '('
 
         # add arguments
         for idx, argument in enumerate(arguments):
+            # TODO check pointer level and type
+
             statement += argument.name
 
             if (idx + 1) != len(arguments):
@@ -113,7 +99,7 @@ class Function:
 
         statement += ');'
 
-        return FunctionStatement({return_name, return_variable}, statement)
+        return FunctionStatement({return_name: return_variable}, statement)
 
     @property
     def name(self):

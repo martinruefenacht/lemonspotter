@@ -87,10 +87,10 @@ class StartEndGenerator(Generator):
                                                                  self._database)
             source.add_at_start(function_call)
 
-            # TODO set???
             # add return output
-            #for name, variable in function_call.variables.items():
-            #    source.add_at_start(variable.generate_print_statement())
+            print(function_call.variables)
+            for name, variable in function_call.variables.items():
+                source.add_at_start(variable.generate_print_statement())
 
             # add return check
             #for name, variable in function_call.variables.items():
@@ -98,13 +98,6 @@ class StartEndGenerator(Generator):
 
         return source
 
-#        # catch return
-#        return_name = 'return_' + element.name + '_' + str(self.elements_generated)
-#        return_expression = []
-#        return_expression.append(self._database.types_by_abstract_type[element.return_type].ctype)
-#        return_expression.append(return_name)
-#        return_expression.append('=')
-#
 #        # add arguments
 #        for parameter in element.parameters:
 #            # match parameter with available variable
@@ -133,28 +126,3 @@ class StartEndGenerator(Generator):
 #                argument.append(',')
 #
 #            line.append(''.join(argument))
-#
-#        line.append(');')
-#
-#        lines.append(''.join(line))
-#
-#
-#
-#
-#
-#        # TODO where do these move?
-#        # in the generator...
-#
-#
-#        # return variable output
-#        # TODO change to element.return_type without lookup
-#        return_variable = Variable(self._database.types_by_abstract_type[element.return_type], return_name)
-#
-#        lines.append(return_variable.generate_print_expression())
-#
-#        # return variable check
-#        check_expression = return_variable.generate_check_expression()
-#        if check_expression:
-#            lines.append(check_expression)
-#
-#        return lines

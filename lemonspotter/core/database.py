@@ -2,7 +2,7 @@
 This module defines the Database class.
 """
 
-from typing import Set
+from typing import Set, Dict
 
 class Database:
     """
@@ -15,9 +15,9 @@ class Database:
         self.constants: Set['Constant'] = set()
         self.types: Set['Type'] = set()
 
-        self.functions_by_name = {}
-        self.constants_by_abstract_type = {}
-        self.types_by_abstract_type = {}
+        self.functions_by_name: Dict[str, 'Function'] = {}
+        self.constants_by_abstract_type: Dict[str, 'Constant'] = {}
+        self.types_by_abstract_type: Dict[str, 'Type'] = {}
 
     def add_constant(self, constant: 'Constant') -> None:
         """
