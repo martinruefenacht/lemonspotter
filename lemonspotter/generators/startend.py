@@ -73,6 +73,7 @@ class StartEndGenerator(Generator):
             # TODO this is temporary, we will want to do partitioning
             # TODO how to access latest block??
 
+            # TODO how do we abstract this?
             arguments = []
             for parameter in function.parameters:
                 arguments.append(source.get_variable(parameter['name']))
@@ -88,13 +89,12 @@ class StartEndGenerator(Generator):
             source.add_at_start(function_call)
 
             # add return output
-            print(function_call.variables)
             for name, variable in function_call.variables.items():
                 source.add_at_start(variable.generate_print_statement())
 
             # add return check
-            #for name, variable in function_call.variables.items():
-            #    source.add_at_start(variable.generate_check_statement())
+            for name, variable in function_call.variables.items():
+                source.add_at_start(variable.generate_check_statement())
 
         return source
 

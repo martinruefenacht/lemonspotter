@@ -89,10 +89,19 @@ class Function:
         statement += self.name + '('
 
         # add arguments
-        for idx, argument in enumerate(arguments):
-            # TODO check pointer level and type
+        for idx, (argument, parameter) in enumerate(zip(arguments, self._parameters)):
+            mod = ''
 
-            statement += argument.name
+            pointer_diff = argument.pointer_level - parameter['pointer']
+            if pointer_diff > 0:
+                # dereference *
+                raise NotImplementedError
+
+            elif pointer_diff < 0:
+                # addressof &
+                mod += '&'
+
+            statement += (mod + argument.name)
 
             if (idx + 1) != len(arguments):
                 statement += ', '

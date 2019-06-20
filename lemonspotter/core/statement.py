@@ -35,6 +35,12 @@ class FunctionStatement(Statement):
 
         self._statement: str = statement
 
+class ExitStatement(Statement):
+    def __init__(self, errorcode):
+        super().__init__()
+
+        self._statement: str = 'exit(' + errorcode + ');'
+
 class BlockStatement(Statement):
     def __init__(self):
         super().__init__()
@@ -60,6 +66,26 @@ class BlockStatement(Statement):
         code += '}'
 
         return code
+
+class ConditionStatement(BlockStatement):
+    def __init__(self, condition: str):
+        super().__init__()
+
+        self._condition = condition
+
+    def express(self) -> str:
+        code = 'if(' + self._condition + ')\n{\n'
+
+        for statement in self._front_statements:
+            code += statement.express() + '\n'
+
+        for statement in self._back_statements:
+            code += statement.express() + '\n'
+
+        code += '}'
+
+        return code
+
 
 #class FunctionDefinitionStatement(BlockStatement):
 
