@@ -106,17 +106,26 @@ class MPIExecutor:
 
         return self.build_results
 
-    def run(self, args=[]):
+    def run(self, tests=[],args=[]):
 
         if not os.path.isdir(self.test_directory):
             os.makedirs(test_directory)
-        files = pathlib.Path(self.test_directory).glob('**/*.c')
 
-        for test in files:
-            test_name = str(test)[len(self._test_directory)+1: len(str(test))-2]
-            mpiexec = ["mpiexec"] + args + [self.test_directory + test_name]
-            process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = process.communicate()
-            self.exec_results[test_name] = [str(stdout), str(stderr)]
+        if tests:
+            # Runs if a defined list of tests to run is passed into run()
+            for test in tests:
+                mpiexec = ["mpiexec"] + args + [self.test_directory + test.name]
+                process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = process.communicate()
+                self.exec_results[test.name] = [str(stdout), str(stderr)]
+        else:
+            # If specific list isn't defined, all exectuables are run
+            files = pathlib.Path(self.test_directory).glob('**/*.c')
+            for test in files:
+                test_name = str(test)[len(self._test_directory)+1: len(str(test))-2]
+                mpiexec = ["mpiexec"] + args + [self.test_directory + test_name]
+                process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = process.communicate()
+                self.exec_results[test_name] = [str(stdout), str(stderr)]
 
         return self.exec_results

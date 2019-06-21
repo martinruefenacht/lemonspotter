@@ -135,7 +135,7 @@ class LemonSpotter:
 
     def run_tests(self):
         executor = MPIExecutor()
-        results = executor.run()
+        results = executor.run(tests=self.tests)
 
         for key, value in results.items():
             print(key + ", " + value[0])
