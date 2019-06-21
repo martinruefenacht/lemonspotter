@@ -12,7 +12,8 @@ class LemonSpotter:
         Construct the LemonSpotter runtime.
         """
 
-        self.database = None
+        self._database = None
+        self.tests = []
 
         self.parse_arguments()
         self.set_logging_level()
@@ -24,6 +25,19 @@ class LemonSpotter:
         self.run_tests()
 
         #TODO self.extract_constants()
+
+
+    @property
+    def database(self):
+        return self._database
+
+    @database.setter
+    def database(self, database):
+        self._database = database
+
+    @database.deleter
+    def database(self):
+        del self._database
 
     def parse_arguments(self):
         """
@@ -104,34 +118,32 @@ class LemonSpotter:
         Generate and run an extraction program to determine the values of
         constants and errors.
         """
-
         raise NotImplementedError
 
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
-
-        sources = generator.generate()
+        self.tests.extend(generator.generate())
 
         # TODO remove, this is for debugging
-        for source in sources:
-            print(source.get_source())
+        for source in self.tests:
+            #print(source.get_source())
             source.write()
 
     def build_tests(self):
         executor = MPIExecutor()
-        executor.build() 
+        executor.build(tests=self.tests)
 
     def run_tests(self):
         executor = MPIExecutor()
-        results = executor.run()
+        results = executor.run(tests=self.tests)
 
         for key, value in results.items():
             print(key + ", " + value[0])
-        
+
 
 def main():
     """
-    
+
     """
     runtime = LemonSpotter()
 

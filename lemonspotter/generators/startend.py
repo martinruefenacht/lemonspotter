@@ -5,7 +5,7 @@ This module defines the initiation point to finalization point generator.
 import logging
 from typing import Set, List, Dict, Optional
 
-from core.source import Source
+from core.test import Test, Source
 from core.variable import Variable
 from core.database import Database
 from core.function import Function
@@ -21,12 +21,12 @@ class StartEndGenerator(Generator):
 
         self.elements_generated = 0
 
-    def generate(self) -> Set[Source]:
+    def generate(self) -> Set[Test]:
         """
         Generate all possible C programs for all initiators and finalizers.
         """
 
-        sources = set()
+        tests = set()
 
         # determine all start and ends
         starts = filter(lambda f: not f.needs_all and not f.needs_any,
@@ -47,10 +47,17 @@ class StartEndGenerator(Generator):
 
                 # generate individual test
                 path = [start, end]
-                source = self.generate_source(path)
-                sources.add(source)
+                test = self.generate_test(path)
+                tests.add(test)
 
-        return sources
+        return tests
+
+    def generate_test(self, path: List[Function]) -> Test:
+        """
+        Generates a test object
+        """
+        test_name = ''.join([func.name for func in path])
+        return Test(test_name, [self.generate_source(path)])
 
     def generate_source(self, path: List[Function]) -> Source:
         """
@@ -62,7 +69,7 @@ class StartEndGenerator(Generator):
 
         for function in path:
             # we have a current set of variables
-            
+
             # explore all partitions for this element
             # deepcopy current source, this goes exponential
             # for each source:variables combination generate a function expression

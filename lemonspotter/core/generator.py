@@ -2,7 +2,7 @@ import logging
 from typing import Dict
 
 from core.database import Database
-from core.source import Source
+from core.test import Source
 from core.variable import Variable
 from core.statement import IncludeStatement, ReturnStatement
 from core.function import MainDefinitionStatement
@@ -21,7 +21,8 @@ class Generator:
         This function generates the main function for the test.
         """
 
-        source = Source(name) 
+        source = Source(name)
+        variables = {}
 
         # add include statements
         source.add_at_start(IncludeStatement('stdio.h'))
