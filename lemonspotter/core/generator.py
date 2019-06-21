@@ -1,7 +1,7 @@
 import logging
 from typing import Tuple, Dict
 
-from core.source import Source
+from core.test import Source
 from core.variable import Variable
 
 class Generator:
@@ -15,7 +15,7 @@ class Generator:
         This function generates the main function for the test.
         """
 
-        source = Source(name) 
+        source = Source(name)
         variables = {}
 
         # add include statements

@@ -118,17 +118,15 @@ class LemonSpotter:
         Generate and run an extraction program to determine the values of
         constants and errors.
         """
-
         raise NotImplementedError
 
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
-
         self.tests.extend(generator.generate())
 
         # TODO remove, this is for debugging
         for source in self.tests:
-            print(source.get_source())
+            #print(source.get_source())
             source.write()
 
     def build_tests(self):

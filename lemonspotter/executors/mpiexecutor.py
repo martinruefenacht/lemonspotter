@@ -79,7 +79,7 @@ class MPIExecutor:
         """
         Builds a test into a runnable executable
 
-        tests: list of source(later test) objects that define the tests to run
+        tests: list of test objects that define the tests to run
         """
         if not os.path.isdir(self.test_directory):
             os.makedirs(test_directory)
@@ -113,7 +113,7 @@ class MPIExecutor:
         files = pathlib.Path(self.test_directory).glob('**/*.c')
 
         for test in files:
-            test_name = str(test)[len(self._test_directory): len(str(test))-2]
+            test_name = str(test)[len(self._test_directory)+1: len(str(test))-2]
             mpiexec = ["mpiexec"] + args + [self.test_directory + test_name]
             process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
