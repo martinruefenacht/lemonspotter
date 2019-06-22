@@ -5,7 +5,7 @@ class Test:
         self._name = name
         self._sources = sources
 
-        self._build_results = []
+        self._build_output = []
         self._exec_results = []
 
         self._expected_outcome = expected_outcome
@@ -35,16 +35,16 @@ class Test:
         del self._sources
 
     @property
-    def build_results(self):
-        return self._build_results
+    def build_output(self):
+        return self._build_output
 
-    @build_results.setter
-    def build_results(self, build_results):
-        self._build_results = build_results
+    @build_output.setter
+    def build_output(self, build_output):
+        self._build_output = build_output
 
-    @build_results.deleter
-    def build_results(self):
-        del self._build_results
+    @build_output.deleter
+    def build_output(self):
+        del self._build_output
 
     @property
     def exec_results(self):
@@ -86,6 +86,12 @@ class Test:
             test_file.write(source.get_source())
 
         test_file.close()
+
+    def result_parser(self):
+        """
+        Parses output of test into results
+        """
+        raise NotImplementedError
 
 
 class Source:

@@ -93,7 +93,7 @@ class MPIExecutor:
                 process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
                 self.build_results[test.name] = [str(stdout), str(stderr)]
-                test.build_results = [str(stdout), str(stderr)]
+                test.build_output = [str(stdout), str(stderr)]
 
         else:
             # DEPRECATED
@@ -121,7 +121,7 @@ class MPIExecutor:
                 process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
                 self.exec_results[test.name] = [str(stdout), str(stderr)]
-                test.exec_results = [str(stdout), str(stderr)]
+                test.exec_output = [str(stdout), str(stderr)]
         else:
             # If specific list isn't defined, all exectuables are run
             # DEPRECATED
