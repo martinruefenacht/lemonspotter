@@ -93,8 +93,11 @@ class MPIExecutor:
                 process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
                 self.build_results[test.name] = [str(stdout), str(stderr)]
+                test.build_results = [str(stdout), str(stderr)]
 
         else:
+            # DEPRECATED
+            # This behavior works currently for compatability.
             files = pathlib.Path(self.test_directory).glob('**/*.c')
             for test in files:
                 test_name = str(test)[len(self._test_directory): len(str(test))-2]
@@ -118,8 +121,11 @@ class MPIExecutor:
                 process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
                 self.exec_results[test.name] = [str(stdout), str(stderr)]
+                test.exec_results = [str(stdout), str(stderr)]
         else:
             # If specific list isn't defined, all exectuables are run
+            # DEPRECATED
+            # This behavior works currently for compatability
             files = pathlib.Path(self.test_directory).glob('**/*.c')
             for test in files:
                 test_name = str(test)[len(self._test_directory)+1: len(str(test))-2]

@@ -4,7 +4,10 @@ class Test:
     def __init__(self, name: str, sources=[], expected_outcome='pass'):
         self._name = name
         self._sources = sources
-        self._results = []
+
+        self._build_results = []
+        self._exec_results = []
+
         self._expected_outcome = expected_outcome
 
     @property
@@ -32,16 +35,28 @@ class Test:
         del self._sources
 
     @property
-    def results(self):
-        return self._results
+    def build_results(self):
+        return self._build_results
 
-    @results.setter
-    def results(self, results):
-        self._results = results
+    @build_results.setter
+    def build_results(self, build_results):
+        self._build_results = build_results
 
-    @results.deleter
-    def results(self):
-        del self._results
+    @build_results.deleter
+    def build_results(self):
+        del self._build_results
+
+    @property
+    def exec_results(self):
+        return self._exec_results
+
+    @exec_results.setter
+    def exec_results(self, exec_results):
+        self._exec_results = exec_results
+
+    @exec_results.deleter
+    def exec_results(self):
+        del self._exec_results
 
     @property
     def expected_outcome(self):
