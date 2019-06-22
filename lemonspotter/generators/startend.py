@@ -56,6 +56,7 @@ class StartEndGenerator(Generator):
         """
         Generates a test object
         """
+
         test_name = ''.join([func.name for func in path])
         return Test(test_name, [self.generate_source(path)])
 
