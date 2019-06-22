@@ -106,10 +106,10 @@ class MPIExecutor:
 
         return self.build_results
 
-    def run(self, tests=[],args=[]):
+    def run(self, tests=[], args=[]):
 
         if not os.path.isdir(self.test_directory):
-            os.makedirs(test_directory)
+            os.makedirs(self.test_directory)
 
         if tests:
             # Runs if a defined list of tests to run is passed into run()
