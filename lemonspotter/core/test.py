@@ -1,9 +1,11 @@
 import os
 
 class Test:
-    def __init__(self, name: str, sources=[]):
+    def __init__(self, name: str, sources=[], expected_outcome='pass'):
         self._name = name
         self._sources = sources
+        self._results = []
+        self._expected_outcome = expected_outcome
 
     @property
     def name(self):
@@ -28,6 +30,31 @@ class Test:
     @sources.deleter
     def sources(self):
         del self._sources
+
+    @property
+    def results(self):
+        return self._results
+
+    @results.setter
+    def results(self, results):
+        self._results = results
+
+    @results.deleter
+    def results(self):
+        del self._results
+
+    @property
+    def expected_outcome(self):
+        return self._expected_outcome
+
+    @expected_outcome.setter
+    def expected_outcome(self, expected_outcome):
+        self._expected_outcome = expected_outcome
+
+    @expected_outcome.deleter
+    def expected_outcome(self):
+        del self._expected_outcome
+
 
     def write(self):
         """
