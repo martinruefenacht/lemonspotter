@@ -3,15 +3,16 @@ This module defines the initiation point to finalization point generator.
 """
 
 import logging
-from typing import Set, List, Dict, Optional
+from typing import Set, List, Dict, Optional, Generator
 
 from core.test import Test, Source
 from core.variable import Variable
 from core.database import Database
 from core.function import Function
-from core.generator import Generator
+from core.testgenerator import TestGenerator
+from core.instantiator import Instantiator
 
-class StartEndGenerator(Generator):
+class StartEndGenerator(TestGenerator):
     """
     Source code generator for initiator and finalizer functions.
     """
@@ -21,17 +22,19 @@ class StartEndGenerator(Generator):
 
         self.elements_generated = 0
 
-    def generate(self) -> Set[Test]:
+    def generate(self, instantiator: Instantiator) -> Generator[Test, None, None]:
         """
         Generate all possible C programs for all initiators and finalizers.
         """
 
-        tests = set()
-
-        # determine all start and ends
-        starts = filter(lambda f: not f.needs_all and not f.needs_any,
+        # determine all start functions
+        starts = filter(lambda f: not f.needs_all and not f.needs_any and
+                                  (f.leads_any or f.leads_all),
                         self._database.functions)
-        ends = filter(lambda f: not f.leads_all and not f.leads_any,
+
+        # determine all end points
+        ends = filter(lambda f: not f.leads_all and not f.leads_any and
+                                (f.needs_any or f.needs_all),
                       self._database.functions)
 
         # for all combinations
@@ -40,17 +43,20 @@ class StartEndGenerator(Generator):
                 logging.warning('Skipping %s, status failed.', start.name)
                 continue
 
+            logging.info('using start ' + str(start))
+
             for end in ends:
                 if end.has_failed():
                     logging.warning('Skipping %s, status failed.', end.name)
                     continue
 
+                logging.info('using start ' + str(start))
+
                 # generate individual test
                 path = [start, end]
                 test = self.generate_test(path)
-                tests.add(test)
 
-        return tests
+                yield test
 
     def generate_test(self, path: List[Function]) -> Test:
         """
@@ -85,6 +91,8 @@ class StartEndGenerator(Generator):
             arguments = []
             for parameter in function.parameters:
                 arguments.append(source.get_variable(parameter['name']))
+
+            print(function, arguments)
 
             # add function call
             self.elements_generated += 1

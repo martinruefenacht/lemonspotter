@@ -6,9 +6,9 @@ import logging
 
 from core.database import Database
 from core.source import Source
-from core.generator import Generator
+from core.testgenerator import TestGenerator
 
-class PresenceGenearator(Generator):
+class PresenceGenearator(TestGenerator):
     def generate(self) -> Set[Source]:
         sources = set()
 

@@ -7,7 +7,7 @@ from core.variable import Variable
 from core.statement import IncludeStatement, ReturnStatement
 from core.function import MainDefinitionStatement
 
-class Generator:
+class TestGenerator:
     """
     This class is the base generator class. It provides the main function
     generation.
