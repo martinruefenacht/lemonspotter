@@ -105,6 +105,7 @@ class MPIExecutor:
                 mpicc = ["mpicc", str(test)] + args + ["-o", self.test_directory, test_name]
 
                 process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = process.communicate()
                 self.build_results[test_name] = [str(stdout), str(stderr)]
 
         return self.build_results
