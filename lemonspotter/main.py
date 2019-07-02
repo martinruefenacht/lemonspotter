@@ -118,12 +118,14 @@ class LemonSpotter:
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
         
-        self.tests.extend(list(generator.generate(None)))
+        # TODO instantiator make it a functioning object
+        instantiator = None
+        self.tests.extend(list(generator.generate(instantiator)))
 
-        # TODO remove, this is for debugging
+        logging.debug('generated tests:')
         for test in self.tests:
             for source in test.sources:
-                print(source.get_source())
+                logging.debug(source.get_source())
 
         for test in self.tests:
             for source in test.sources:

@@ -29,12 +29,12 @@ class StartEndGenerator(TestGenerator):
 
         # determine all start functions
         starts = filter(lambda f: not f.needs_all and not f.needs_any and
-                                  (f.leads_any or f.leads_all),
+                        (f.leads_any or f.leads_all),
                         self._database.functions)
 
         # determine all end points
         ends = filter(lambda f: not f.leads_all and not f.leads_any and
-                                (f.needs_any or f.needs_all),
+                      (f.needs_any or f.needs_all),
                       self._database.functions)
 
         # for all combinations
@@ -43,30 +43,45 @@ class StartEndGenerator(TestGenerator):
                 logging.warning('Skipping %s, status failed.', start.name)
                 continue
 
-            logging.info('using start ' + str(start))
+            logging.info('using start %s', str(start))
 
             for end in ends:
                 if end.has_failed():
                     logging.warning('Skipping %s, status failed.', end.name)
                     continue
 
-                logging.info('using start ' + str(start))
+                logging.info('using start %s', str(start))
 
                 # generate individual test
                 path = [start, end]
-                test = self.generate_test(path)
+                test = self.generate_tests(path, instantiator)
+
+                # TODO annotate test with expected values of watch variables
 
                 yield test
 
-    def generate_test(self, path: List[Function]) -> Test:
+    def generate_tests(self, path: List[Function], instantiator: Instantiator):
+        """
+        Using the functions selected and the given instantiator generate a test
+        for each argument set extracted from instantiator.
+        """
+
+        # instantiator -> set[variables]
+
+        # TODO use instantiator to generate parameters for test
+        pass
+
+        # for all arguments N^path generate test
+
+    def generate_test(self, path: List[Function], arguments: List[List[Variable]]) -> Test:
         """
         Generates a test object
         """
 
         test_name = ''.join([func.name for func in path])
-        return Test(test_name, [self.generate_source(path)])
+        return Test(test_name, [self.generate_source(path, arguments)])
 
-    def generate_source(self, path: List[Function]) -> Source:
+    def generate_source(self, path: List[Function], arguments: List[List[Variable]]) -> Source:
         """
         Generate C source code for a given path between initiator and finalizer.
         """
@@ -74,27 +89,14 @@ class StartEndGenerator(TestGenerator):
         source_name = ''.join([func.name for func in path])
         source = self.generate_main(source_name)
 
-        for function in path:
+        for idx, function in enumerate(path):
             # we have a current set of variables
 
-            # explore all partitions for this element
             # deepcopy current source, this goes exponential
             # for each source:variables combination generate a function expression
 
-            # TODO generate variables from parameters
-            # or pass from variables
-
-            # TODO this is temporary, we will want to do partitioning
-            # TODO how to access latest block??
-
-            # TODO how do we abstract this?
-            arguments = []
-            for parameter in function.parameters:
-                arguments.append(source.get_variable(parameter['name']))
-
-            # TODO
-
-            print(function, arguments)
+            arguments = arguments[idx]
+            logging.debug('%s %s', str(function), str(arguments))
 
             # add function call
             self.elements_generated += 1

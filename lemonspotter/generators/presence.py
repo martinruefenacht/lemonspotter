@@ -8,6 +8,8 @@ from core.database import Database
 from core.source import Source
 from core.testgenerator import TestGenerator
 
+from typing import Set
+
 class PresenceGenearator(TestGenerator):
     def generate(self) -> Set[Source]:
         sources = set()

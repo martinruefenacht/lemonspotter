@@ -18,6 +18,12 @@ class Variable:
         self._kind: Type = kind
         self._name: str = name
         self._pointer_level: int = pointer_level
+        
+    def __str__(self):
+        return self._name
+
+    def __repr__(self):
+        return self._name
 
     @property
     def kind(self) -> Type:
