@@ -129,7 +129,7 @@ class MPIExecutor:
                     stdout, stderr = process.communicate()
                     self.exec_results[test.name] = [stdout.decode('UTF-8'),
                                                     stderr.decode('UTF-8')]
-                    test.exec_output = [stdout.decode('UTF-8'),
+                    test.exec_results = [stdout.decode('UTF-8'),
                                         stderr.decode('UTF-8')]
 
                     # Determines if a test passes or fails and stores result internally
