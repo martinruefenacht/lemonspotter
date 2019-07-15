@@ -123,16 +123,17 @@ class MPIExecutor:
         if tests:
             # Runs if a defined list of tests to run is passed into run()
             for test in tests:
-                mpiexec = ["mpiexec"] + args + [self.test_directory + test.name]
-                process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = process.communicate()
-                self.exec_results[test.name] = [stdout.decode('UTF-8'),
-                                                stderr.decode('UTF-8')]
-                test.exec_output = [stdout.decode('UTF-8'),
-                                    stderr.decode('UTF-8')]
+                if not test.result:
+                    mpiexec = ["mpiexec"] + args + [self.test_directory + test.name]
+                    process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
+                    stdout, stderr = process.communicate()
+                    self.exec_results[test.name] = [stdout.decode('UTF-8'),
+                                                    stderr.decode('UTF-8')]
+                    test.exec_output = [stdout.decode('UTF-8'),
+                                        stderr.decode('UTF-8')]
 
-                # Determines if a test passes or fails and stores result internally
-                test.exec_result_parser()
+                    # Determines if a test passes or fails and stores result internally
+                    test.exec_result_parser()
         else:
             # If specific list isn't defined, all exectuables are run
             # DEPRECATED
