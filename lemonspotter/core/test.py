@@ -1,7 +1,7 @@
 import os
 
 class Test:
-    def __init__(self, name: str, sources=[], expected_outcome='pass'):
+    def __init__(self, name: str, sources=[], expected_result='pass'):
         self._name = name
         self._sources = sources
 
@@ -9,10 +9,12 @@ class Test:
         self._exec_results = []
 
         # Outcome can be pass/fail/xfail/xpass
-        self._expected_outcome = expected_outcome
+        self._expected_result = expected_result
 
-        # Actual outcome after tested. Until set default value is 'not_tested'
-        self._result = 'not_tested'
+        # Actual outcome after tested.
+        # Until set default value is ''
+        # Once tested can be set to pass/fail/xfail/xpass
+        self._result = ''
 
     @property
     def name(self):
@@ -63,16 +65,16 @@ class Test:
         del self._exec_results
 
     @property
-    def expected_outcome(self):
-        return self._expected_outcome
+    def expected_result(self):
+        return self._expected_result
 
-    @expected_outcome.setter
-    def expected_outcome(self, expected_outcome):
-        self._expected_outcome = expected_outcome
+    @expected_result.setter
+    def expected_result(self, expected_result):
+        self._expected_result = expected_result
 
-    @expected_outcome.deleter
-    def expected_outcome(self):
-        del self._expected_outcome
+    @expected_result.deleter
+    def expected_result(self):
+        del self._expected_result
 
     @property
     def result(self):
@@ -116,6 +118,7 @@ class Test:
         """
         Parses output of test execution into results
         """
+        raise NotImplementedError
 
 
 class Source:
