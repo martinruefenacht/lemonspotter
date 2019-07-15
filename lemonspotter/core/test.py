@@ -118,7 +118,10 @@ class Test:
         """
         Parses output of test execution into results
         """
-        raise NotImplementedError
+        if self.expected_result == 'pass':
+            if self.exec_results[1]:
+                print("STDERR Not Empty")
+                print(self.exec_results[1])
 
 
 class Source:
