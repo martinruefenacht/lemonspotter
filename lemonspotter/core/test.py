@@ -5,10 +5,14 @@ class Test:
         self._name = name
         self._sources = sources
 
-        self._build_output = []
+        self._build_results = []
         self._exec_results = []
 
+        # Outcome can be pass/fail/xfail/xpass
         self._expected_outcome = expected_outcome
+
+        # Actual outcome after tested. Until set default value is 'not_tested'
+        self._result = 'not_tested'
 
     @property
     def name(self):
@@ -35,16 +39,16 @@ class Test:
         del self._sources
 
     @property
-    def build_output(self):
-        return self._build_output
+    def build_results(self):
+        return self._build_results
 
-    @build_output.setter
-    def build_output(self, build_output):
-        self._build_output = build_output
+    @build_results.setter
+    def build_results(self, build_results):
+        self._build_results = build_results
 
-    @build_output.deleter
-    def build_output(self):
-        del self._build_output
+    @build_results.deleter
+    def build_results(self):
+        del self._build_results
 
     @property
     def exec_results(self):
@@ -70,6 +74,19 @@ class Test:
     def expected_outcome(self):
         del self._expected_outcome
 
+    @property
+    def result(self):
+        return self._result
+
+    @result.setter
+    def result(self, result):
+        self._result = result
+
+    @result.deleter
+    def result(self):
+        del self._result
+
+
 
     def write(self):
         """
@@ -87,11 +104,18 @@ class Test:
 
         test_file.close()
 
-    def result_parser(self):
+    def build_result_parser(self):
         """
-        Parses output of test into results
+        Fails test if build process produces error
         """
-        raise NotImplementedError
+        if self.build_results[1]:
+            print("BUILD ERROR: " + self.name + " failed to build.")
+            self.result = "failed"
+
+    def exec_result_parser(self):
+        """
+        Parses output of test execution into results
+        """
 
 
 class Source:
