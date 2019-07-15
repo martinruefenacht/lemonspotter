@@ -131,7 +131,8 @@ class LemonSpotter:
 
     def build_tests(self):
         executor = MPIExecutor()
-        executor.build(tests=self.tests)
+        results = executor.build(tests=self.tests)
+
 
     def run_tests(self):
         executor = MPIExecutor()
