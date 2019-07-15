@@ -92,8 +92,13 @@ class MPIExecutor:
 
                 process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
-                self.build_results[test.name] = [str(stdout), str(stderr)]
-                test.build_output = [str(stdout), str(stderr)]
+                self.build_results[test.name] = [stdout.decode('UTF-8'),
+                                                 stderr.decode('UTF-8')]
+                test.build_results = [stdout.decode('UTF-8'),
+                                      stderr.decode('UTF-8')]
+
+                # Determines if a test passes or fails and stores result internally
+                test.build_result_parser()
 
         else:
             # DEPRECATED
@@ -105,7 +110,8 @@ class MPIExecutor:
                 mpicc = ["mpicc", str(test)] + args + ["-o", self.test_directory, test_name]
 
                 process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
-                self.build_results[test_name] = [str(stdout), str(stderr)]
+                self.build_results[test_name] = [str(stdout).decode('UTF-8'),
+                                                 str(stderr).decode('UTF-8')]
 
         return self.build_results
 
@@ -120,8 +126,13 @@ class MPIExecutor:
                 mpiexec = ["mpiexec"] + args + [self.test_directory + test.name]
                 process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
-                self.exec_results[test.name] = [str(stdout), str(stderr)]
-                test.exec_output = [str(stdout), str(stderr)]
+                self.exec_results[test.name] = [stdout.decode('UTF-8'),
+                                                stderr.decode('UTF-8')]
+                test.exec_output = [stdout.decode('UTF-8'),
+                                    stderr.decode('UTF-8')]
+
+                # Determines if a test passes or fails and stores result internally
+                test.exec_result_parser()
         else:
             # If specific list isn't defined, all exectuables are run
             # DEPRECATED
@@ -132,6 +143,7 @@ class MPIExecutor:
                 mpiexec = ["mpiexec"] + args + [self.test_directory + test_name]
                 process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
-                self.exec_results[test_name] = [str(stdout), str(stderr)]
+                self.exec_results[test_name] = [stdout.decode('UTF-8'),
+                                                stderr.decode('UTF-8')]
 
         return self.exec_results
