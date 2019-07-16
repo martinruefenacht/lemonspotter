@@ -1,13 +1,29 @@
 """    Defines an function object that can be included in Lemonspotter tests."""
 
-from typing import List
+from typing import Dict, List
 
 from core.variable import Variable
+from core.statement import Statement
+from core.database import Database
+from core.statement import BlockStatement, FunctionStatement
 
-class FunctionExpression:
-    def __init__(self, variables: List[Variable], expressions: List[str]):
-        self.variables = variables
-        self.expression = expression
+class MainDefinitionStatement(BlockStatement):
+    def __init__(self, database: Database) -> None:
+        super().__init__()
+
+        argc = Variable(database.types_by_abstract_type['INT'],
+                        'argument_count')
+        argv = Variable(database.types_by_abstract_type['CHAR'],
+                        'argument_list',
+                        2)
+
+        self._variables[argc.name] = argc
+        self._variables[argv.name] = argv
+
+        self._statement = 'int main(int argument_count, char **argument_list)'
+
+    def express(self) -> str:
+        return self._statement + '\n' + super().express()
 
 class Function:
     """
@@ -38,6 +54,10 @@ class Function:
         self._leads_any = leads_any
         self._leads_all = leads_all
 
+        # TODO think about how to handle this
+        # present vs not present is a boolean
+        # validated is true for certain arguments, but not others
+        # attempted is really quite useless
         self._attempted = False
         self._validated = False
 
@@ -53,26 +73,42 @@ class Function:
         """
         return self._name
 
-    def generate_function_expression(self, variables: List[Variable]) -> FunctionExpression:
+    def generate_function_statement(self, arguments: List[Variable], return_name: str, database: Database) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
 
-        # catch return
-            # generate return name
-            # return_type
-            # return expression segment
-            # create variable
+        statement = ''
 
-        # function call construction
-            # function_name
-            # variables as arguments
+        #statement += self.return_type.kind + ' ' + return_name
+        statement += database.types_by_abstract_type[self.return_type].ctype + ' ' + return_name
 
-        # return output
-    
-        # return check
+        return_variable = Variable(database.types_by_abstract_type[self.return_type], return_name)
 
-        raise NotImplementedError
+        statement += ' = '
+        statement += self.name + '('
+
+        # add arguments
+        for idx, (argument, parameter) in enumerate(zip(arguments, self._parameters)):
+            mod = ''
+
+            pointer_diff = argument.pointer_level - parameter['pointer']
+            if pointer_diff > 0:
+                # dereference *
+                raise NotImplementedError
+
+            elif pointer_diff < 0:
+                # addressof &
+                mod += '&'
+
+            statement += (mod + argument.name)
+
+            if (idx + 1) != len(arguments):
+                statement += ', '
+
+        statement += ');'
+
+        return FunctionStatement({return_name: return_variable}, statement)
 
     @property
     def name(self):
@@ -205,5 +241,3 @@ class Function:
         Sets the attempt state of the function
         """
         self._attempted = True
-
-    

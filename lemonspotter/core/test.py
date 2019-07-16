@@ -1,9 +1,17 @@
+from typing import Union, Dict, List
 import os
+from core.statement import Statement, BlockStatement
+from core.variable import Variable
+
 
 class Test:
-    def __init__(self, name: str, sources=[], expected_result='pass'):
+    def __init__(self, name: str, sources: List[Source]=[], expected_result='pass'):
         self._name = name
-        self._sources = sources
+
+        self._variables: Dict[str, Variable] = {}
+
+        self._front_statements = []
+        self._back_statements = []
 
         self._build_results = []
         self._exec_results = []
@@ -29,16 +37,59 @@ class Test:
         del self._name
 
     @property
-    def sources(self):
-        return self._sources
+    def variables(self) -> Dict[str, Variable]:
+        return self._variables
 
-    @sources.setter
-    def sources(self, sources):
-        self._sources = sources
+    def get_variable(self, name: str) -> Variable:
+        if name in self._variables:
+            return self._variables[name]
 
-    @sources.deleter
-    def sources(self):
-        del self._sources
+        else:
+            for statement in self._front_statements:
+                if issubclass(type(statement), BlockStatement):
+                    if name in statement.variables:
+                        return statement.variables[name]
+
+    def add_at_start(self, statement: Statement) -> None:
+        """
+        Adds a generated string to the front of the source code.
+        """
+
+        # TODO currently only able to add to nested block
+        if self._front_statements and issubclass(type(self._front_statements[-1]),
+                                                 BlockStatement):
+            self._front_statements[-1].add_at_start(statement)
+
+        else:
+            self._front_statements.append(statement)
+
+            # TODO how to handle this internally?
+            # how do statements have access to whole global variables?
+            if not issubclass(type(statement), BlockStatement):
+                self._variables.update(statement.variables)
+
+    def add_at_end(self, statement: Statement) -> None:
+        """
+        Adds a generated string to the back of the source code.
+        """
+
+        self._back_statements.append(statement)
+        self._variables.update(statement.variables)
+
+    def get_source(self) -> str:
+        """
+        Combines the front and back lines into a single string.
+        """
+
+        code = ''
+
+        for statement in self._front_statements:
+            code += statement.express() + '\n'
+
+        for statement in self._back_statements:
+            code += statement.express() + '\n'
+
+        return code
 
     @property
     def build_results(self):
@@ -95,14 +146,17 @@ class Test:
         Writes source object to file that can be compiled/run
         by executors.
         """
+
+        # TODO this is hard coding paths
+
         if not os.path.isdir('../tests'):
             os.makedirs("../tests")
 
         file_name = self.name + ".c"
         test_file = open("../tests/" + file_name, "w+")
 
-        for source in self.sources:
-            test_file.write(source.get_source())
+        for line in self.get_source():
+            test_file.write(line+"\n")
 
         test_file.close()
 
@@ -127,8 +181,7 @@ class Test:
 class Source:
     def __init__(self, name: str):
         self._name = name
-        self._front_lines = []
-        self._back_lines = []
+        self._sources = sources
 
     @property
     def name(self):
@@ -142,26 +195,30 @@ class Source:
     def name(self):
         del self._name
 
-    def add_at_start(self, line: str) -> None:
-        """
-        Adds a generated string to the front of the source code.
-        """
+    @property
+    def sources(self):
+        return self._sources
 
-        self._front_lines.append(line)
+    @sources.setter
+    def sources(self, sources):
+        self._sources = sources
 
-    def add_at_end(self, line: str) -> None:
+    @sources.deleter
+    def sources(self):
+        del self._sources
+
+    def write(self):
         """
-        Adds a generated string to the back of the source code.
+        Writes source object to file that can be compiled/run
+        by executors.
         """
+        if not os.path.isdir('../tests'):
+            os.makedirs("../tests")
 
-        self._back_lines.append(line)
+        file_name = self.name + ".c"
+        test_file = open("../tests/" + file_name, "w+")
 
-    def get_source(self) -> str:
-        """
-        Combines the front and back lines into a single string.
-        """
+        for source in self.sources:
+            test_file.write(source.get_source())
 
-        lines = '\n'.join(self._front_lines) + '\n'
-        lines = lines + '\n'.join(self._back_lines)
-
-        return lines
+        test_file.close()

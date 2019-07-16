@@ -7,6 +7,7 @@ class MPIExecutor:
         """
         Initializes a test executor for MPI Libraries
         """
+
         self._test_directory = os.path.abspath(test_directory)
         self._build_results = {}
         self._exec_results = {}
@@ -16,6 +17,7 @@ class MPIExecutor:
         """
         Returns build_results of a test
         """
+
         return self._build_results
 
     @build_results.setter
@@ -23,6 +25,7 @@ class MPIExecutor:
         """
         Sets the build_results of a test
         """
+
         self._build_results = build_results
 
     @build_results.deleter

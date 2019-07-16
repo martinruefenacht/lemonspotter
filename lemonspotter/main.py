@@ -20,12 +20,7 @@ class LemonSpotter:
 
         self.parse_database()
 
-        self.generate_tests()
-        self.build_tests()
-        self.run_tests()
-
         #TODO self.extract_constants()
-
 
     @property
     def database(self):
@@ -122,12 +117,19 @@ class LemonSpotter:
 
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
-        self.tests.extend(generator.generate())
+        
+        # TODO instantiator make it a functioning object
+        instantiator = None
+        self.tests.extend(list(generator.generate(instantiator)))
 
-        # TODO remove, this is for debugging
-        for source in self.tests:
-            #print(source.get_source())
-            source.write()
+        logging.debug('generated tests:')
+        for test in self.tests:
+            for source in test.sources:
+                logging.debug(source.get_source())
+
+        for test in self.tests:
+            for source in test.sources:
+                source.write()
 
     def build_tests(self):
         executor = MPIExecutor()
@@ -141,9 +143,13 @@ class LemonSpotter:
 
 def main():
     """
-
     """
+
     runtime = LemonSpotter()
+
+    runtime.generate_tests()
+    runtime.build_tests()
+    runtime.run_tests()
 
 if __name__ == '__main__':
     main()
