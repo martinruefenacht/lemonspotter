@@ -117,7 +117,7 @@ class LemonSpotter:
 
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
-        
+
         # TODO instantiator make it a functioning object
         instantiator = None
         self.tests.extend(list(generator.generate(instantiator)))

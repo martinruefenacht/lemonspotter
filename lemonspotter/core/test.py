@@ -10,6 +10,7 @@ class Test:
     def __init__(self, name: str, sources: List[Source]=[], expected_result='pass'):
         self._name = name
 
+        self._sources = sources
         self._variables: Dict[str, Variable] = {}
 
         self._front_statements = []
@@ -92,6 +93,18 @@ class Test:
             code += statement.express() + '\n'
 
         return code
+
+    @property
+    def sources(self):
+        return self._sources
+
+    @sources.setter
+    def sources(self, sources):
+        self._sources = sources
+
+    @sources.deleter
+    def sources(self):
+        del self._sources
 
     @property
     def build_results(self):
