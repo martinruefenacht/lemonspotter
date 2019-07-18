@@ -1,31 +1,93 @@
-import os
+"""
+"""
 
-from typing import Union, Dict, List
-from core.statement import Statement, BlockStatement
-from core.variable import Variable
+from pathlib import Path
+from enum import Enum
+
 from core.source import Source
+from core.variable import Variable
 
+class TestType(Enum):
+    BUILD_AND_RUN = 0
+    BUILD_ONLY = 1
+
+class TestOutcome(Enum):
+    FAILED_BUILD = 0
+    CRASH = 1
+    SUCCESS = 2
 
 class Test:
-    def __init__(self, name: str, sources: List[Source]=[], expected_result='pass'):
+    """
+    """
+
+    def __init__(self, name: str, source: Source, test_type: TestType=TestType.BUILD_AND_RUN):
         self._name = name
+        self._source = source
+        self._test_type = test_type
 
-        self._sources = sources
-        self._variables: Dict[str, Variable] = {}
+        # build closures
+        self._build_success_func = None
+        self._build_fail_func = None
 
-        self._front_statements = []
-        self._back_statements = []
+        # run closures
+        self._run_success_func = None
+        self._run_fail_func = None
 
         self._build_results = []
         self._exec_results = []
-
-        # Outcome can be pass/fail/xfail/xpass
-        self._expected_result = expected_result
 
         # Actual outcome after tested.
         # Until set default value is ''
         # Once tested can be set to pass/fail/xfail/xpass
         self._result = ''
+
+    @property
+    def build_success_function(self):
+        return self._build_success_func
+    @build_success_function.setter
+    def build_success_function(self, func):
+        self._build_success_func = func
+
+    @property
+    def build_fail_function(self):
+        return self._build_fail_func
+    @build_fail_function.setter
+    def build_fail_function(self, func):
+        self._build_fail_func = func
+
+    @property
+    def run_success_function(self):
+        return self._run_success_func
+    @run_success_function.setter
+    def run_success_function(self, func):
+        self._run_success_func = func
+
+    @property
+    def run_fail_function(self):
+        return self._run_fail_func
+    @run_fail_function.setter
+    def run_fail_function(self, func):
+        self._run_fail_func = func
+
+
+    def write(self, path: Path) -> None:
+        """
+        Write this tests C source code to the given path.
+        """
+
+        with path.open() as source_file:
+            source_file.write(self.source)
+
+    def add_capture(self, variable: Variable):
+        """
+        Register variable output to be caught.
+        """
+
+        self.captures.add(variable)
+
+    @property
+    def build_only(self):
+        return self._build_only
 
     @property
     def name(self):
@@ -40,71 +102,8 @@ class Test:
         del self._name
 
     @property
-    def variables(self) -> Dict[str, Variable]:
-        return self._variables
-
-    def get_variable(self, name: str) -> Variable:
-        if name in self._variables:
-            return self._variables[name]
-
-        else:
-            for statement in self._front_statements:
-                if issubclass(type(statement), BlockStatement):
-                    if name in statement.variables:
-                        return statement.variables[name]
-
-    def add_at_start(self, statement: Statement) -> None:
-        """
-        Adds a generated string to the front of the source code.
-        """
-
-        # TODO currently only able to add to nested block
-        if self._front_statements and issubclass(type(self._front_statements[-1]),
-                                                 BlockStatement):
-            self._front_statements[-1].add_at_start(statement)
-
-        else:
-            self._front_statements.append(statement)
-
-            # TODO how to handle this internally?
-            # how do statements have access to whole global variables?
-            if not issubclass(type(statement), BlockStatement):
-                self._variables.update(statement.variables)
-
-    def add_at_end(self, statement: Statement) -> None:
-        """
-        Adds a generated string to the back of the source code.
-        """
-
-        self._back_statements.append(statement)
-        self._variables.update(statement.variables)
-
-    def get_source(self) -> str:
-        """
-        Combines the front and back lines into a single string.
-        """
-
-        code = ''
-
-        for statement in self._front_statements:
-            code += statement.express() + '\n'
-
-        for statement in self._back_statements:
-            code += statement.express() + '\n'
-
-        return code
-
-    @property
-    def sources(self):
-        return self._sources
-
-    @sources.setter
-    def sources(self, sources):
-        self._sources = sources
-
-    @sources.deleter
-    def sources(self):
-        del self._sources
+    def source(self):
+        return self._source
 
     @property
     def build_results(self):
@@ -131,18 +130,6 @@ class Test:
         del self._exec_results
 
     @property
-    def expected_result(self):
-        return self._expected_result
-
-    @expected_result.setter
-    def expected_result(self, expected_result):
-        self._expected_result = expected_result
-
-    @expected_result.deleter
-    def expected_result(self):
-        del self._expected_result
-
-    @property
     def result(self):
         return self._result
 
@@ -156,24 +143,24 @@ class Test:
 
 
 
-    def write(self):
-        """
-        Writes source object to file that can be compiled/run
-        by executors.
-        """
-
-        # TODO this is hard coding paths
-
-        if not os.path.isdir('../tests'):
-            os.makedirs("../tests")
-
-        file_name = self.name + ".c"
-        test_file = open("../tests/" + file_name, "w+")
-
-        for line in self.get_source():
-            test_file.write(line+"\n")
-
-        test_file.close()
+#    def write(self):
+#        """
+#        Writes source object to file that can be compiled/run
+#        by executors.
+#        """
+#
+#        # TODO this is hard coding paths
+#
+#        if not os.path.isdir('../tests'):
+#            os.makedirs("../tests")
+#
+#        file_name = self.name + ".c"
+#        test_file = open("../tests/" + file_name, "w+")
+#
+#        for line in self.get_source():
+#            test_file.write(line+"\n")
+#
+#        test_file.close()
 
     def build_result_parser(self):
         """

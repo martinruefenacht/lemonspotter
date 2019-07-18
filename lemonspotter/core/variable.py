@@ -2,21 +2,24 @@
 This module defines the Variable class.
 """
 
+from typing import Union
+
 from core.type import Type
-from core.statement import FunctionStatement, ConditionStatement, ExitStatement
+from core.statement import FunctionStatement, ConditionStatement, ExitStatement, DeclarationStatement, DeclarationAssignmentStatement
 
 class Variable:
     """
     This class represents any C variable for source code generation.
     """
 
-    def __init__(self, kind: Type, name: str, pointer_level: int = 0) -> None:
+    def __init__(self, kind: Type, name: str, value: str='', pointer_level: int = 0) -> None:
         """
         This method constructs the Variable from a type, name and pointer level.
         """
 
         self._kind: Type = kind
         self._name: str = name
+        self._value: str = value
         self._pointer_level: int = pointer_level
         
     def __str__(self):
@@ -47,6 +50,7 @@ class Variable:
             # this is a function call statement
             # we don't care about return variable though
 
+            # TODO this is always integer, make it specific to type
             statement = 'printf("' + self._name + ' %i\\n", ' + self._name + ');'
             return FunctionStatement({}, statement) 
 
@@ -66,3 +70,10 @@ class Variable:
             return statement
 
         raise NotImplementedError
+
+    def generate_declaration_statement(self) -> Union[DeclarationStatement, DeclarationAssignmentStatement]:
+        if self._value:
+            return DeclarationAssignmentStatement(self, self._value)
+
+        else:
+            return DeclarationStatement(self)

@@ -19,6 +19,8 @@ class Constant:
         self._attempted = False
         self._validated = False
 
+        self.properties = {}
+
     def __repr__(self):
         """
         Defines informal string behavior for constant class
@@ -35,25 +37,9 @@ class Constant:
     def name(self):
         return self._name
     
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @name.deleter
-    def name(self):
-        del self._name
-    
     @property
     def abstract_type(self):
         return self._abstract_type
-
-    @abstract_type.setter
-    def abstract_type(self, abstract_type):
-        self._abstract_type = abstract_type
-    
-    @abstract_type.deleter
-    def abstract_type(self):
-        del self._abstract_type
 
     @property
     def validated(self):

@@ -1,10 +1,9 @@
-from typing import Dict
-import os
+from typing import Dict, List
 
 class Statement:
     def __init__(self, variables: Dict[str, 'Variable'] = {}):
-        self._variables = variables
-        self._statement = ''
+        self._variables: Dict[str, 'Variable'] = variables
+        self._statement: str = ''
 
     @property
     def variables(self) -> Dict[str, 'Variable']:
@@ -25,9 +24,23 @@ class ReturnStatement(Statement):
 
         self._statement = 'return ' + expression + ';'
 
-#class AssignmentStatement(Statement):
-#    def __init__(self, name: str):
-#        super().__init__()
+class DeclarationStatement(Statement):
+    def __init__(self, variable: 'Variable'):
+        super().__init__()
+
+        self._statement = variable.kind.language_type + ' ' + variable.name + ';'
+
+class AssignmentStatement(Statement):
+    def __init__(self, name: str, value: str):
+        super().__init__()
+
+        self._statement = name + ' = ' + value + ';'
+
+class DeclarationAssignmentStatement(Statement):
+    def __init__(self, variable: 'Variable', value: str):
+        super().__init__()
+
+        self._statement = variable.kind.language_type + ' ' + variable.name + ' = ' + value + ';'
 
 class FunctionStatement(Statement):
     def __init__(self, variables: Dict[str, 'Variable'], statement: str):
