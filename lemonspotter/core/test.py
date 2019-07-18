@@ -69,21 +69,20 @@ class Test:
     def run_fail_function(self, func):
         self._run_fail_func = func
 
-
     def write(self, path: Path) -> None:
         """
         Write this tests C source code to the given path.
         """
 
-        with path.open() as source_file:
-            source_file.write(self.source)
+        with path.open(mode='w') as source_file:
+            source_file.write(repr(self.source))
 
-    def add_capture(self, variable: Variable):
-        """
-        Register variable output to be caught.
-        """
+    #def add_capture(self, variable: Variable):
+    #    """
+    #    Register variable output to be caught.
+    #    """
 
-        self.captures.add(variable)
+    #    self.captures.add(variable)
 
     @property
     def name(self):

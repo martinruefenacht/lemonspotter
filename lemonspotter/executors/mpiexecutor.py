@@ -1,16 +1,22 @@
 import os
-import pathlib
+
+from pathlib import Path
+import logging
 from subprocess import Popen, PIPE
+from typing import Set
+
+from core.test import Test
 
 class MPIExecutor:
-    def __init__(self, test_directory='../tests/'):
+    def __init__(self, test_directory='tests/'):
         """
         Initializes a test executor for MPI Libraries
         """
 
         self._test_directory = os.path.abspath(test_directory)
-        self._build_results = {}
-        self._exec_results = {}
+
+        #self._build_results = {}
+        #self._exec_results = {}
 
     @property
     def build_results(self):
@@ -78,32 +84,49 @@ class MPIExecutor:
         """
         del self._test_directory
 
-    def build(self, tests, args=[]):
+    def build(self, tests: Set[Test], args=[]) -> None:
         """
         Builds a test into a runnable executable
 
         tests: list of test objects that define the tests to run
         """
 
+        # make directory if not exists
         if not os.path.isdir(self.test_directory):
             os.makedirs(self.test_directory)
 
         if tests:
             for test in tests:
-                # Generate MPICC command that compiles test excutable
-                file_name = test.name + ".c"
-                mpicc = ["mpicc", file_name] + args + ["-o", self.test_directory, test.name]
+                logging.info('building test %s', test.name)
 
-                process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
+                # output source file
+                test_filename = self._test_directory + '/' + test.name + ".c"
+                test.write(Path(test_filename))
+
+                # create executable command
+                executable_filename = self.test_directory + '/' + test.name
+                mpicc = ["mpicc", test_filename] + args + ["-o", executable_filename]
+
+                logging.info('executing: %s', ' '.join(mpicc))
+
+                # execute command
+                process = Popen(mpicc, stdout=PIPE, stderr=PIPE, text=True)
                 stdout, stderr = process.communicate()
 
-                self.build_results[test.name] = [stdout.decode('UTF-8'),
-                                                 stderr.decode('UTF-8')]
-                test.build_results = [stdout.decode('UTF-8'),
-                                      stderr.decode('UTF-8')]
+                # evaluate build result
+                logging.info('stdout\n%s', stdout)
+                logging.info('stderr\n%s', stderr)
 
-                # Determines if a test passes or fails and stores result internally
-                test.build_result_parser()
+                if not stdout and not stderr:
+                    test.build_success_function()
+
+                    logging.info('building successful')
+
+                else:
+                    # TODO evalulate build output, is there ERROR?
+                    test.build_fail_function()
+
+                    logging.warning('building failed')
 
         else:
             # DEPRECATED
@@ -118,7 +141,7 @@ class MPIExecutor:
                 self.build_results[test_name] = [str(stdout).decode('UTF-8'),
                                                  str(stderr).decode('UTF-8')]
 
-        return self.build_results
+        #return self.build_results
 
     def run(self, tests=[], args=[]):
 

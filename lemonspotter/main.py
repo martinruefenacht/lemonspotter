@@ -12,17 +12,16 @@ from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 
 class LemonSpotter:
-    def __init__(self, database_path: Path):
+    def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
         """
         Construct the LemonSpotter runtime.
         """
 
         self._database = None
-        self.parse_database(database_path)
+        self._mpicc = mpicc
+        self._mpiexec = mpiexec
 
-        # TODO should this be global?
-        # no, this is a function execution level
-        self.tests = []
+        self.parse_database(database_path)
 
     @property
     def database(self):
@@ -50,8 +49,8 @@ class LemonSpotter:
         results = executor.build(constant_tests)
 
         # generate all function presence tests
-        func_gen = FunctionPresenceGenerator(self.database)
-        function_tests = func_gen.generate()
+        #func_gen = FunctionPresenceGenerator(self.database)
+        #function_tests = func_gen.generate()
 
         # execute all function presence tests
         # TODO
@@ -65,6 +64,8 @@ class LemonSpotter:
         # TODO instantiator make it a functioning object
         instantiator = None
         self.tests.extend(list(generator.generate(instantiator)))
+
+        self.tests = []
 
         logging.debug('generated tests:')
         for test in self.tests:
@@ -162,7 +163,7 @@ def main():
     set_logging_level(arguments.log)
 
     # initialize and load the database
-    runtime = LemonSpotter(arguments.database)
+    runtime = LemonSpotter(arguments.database, arguments.mpicc, arguments.mpiexec)
 
     # perform presence testing
     runtime.presence_testing()
