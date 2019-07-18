@@ -113,6 +113,7 @@ class LemonSpotter:
         Generate and run an extraction program to determine the values of
         constants and errors.
         """
+
         raise NotImplementedError
 
     def generate_tests(self):
@@ -124,17 +125,17 @@ class LemonSpotter:
 
         logging.debug('generated tests:')
         for test in self.tests:
+            if not test:
+                logging.warning('test is none')
+                continue
+
             for source in test.sources:
                 logging.debug(source.get_source())
-
-        for test in self.tests:
-            for source in test.sources:
                 source.write()
 
     def build_tests(self):
         executor = MPIExecutor()
         results = executor.build(tests=self.tests)
-
 
     def run_tests(self):
         executor = MPIExecutor()
@@ -150,6 +151,8 @@ def main():
     runtime.generate_tests()
     runtime.build_tests()
     runtime.run_tests()
+
+    # TODO this is where feedback will be needed and then generate more tests
 
 if __name__ == '__main__':
     main()
