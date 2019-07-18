@@ -44,19 +44,28 @@ class LemonSpotter:
         generator = ConstantPresenceGenerator(self.database)
         constant_tests = generator.generate()
 
-        # execute all constant presence tests
+        func_gen = FunctionPresenceGenerator(self.database)
+        function_tests = func_gen.generate()
+
         executor = MPIExecutor()
-        results = executor.build(constant_tests)
-
-        # generate all function presence tests
-        #func_gen = FunctionPresenceGenerator(self.database)
-        #function_tests = func_gen.generate()
-
-        # execute all function presence tests
-        # TODO
+        executor.build(constant_tests)
+        executor.build(function_tests)
 
     def presence_report(self) -> str:
-        raise NotImplementedError
+        """
+        """
+
+        report = ''
+
+        for constant in self._database.constants:
+            report += constant.name + ' ' + str(constant.properties) + '\n'
+
+        report += '#' * 80 + '\n'
+
+        for function in self._database.functions:
+            report += function.name + ' ' + str(function.properties) + '\n'
+
+        return report
         
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
@@ -166,8 +175,9 @@ def main():
     runtime = LemonSpotter(arguments.database, arguments.mpicc, arguments.mpiexec)
 
     # perform presence testing
+    print(runtime.presence_report())
     runtime.presence_testing()
-    #runtime.presence_report()
+    print(runtime.presence_report())
 
     #runtime.generate_tests()
     #runtime.build_tests()
