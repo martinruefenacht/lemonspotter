@@ -121,6 +121,7 @@ class MPIParser:
                     type_name = mpi_type['name']
                     type_abstract_type = mpi_type['abstract_type']
                     type_ctype = mpi_type['ctype']
+                    type_default = mpi_type['default']
 
                     type_source = mpi_type['source']
                     for source in type_source:
@@ -132,7 +133,8 @@ class MPIParser:
                                     type_source,
                                     type_ctype,
                                     [type_lower_range, type_upper_range],
-                                    type_name)
+                                    type_name,
+                                    type_default)
 
                     #database.types[mpi_type['name']] = type_obj
                     database.add_type(type_obj)

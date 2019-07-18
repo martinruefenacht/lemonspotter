@@ -4,7 +4,7 @@ class Type:
     """
     Defines a type object of from library that can be included in Lemonspotter tests.
     """
-    def __init__(self, abstract_type, source, ctype, range=[], name="CONSTANT_UNDEFINED"):
+    def __init__(self, abstract_type, source, ctype, range=[], name="CONSTANT_UNDEFINED", default=''):
         """
         Initializes object of class Type.
 
@@ -21,6 +21,7 @@ class Type:
         self._source = source
         self._range = range
         self._validation = False
+        self._default = default
 
     def __str__(self):
         """
@@ -33,6 +34,10 @@ class Type:
         Defines informal string represenation of Type
         """
         return self._name
+    
+    @property
+    def default(self):
+        return self._default
 
     @property
     def name(self):
@@ -50,25 +55,9 @@ class Type:
     def abstract_type(self):
         return self._abstract_type
 
-    @abstract_type.setter
-    def abstract_type(self, abstract_type):
-        self._abstract_type = abstract_type
-
-    @abstract_type.deleter
-    def abstract_type(self):
-        del self._abstract_type
-
     @property
-    def ctype(self):
+    def language_type(self):
         return self._ctype
-
-    @ctype.setter
-    def ctype(self, ctype):
-        self._ctype = ctype
-
-    @ctype.deleter
-    def ctype(self):
-        del self._ctype
 
     @property
     def lower_range(self):

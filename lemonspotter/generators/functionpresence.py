@@ -1,36 +1,86 @@
 """
 This module defines the function presence test generator.
+
+Tests whether a specific function is linkable. No execution is required only building success or fail.
 """
 
 import logging
-
-from core.database import Database
-from core.source import Source
-from core.testgenerator import TestGenerator
-
 from typing import Set
 
-class PresenceGenearator(TestGenerator):
-    def generate(self) -> Set[Source]:
-        sources = set()
+from core.database import Database
+from core.test import Test, TestType
+from core.source import Source
+from core.function import Function
+from core.testgenerator import TestGenerator
+from instantiators.defaultinstantiator import DefaultInstantiator
+from core.statement import DeclarationAssignmentStatement
 
-        # TODO this needs to be rethought
-        functions = filter(lambda f: not f._attempted, self._database.functions)
+class FunctionPresenceGenerator(TestGenerator):
+    """
+    """
 
+    def __init__(self, database: Database) -> None:
+        super().__init__(database)
+
+    def generate(self) -> Set[Test]:
+        """
+        Generates all presence test objects for all functions in the database.
+        """
+
+        tests = set()
+
+        # find all functions which have not been tested
+        functions = filter(lambda f: not f.properties.get('presence_tested', False), self._database.functions)
+
+        # for all applicable functions
         for func in functions:
-            sources.add(self.generate_source(func))
+            test = self.generate_test(func)
 
-        return sources
+            logging.debug(('function test generated for %s:\n' + repr(test.source)), func.name)
 
-    def generate_source(self, function: Function) -> Source:
+            tests.add(test)
+
+        return tests
+
+    def generate_test(self, function: Function) -> Test:
         """
-        This function generates a presence test for the given Function.
+        Generates a Test object containing a valid main block and a function call without
+        check or print statements.
         """
 
-        source_name = 'presence_' + function.name
-        source, variables = self.generate_main(source_name)
+        logging.info('generating test for %s', function.name)
 
-        # instantiate element
-        # TODO move this to the Function object, given the Variables
+        source = self.generate_main()
 
-        return source
+        # generate default function arguments
+        arguments = [] 
+        instantiator = DefaultInstantiator(self._database)
+
+        for parameter in function.parameters:
+            variable = instantiator.generate_variable(parameter)
+
+            arguments.append(variable)
+
+            variable_statement = variable.generate_declaration_statement()
+            source.add_at_start(variable_statement)
+
+        # generate function call statement
+        return_name = 'return_' + function.name
+        function_call = function.generate_function_statement(arguments, return_name, self._database)
+
+        source.add_at_start(function_call)
+
+        # create Test and assign build success/fail closures
+        test = Test('presence_' + function.name, source, test_type=TestType.BUILD_ONLY)
+
+        def build_fail():
+            function.properties['presence_tested'] = True
+            function.properties['present'] = False
+        test.build_fail_function = build_fail
+
+        def build_success():
+            function.properties['presence_tested'] = True
+            function.properties['present'] = True
+        test.build_success_function = build_success
+
+        return test

@@ -1,3 +1,9 @@
+"""
+The TestGenerator is the base class for all generators.
+
+It provides the main function definition.
+"""
+
 import logging
 from typing import Dict
 
@@ -16,12 +22,12 @@ class TestGenerator:
     def __init__(self, database: Database) -> None:
         self._database = database
 
-    def generate_main(self, name: str) -> Source:
+    def generate_main(self) -> Source:
         """
         This function generates the main function for the test.
         """
 
-        source = Source(name)
+        source = Source()
         variables = {}
 
         # add include statements

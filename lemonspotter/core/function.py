@@ -61,6 +61,8 @@ class Function:
         self._attempted = False
         self._validated = False
 
+        self.properties = {}
+
     def __repr__(self) -> str:
         """
         Defines informal string behavior for function type
@@ -81,7 +83,7 @@ class Function:
         statement = ''
 
         #statement += self.return_type.kind + ' ' + return_name
-        statement += database.types_by_abstract_type[self.return_type].ctype + ' ' + return_name
+        statement += database.types_by_abstract_type[self.return_type].language_type + ' ' + return_name
 
         return_variable = Variable(database.types_by_abstract_type[self.return_type], return_name)
 
@@ -118,10 +120,6 @@ class Function:
     def name(self, name):
         self._name = name
 
-    @name.deleter
-    def name(self):
-        del self._name
-
     @property
     def parameters(self):
         return self._parameters
@@ -130,10 +128,6 @@ class Function:
     def parameters(self, parameters):
         self._parameters = parameters
 
-    @parameters.deleter
-    def parameters(self):
-        del self._parameters
-    
     @property
     def return_type(self):
         return self._return_type
@@ -141,10 +135,6 @@ class Function:
     @return_type.setter
     def return_type(self, return_type):
         self._return_type = return_type
-
-    @return_type.deleter
-    def return_type(self):
-        del self._return_type
 
     @property
     def needs_any(self):
@@ -154,10 +144,6 @@ class Function:
     def needs_any(self, needs_any):
         self._needs_any = needs_any
 
-    @needs_any.deleter
-    def needs_any(self):
-        del self._needs_any
-
     @property
     def needs_all(self):
         return self._needs_all
@@ -165,10 +151,6 @@ class Function:
     @needs_all.setter
     def needs_all(self, needs_all):
         self._needs_all = needs_all
-
-    @needs_all.deleter
-    def needs_all(self):
-        del self._needs_all
 
     @property
     def leads_any(self):
@@ -178,10 +160,6 @@ class Function:
     def leads_any(self, leads_any):
         self._leads_any = leads_any
 
-    @leads_any.deleter
-    def leads_any(self):
-        del self._leads_any
-
     @property
     def leads_all(self):
         return self._leads_all
@@ -189,10 +167,6 @@ class Function:
     @leads_all.setter
     def leads_all(self, leads_all):
         self._leads_all = leads_all
-
-    @leads_all.deleter
-    def leads_all(self):
-        del self._leads_all
 
     @property
     def validated(self):
@@ -202,10 +176,6 @@ class Function:
     def validated(self, validated):
         self._validated = validated
 
-    @validated.deleter
-    def validated(self):
-        del self._validated
-
     @property
     def attempted(self):
         return self._attempted
@@ -214,9 +184,21 @@ class Function:
     def attempted(self, attempted):
         self._attempted = attempted
 
-    @attempted.deleter
-    def attempted(self):
-        del self._attempted
+    @property
+    def presence_tested(self):
+        return self._presence_tested
+    
+    @presence_tested.setter
+    def presence_tested(self, presence_tested):
+        self._presence_tested = presence_tested
+
+    @property
+    def present(self):
+        return self._present
+
+    @present.setter
+    def present(self, present):
+        self._present = present
 
     def has_failed(self):
         """
