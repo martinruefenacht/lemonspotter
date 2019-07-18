@@ -57,12 +57,19 @@ class FunctionPresenceGenerator(TestGenerator):
         instantiator = DefaultInstantiator(self._database)
 
         for parameter in function.parameters:
-            variable = instantiator.generate_variable(parameter)
+            if parameter['name'] not in source.variables:
+                variable = instantiator.generate_variable(parameter)
+
+                source.variables[variable.name] = variable
+
+
+                variable_statement = variable.generate_declaration_statement()
+                source.add_at_start(variable_statement)
+
+            else:
+                variable = source.variables[parameter['name']]
 
             arguments.append(variable)
-
-            variable_statement = variable.generate_declaration_statement()
-            source.add_at_start(variable_statement)
 
         # generate function call statement
         return_name = 'return_' + function.name
@@ -71,7 +78,7 @@ class FunctionPresenceGenerator(TestGenerator):
         source.add_at_start(function_call)
 
         # create Test and assign build success/fail closures
-        test = Test('presence_' + function.name, source, test_type=TestType.BUILD_ONLY)
+        test = Test('function_presence_' + function.name, source, test_type=TestType.BUILD_ONLY)
 
         def build_fail():
             function.properties['presence_tested'] = True

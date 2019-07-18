@@ -58,12 +58,12 @@ class LemonSpotter:
         report = ''
 
         for constant in self._database.constants:
-            report += constant.name + ' ' + str(constant.properties) + '\n'
+            report += constant.name + '\t\t ' + str(constant.properties) + '\n'
 
-        report += '#' * 80 + '\n'
+        report += '\n' + '#' * 80 + '\n\n'
 
         for function in self._database.functions:
-            report += function.name + ' ' + str(function.properties) + '\n'
+            report += function.name + '\t\t ' + str(function.properties) + '\n'
 
         return report
         
