@@ -78,14 +78,15 @@ class MPIExecutor:
         """
         del self._test_directory
 
-    def build(self, tests=[], args=[]):
+    def build(self, tests, args=[]):
         """
         Builds a test into a runnable executable
 
         tests: list of test objects that define the tests to run
         """
+
         if not os.path.isdir(self.test_directory):
-            os.makedirs(test_directory)
+            os.makedirs(self.test_directory)
 
         if tests:
             for test in tests:
@@ -95,6 +96,7 @@ class MPIExecutor:
 
                 process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
+
                 self.build_results[test.name] = [stdout.decode('UTF-8'),
                                                  stderr.decode('UTF-8')]
                 test.build_results = [stdout.decode('UTF-8'),

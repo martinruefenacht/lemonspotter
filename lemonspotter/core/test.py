@@ -33,13 +33,13 @@ class Test:
         self._run_success_func = None
         self._run_fail_func = None
 
-        self._build_results = []
-        self._exec_results = []
+        #self._build_results = []
+        #self._exec_results = []
 
         # Actual outcome after tested.
         # Until set default value is ''
         # Once tested can be set to pass/fail/xfail/xpass
-        self._result = ''
+        #self._result = ''
 
     @property
     def build_success_function(self):
@@ -86,20 +86,8 @@ class Test:
         self.captures.add(variable)
 
     @property
-    def build_only(self):
-        return self._build_only
-
-    @property
     def name(self):
         return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @name.deleter
-    def name(self):
-        del self._name
 
     @property
     def source(self):
@@ -109,39 +97,16 @@ class Test:
     def build_results(self):
         return self._build_results
 
-    @build_results.setter
-    def build_results(self, build_results):
-        self._build_results = build_results
-
-    @build_results.deleter
-    def build_results(self):
-        del self._build_results
-
     @property
     def exec_results(self):
         return self._exec_results
-
-    @exec_results.setter
-    def exec_results(self, exec_results):
-        self._exec_results = exec_results
-
-    @exec_results.deleter
-    def exec_results(self):
-        del self._exec_results
 
     @property
     def result(self):
         return self._result
 
-    @result.setter
-    def result(self, result):
-        self._result = result
-
-    @result.deleter
-    def result(self):
-        del self._result
-
-
+    def __str__(self) -> str:
+        return 'Test: ' + self.name + ' : ' + self.test_type
 
 #    def write(self):
 #        """

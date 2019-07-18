@@ -46,15 +46,18 @@ class LemonSpotter:
         constant_tests = generator.generate()
 
         # execute all constant presence tests
-        # TODO
+        executor = MPIExecutor()
+        results = executor.build(constant_tests)
 
         # generate all function presence tests
-        # TODO
         func_gen = FunctionPresenceGenerator(self.database)
         function_tests = func_gen.generate()
 
         # execute all function presence tests
         # TODO
+
+    def presence_report(self) -> str:
+        raise NotImplementedError
         
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
@@ -168,8 +171,6 @@ def main():
     #runtime.generate_tests()
     #runtime.build_tests()
     #runtime.run_tests()
-
-    # TODO this is where feedback will be needed and then generate more tests
 
 if __name__ == '__main__':
     main()
