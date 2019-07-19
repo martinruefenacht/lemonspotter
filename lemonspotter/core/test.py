@@ -1,8 +1,9 @@
 """
 """
 
-from pathlib import Path
+from typing import Callable, Set, Union
 from enum import Enum
+from pathlib import Path
 
 from core.source import Source
 from core.variable import Variable
@@ -12,26 +13,32 @@ class TestType(Enum):
     BUILD_ONLY = 1
 
 class TestOutcome(Enum):
-    FAILED_BUILD = 0
-    CRASH = 1
-    SUCCESS = 2
+    FAILED = 0
+    SUCCESS = 1
+    UNTESTED = 2
 
 class Test:
     """
     """
 
-    def __init__(self, name: str, source: Source, test_type: TestType=TestType.BUILD_AND_RUN):
-        self._name = name
-        self._source = source
-        self._test_type = test_type
+    def __init__(self, name: str, source: Source, test_type: TestType=TestType.BUILD_AND_RUN) -> None:
+        self._name: str = name
+        self._type: TestType = test_type
+
+        self._source: Source = source
+        self._executable: Path = None
 
         # build closures
-        self._build_success_func = None
-        self._build_fail_func = None
+        self._build_success_func: Callable[[], None] = None
+        self._build_fail_func: Callable[[], None] = None
 
         # run closures
         self._run_success_func = None
         self._run_fail_func = None
+
+        self._captures: Set[str] = set()
+        self._build_outcome: TestOutcome = TestOutcome.UNTESTED
+        self._run_outcome: TestOutcome = TestOutcome.UNTESTED
 
         #self._build_results = []
         #self._exec_results = []
@@ -42,67 +49,72 @@ class Test:
         #self._result = ''
 
     @property
-    def build_success_function(self):
+    def build_success_function(self) -> Callable[[], None]:
         return self._build_success_func
     @build_success_function.setter
-    def build_success_function(self, func):
+    def build_success_function(self, func: Callable[[], None]) -> None:
         self._build_success_func = func
 
     @property
-    def build_fail_function(self):
+    def build_fail_function(self) -> Callable[[], None]:
         return self._build_fail_func
     @build_fail_function.setter
-    def build_fail_function(self, func):
+    def build_fail_function(self, func: Callable[[], None]) -> None:
         self._build_fail_func = func
 
     @property
     def run_success_function(self):
         return self._run_success_func
     @run_success_function.setter
-    def run_success_function(self, func):
+    def run_success_function(self, func) -> None:
         self._run_success_func = func
 
     @property
     def run_fail_function(self):
         return self._run_fail_func
     @run_fail_function.setter
-    def run_fail_function(self, func):
+    def run_fail_function(self, func) -> None:
         self._run_fail_func = func
 
-    def write(self, path: Path) -> None:
-        """
-        Write this tests C source code to the given path.
-        """
+    @property
+    def captures(self) -> Set[str]:
+        return self._captures
 
-        with path.open(mode='w') as source_file:
-            source_file.write(repr(self.source))
-
-    #def add_capture(self, variable: Variable):
-    #    """
-    #    Register variable output to be caught.
-    #    """
-
-    #    self.captures.add(variable)
+    def register_capture(self, token: str) -> None:
+        self._captures.add(token)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def source(self):
+    def type(self) -> TestType:
+        return self._type
+
+    @property
+    def source(self) -> Source:
         return self._source
+    
+    @property
+    def executable(self) -> Union[Path, None]:
+        return self._executable
+    @executable.setter
+    def executable(self, path: Path):
+        self._executable = path
 
     @property
-    def build_results(self):
-        return self._build_results
+    def build_outcome(self) -> TestOutcome:
+        return self._build_outcome
+    @build_outcome.setter
+    def build_outcome(self, outcome: TestOutcome) -> None:
+        self._build_outcome = outcome 
 
     @property
-    def exec_results(self):
-        return self._exec_results
-
-    @property
-    def result(self):
-        return self._result
+    def run_outcome(self) -> TestOutcome:
+        return self._run_outcome
+    @run_outcome.setter
+    def run_outcome(self, outcome: TestOutcome) -> None:
+        self._run_outcome = outcome 
 
     def __str__(self) -> str:
         return 'Test: ' + self.name + ' : ' + self.test_type

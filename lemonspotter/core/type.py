@@ -1,88 +1,81 @@
-"""Defines a type object of from library that can be included in Lemonspotter tests."""
+"""
+Defines a type object of from library that can be included in Lemonspotter tests.
+"""
+
+from typing import Dict, Any
+import logging
+
+from core.database import Database
 
 class Type:
     """
-    Defines a type object of from library that can be included in Lemonspotter tests.
     """
-    def __init__(self, abstract_type, source, ctype, range=[], name="CONSTANT_UNDEFINED", default=''):
-        """
-        Initializes object of class Type.
 
-        Parameters:
-        abstract_type  (string)    : Coorespondes to what this type is classified as
-        source         (list)      : Holds information about type
-        ctype          (string)    : Holds the c-style datatype of the type
-        range          (list)      : Holds lower & upper bounds of type
-        name           (string)    : Name of the type
+    def __init__(self, database: Database, json: Dict[str, Any]):
         """
-        self._name = name
-        self._abstract_type = abstract_type
-        self._ctype = ctype
-        self._source = source
-        self._range = range
-        self._validation = False
-        self._default = default
+        """
 
-    def __str__(self):
-        """
-        Defines formal string represenation of Type
-        """
+        self._json = json
+        self._database: Database = database
+
+        self._partitions = []
+
+    @property
+    def base_type(self) -> bool:
+        return self._json['base_type']
+
+    @property
+    def default(self) -> str:
+        return self._json['default']
+
+    @property
+    def name(self) -> str:
         return self._name
 
-    def __repr__(self):
+    @property
+    def type(self) -> 'Type':
+        logging.warning('Type.type -> Type makes no sense')
+        return self._database.types_by_abstract_type[self.abstract_type]
+
+    @property
+    def abstract_type(self) -> str:
+        return self._json['abstract_type']
+
+    @property
+    def language_type(self) -> str:
+        if self._json['base_type']:
+            return self._json['language_type']
+
+        else:
+            return self._database.types_by_abstract_type[self._json['language_type']].language_type
+
+    @property
+    def printable(self) -> bool:
+        if self.base_type:
+            return self._json['printable']
+
+        else:
+            return self._database.types_by_abstract_type[self._json['language_type']].printable
+
+    @property
+    def print_specifier(self):
+        if self.base_type:
+            return self._json['print_specifier']
+
+        else:
+            return self._database.types_by_abstract_type[self._json['language_type']].print_specifier
+
+    def convert(self, string: str) -> Any:
         """
-        Defines informal string represenation of Type
+
         """
-        return self._name
-    
-    @property
-    def default(self):
-        return self._default
+        
+        if self.language_type == 'int':
+            return int(string)
 
-    @property
-    def name(self):
-        return self._name
+        elif self.language_type == 'double' or self.language_type == 'float':
+            return float(string)
 
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @name.deleter
-    def name(self):
-        del self._name
-
-    @property
-    def abstract_type(self):
-        return self._abstract_type
-
-    @property
-    def language_type(self):
-        return self._ctype
-
-    @property
-    def lower_range(self):
-        return self._range[0]
-
-    @lower_range.setter
-    def lower_range(self, lower_range):
-        self._range[0] = lower_range
-
-    @property
-    def upper_range(self):
-        return self._range[1]
-
-    @lower_range.setter
-    def upper_range(self, upper_range):
-        self._range[1] = upper_range
-
-    @property
-    def validation(self):
-        return self._validation
-
-    @validation.setter
-    def validation(self, validation):
-        self._validation = validation
-
-    @validation.deleter
-    def validation(self):
-        del self.validation
+        else:
+            logging.error('unrecognized language type in Python.')
+            raise RuntimeError('unrecognized')

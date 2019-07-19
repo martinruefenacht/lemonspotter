@@ -47,8 +47,8 @@ class LemonSpotter:
         func_gen = FunctionPresenceGenerator(self.database)
         function_tests = func_gen.generate()
 
-        self._executor.build(constant_tests)
-        self._executor.build(function_tests)
+        self._executor.execute(constant_tests)
+        self._executor.execute(function_tests)
 
     def presence_report(self) -> str:
         """

@@ -2,6 +2,7 @@
 """
 
 from typing import Dict
+from pathlib import Path
 
 from core.statement import Statement, BlockStatement
 from core.variable import Variable
@@ -73,3 +74,11 @@ class Source:
             code += statement.express() + '\n'
 
         return code
+
+    def write(self, path: Path):
+        """
+        Output source code into the given path.
+        """
+
+        with path.open(mode='w') as source_file:
+            source_file.write(repr(self))

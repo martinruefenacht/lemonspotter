@@ -5,10 +5,10 @@ Tests whether a specific constant exists. No execution is required only building
 """
 
 import logging
-from typing import Set
+from typing import Set, Dict
 
 from core.database import Database
-from core.test import Test, TestType
+from core.test import Test, TestType, TestOutcome
 from core.source import Source
 from core.testgenerator import TestGenerator
 from core.constant import Constant
@@ -38,7 +38,7 @@ class ConstantPresenceGenerator(TestGenerator):
         for constant in constants:
             test = self.generate_test(constant)
 
-            logging.debug(('constant test generated for %s:\n' + repr(test.source)), constant.name)
+            logging.debug(('constant test generated for %s:\n' + repr(test.source).replace('%','%%')), constant.name)
 
             tests.add(test)
 
@@ -51,8 +51,7 @@ class ConstantPresenceGenerator(TestGenerator):
 
         source = self.generate_main()
 
-        # TODO convert to object db
-        variable = Variable(self._database.types_by_abstract_type[constant.abstract_type], 'variable')
+        variable = Variable(constant.type, 'variable_' + constant.name)
 
         declaration = DeclarationStatement(variable) 
         source.add_at_start(declaration)
@@ -60,20 +59,47 @@ class ConstantPresenceGenerator(TestGenerator):
         assignment = AssignmentStatement(variable.name, constant.name);
         source.add_at_start(assignment)
 
-        # potential to combine presence and capture output
-        # add print statement 
-        #source.add_at_start(variable.generate_print_statement())
+        if constant.type.printable:
+            source.add_at_start(variable.generate_print_statement())
 
-        test = Test('constant_presence_' + constant.name, source, test_type=TestType.BUILD_ONLY)
+            test = Test('constant_presence_' + constant.name, source, test_type=TestType.BUILD_AND_RUN)
+            test.register_capture(variable.name)
+
+        else:
+            test = Test('constant_presence_' + constant.name, source, test_type=TestType.BUILD_ONLY)
 
         def build_fail():
             constant.properties['presence_tested'] = True
             constant.properties['present'] = False
+            test.build_outcome = TestOutcome.FAILED
         test.build_fail_function = build_fail;
 
         def build_success():
             constant.properties['presence_tested'] = True
             constant.properties['present'] = True
+            test.build_outcome = TestOutcome.SUCCESS
         test.build_success_function = build_success
+
+        def run_fail():
+            # todo do we need to do anything here?
+            test.run_outcome = TestOutcome.FAILED
+        test.run_fail_function = run_fail
+
+        def run_success(captures: Dict[str, str]):
+            logging.info('captures: %s', str(captures))
+
+            constant.properties['value'] = constant.type.convert(captures[variable.name])
+
+            if not constant.defined:
+                test.run_outcome = TestOutcome.SUCCESS
+
+            else:
+                if constant.validate():
+                    test.run_outcome = TestOutcome.SUCCESS
+                else:
+                    test.run_outcome = TestOutcome.FAILED
+
+            logging.info('test %s successful', test.name)
+        test.run_success_function = run_success
 
         return test

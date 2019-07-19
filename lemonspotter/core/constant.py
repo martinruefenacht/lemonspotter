@@ -1,90 +1,68 @@
-"""Defines an constant that can be included in Lemonspotter tests."""
+"""
+"""
+
+from typing import Dict, Any
+import logging
+
+from core.database import Database
+from core.type import Type
 
 class Constant:
     """
-    Defines an constant that can be included in Lemonspotter tests.
     """
-    def __init__(self, abstract_type, name="CONSTANT_UNDEFINED"):
+    
+    def __init__(self, database: Database, json: Dict[str, Any]):
         """
-        Initializes object of class Constant.
-
-        Parameters:
-        abstract_type  (string)    : Underlying type of constant
-        name           (string)    : Name of the constant
         """
 
-        self._name = name
-        self._abstract_type = abstract_type
+        self._database: Database = database
+        self._json: Dict[str, Any] = json
+        self._value: str = None
 
-        self._attempted = False
-        self._validated = False
-
-        self.properties = {}
-
-    def __repr__(self):
-        """
-        Defines informal string behavior for constant class
-        """
-        return self._name
-
-    def __str__(self):
-        """
-        Defines formal string behavior for constant class
-        """
-        return self._name
+        self._properties = {}
 
     @property
-    def name(self):
-        return self._name
+    def name(self) -> str:
+        return self._json['name']
     
     @property
-    def abstract_type(self):
-        return self._abstract_type
+    def type(self) -> Type:
+        return self._database.types_by_abstract_type[self._json['abstract_type']]
 
     @property
-    def validated(self):
-        return self._validated
-
-    @validated.setter
-    def validated(self, validated):
-        self._validated = validated
-
-    @validated.deleter
-    def validated(self):
-        del self._validated
+    def properties(self) -> Dict[str, Any]:
+        return self._properties
 
     @property
-    def attempted(self):
-        return self._attempted
+    def defined(self) -> bool:
+        """
+        """
 
-    @attempted.setter
-    def attempted(self, attempted):
-        self._attempted = attempted
+        spec_defined = self._json.get('defined', None) is not None
+        logging.debug('constant %s is defined %s', self.name, str(spec_defined))
 
-    @attempted.deleter
-    def attempted(self):
-        del self._attempted
+        return spec_defined
 
-    def has_failed(self):
+    def validate(self) -> bool:
         """
-        Deterministic test to determine if function has failed tests
-        """
-        return self._attempted and not self._validated
 
-    def validate(self):
         """
-        Sets the validation state of the function to true
-        """
-        self._validated = True
+        
+        value = self._properties.get('value', None)
+        if value is not None:
+            logging.debug('constant has value, operand %s', self._json['defined']['operand'])
 
-    def invalidate(self):
-        """
-        Sets the validation state of the function to false
-        """
-        self._validated = True
+            if self._json['defined']['operand'] == 'equal':
+                if self._json['defined']['value'] == value:
+                    logging.info('validating constant %s', self.name)
+                    self._properties['valid'] = True
 
-    def attempt(self):
-        """
-        Sets the attempt state of the function
-        """
-        self._attempted = True
+                else:
+                    logging.critical('constant %s failed to validate', self.name)
+                    self._properties['valid'] = False
+
+            else:
+                logging.error('unknown operand')
+                raise RuntimeError("unknown operand")
+
+        return self._properties.get('valid', False)
