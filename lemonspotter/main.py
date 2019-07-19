@@ -18,8 +18,8 @@ class LemonSpotter:
         """
 
         self._database = None
-        self._mpicc = mpicc
-        self._mpiexec = mpiexec
+
+        self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
 
         self.parse_database(database_path)
 
@@ -47,9 +47,8 @@ class LemonSpotter:
         func_gen = FunctionPresenceGenerator(self.database)
         function_tests = func_gen.generate()
 
-        executor = MPIExecutor()
-        executor.build(constant_tests)
-        executor.build(function_tests)
+        self._executor.build(constant_tests)
+        self._executor.build(function_tests)
 
     def presence_report(self) -> str:
         """
@@ -87,12 +86,10 @@ class LemonSpotter:
                 source.write()
 
     def build_tests(self):
-        executor = MPIExecutor()
-        results = executor.build(tests=self.tests)
+        results = self._executor.build(tests=self.tests)
 
     def run_tests(self):
-        executor = MPIExecutor()
-        results = executor.run(tests=self.tests)
+        results = self._executor.run(tests=self.tests)
 
 def parse_arguments():
     """
