@@ -12,8 +12,9 @@ from core.test import Test, TestType
 from core.source import Source
 from core.function import Function
 from core.testgenerator import TestGenerator
-from instantiators.defaultinstantiator import DefaultInstantiator
 from core.statement import DeclarationAssignmentStatement, DeclarationStatement
+
+from instantiators.default import DefaultInstantiator
 
 class FunctionPresenceGenerator(TestGenerator):
     """

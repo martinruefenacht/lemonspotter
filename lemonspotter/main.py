@@ -1,3 +1,6 @@
+"""
+"""
+
 import sys
 import argparse
 import logging
@@ -7,13 +10,16 @@ from typing import Optional
 # TODO rethink these?
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
-from generators.startend import StartEndGenerator
 from core.database import Database
 
+from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 
 class LemonSpotter:
+    """
+    """
+
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
         """
         Construct the LemonSpotter runtime.
@@ -69,17 +75,16 @@ class LemonSpotter:
 
             return report
 
-        else:
-            raise RuntimeError('No database to report.')
-        
+        raise RuntimeError('No database to report.')
+
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
 
         # TODO instantiator make it a functioning object
         instantiator = None
+        self.tests = []
         self.tests.extend(list(generator.generate(instantiator)))
 
-        self.tests = []
 
         logging.debug('generated tests:')
         for test in self.tests:
@@ -152,7 +157,7 @@ def parse_arguments():
         sys.exit(0)
 
     return arguments
-        
+
 def set_logging_level(log_level: str):
     """
     Set the logging level to the one specified on the command line.
