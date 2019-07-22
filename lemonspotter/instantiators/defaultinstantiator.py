@@ -25,12 +25,12 @@ class DefaultInstantiator:
             logging.info('parameter ' + str(parameter))
 
             if parameter['direction'] == 'out': 
-                variable = Variable(self._database.types_by_abstract_type[parameter['abstract_type']],
+                variable = Variable(self._database.type_by_abstract_type[parameter['abstract_type']],
                     parameter['name'])
 
             else:
-                variable = Variable(self._database.types_by_abstract_type[parameter['abstract_type']],
+                variable = Variable(self._database.type_by_abstract_type[parameter['abstract_type']],
                     parameter['name'],
-                    self._database.types_by_abstract_type[parameter['abstract_type']].default)
+                    self._database.type_by_abstract_type[parameter['abstract_type']].default)
 
             return variable

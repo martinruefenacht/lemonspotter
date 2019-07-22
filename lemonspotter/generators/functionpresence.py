@@ -13,7 +13,7 @@ from core.source import Source
 from core.function import Function
 from core.testgenerator import TestGenerator
 from instantiators.defaultinstantiator import DefaultInstantiator
-from core.statement import DeclarationAssignmentStatement
+from core.statement import DeclarationAssignmentStatement, DeclarationStatement
 
 class FunctionPresenceGenerator(TestGenerator):
     """
@@ -63,7 +63,7 @@ class FunctionPresenceGenerator(TestGenerator):
                 source.variables[variable.name] = variable
 
 
-                variable_statement = variable.generate_declaration_statement()
+                variable_statement = DeclarationStatement.generate_declaration(variable)
                 source.add_at_start(variable_statement)
 
             else:

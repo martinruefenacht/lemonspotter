@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import logging
 
 from core.database import Database
@@ -17,9 +17,9 @@ class Constant:
 
         self._database: Database = database
         self._json: Dict[str, Any] = json
-        self._value: str = None
+        self._value: Optional[str] = None
 
-        self._properties = {}
+        self._properties: Dict[str, Any] = {}
 
     @property
     def name(self) -> str:
@@ -27,7 +27,7 @@ class Constant:
     
     @property
     def type(self) -> Type:
-        return self._database.types_by_abstract_type[self._json['abstract_type']]
+        return self._database.type_by_abstract_type[self._json['abstract_type']]
 
     @property
     def properties(self) -> Dict[str, Any]:

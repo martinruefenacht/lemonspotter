@@ -7,6 +7,6 @@ class Instantiator:
     def __init__(self):
         pass
 
-    def generate_variable(parameter: Parameter) -> Generator[Variable, None, None]:
+    def generate_variable(self, parameter: Parameter) -> Generator[Variable, None, None]:
         pass
 

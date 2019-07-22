@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Dict
+from typing import Dict, Optional
 from pathlib import Path
 
 from core.statement import Statement, BlockStatement
@@ -22,7 +22,7 @@ class Source:
     def variables(self) -> Dict[str, Variable]:
         return self._variables
 
-    def get_variable(self, name: str) -> Variable:
+    def get_variable(self, name: str) -> Optional[Variable]:
         if name in self.variables:
             return self.variables[name]
 
@@ -32,10 +32,15 @@ class Source:
                     if name in statement.variables:
                         return statement.variables[name]
 
-    def add_at_start(self, statement: Statement) -> None:
+        return None
+
+    def add_at_start(self, statement: Optional[Statement]) -> None:
         """
         Adds a generated string to the front of the source code.
         """
+        
+        if not statement:
+            return None
 
         # TODO currently only able to add to nested block
         if self._front_statements and issubclass(type(self._front_statements[-1]),

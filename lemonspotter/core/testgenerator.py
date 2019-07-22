@@ -27,8 +27,8 @@ class TestGenerator:
         This function generates the main function for the test.
         """
 
-        source = Source()
-        variables = {}
+        source: Source = Source()
+        variables: Dict[str, Variable] = {}
 
         # add include statements
         source.add_at_start(IncludeStatement('stdio.h'))

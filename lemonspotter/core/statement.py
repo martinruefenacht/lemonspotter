@@ -1,12 +1,15 @@
-from typing import Dict, List
+from typing import Dict, List, Union
+import logging
+
+from core.variable import Variable
 
 class Statement:
-    def __init__(self, variables: Dict[str, 'Variable'] = {}):
-        self._variables: Dict[str, 'Variable'] = variables
+    def __init__(self, variables: Dict[str, Variable] = {}):
+        self._variables: Dict[str, Variable] = variables
         self._statement: str = ''
 
     @property
-    def variables(self) -> Dict[str, 'Variable']:
+    def variables(self) -> Dict[str, Variable]:
         return self._variables
 
     def express(self) -> str:
@@ -25,28 +28,60 @@ class ReturnStatement(Statement):
         self._statement = 'return ' + expression + ';'
 
 class DeclarationStatement(Statement):
-    def __init__(self, variable: 'Variable'):
+    def __init__(self, variable: Variable):
         super().__init__()
 
         self._statement = variable.kind.language_type + ' ' + variable.name + ';'
 
+    @classmethod
+    def generate_declaration(cls, variable: Variable) -> 'DeclarationStatement':
+        return DeclarationStatement(variable)
+
 class AssignmentStatement(Statement):
-    def __init__(self, name: str, value: str):
+    def __init__(self, variable: Variable):
         super().__init__()
 
-        self._statement = name + ' = ' + value + ';'
+        if variable.value:
+            self._statement = variable.name + ' = ' + variable.value + ';'
+
+        else:
+            raise RuntimeError('AssignmentStatement needs Variable.value to be non-none.')
 
 class DeclarationAssignmentStatement(Statement):
-    def __init__(self, variable: 'Variable', value: str):
+    def __init__(self, variable: Variable):
         super().__init__()
 
-        self._statement = variable.kind.language_type + ' ' + variable.name + ' = ' + value + ';'
+        if variable.value:
+            self._statement = variable.kind.language_type + ' ' + variable.name + ' = ' + variable.value + ';'
+
+        else:
+            raise RuntimeError('DeclarationAssignmentStatement needs Variable.value to be non-none.')
+
+    @classmethod
+    def generate_assignment(cls, variable: Variable) -> 'DeclarationAssignmentStatement':
+        return DeclarationAssignmentStatement(variable) 
 
 class FunctionStatement(Statement):
-    def __init__(self, variables: Dict[str, 'Variable'], statement: str):
+    def __init__(self, statement: str, variables: Dict[str, Variable]={}):
         super().__init__(variables)
 
         self._statement: str = statement
+
+    @classmethod
+    def generate_print(cls, variable: Variable, capture_name: str=None) -> Union['FunctionStatement', None]:
+        """
+        Generate a FunctionStatement object for a given Variable.
+        """
+
+        if not variable.type.printable:
+            logging.warning('%s is not printable', variable.name)
+            return None
+
+        if not capture_name:
+            capture_name = variable.name
+
+        statement = 'printf("' + capture_name + ' %' + variable.type.print_specifier + '\\n", ' + variable.name + ');'
+        return FunctionStatement(statement)
 
 class ExitStatement(Statement):
     def __init__(self, errorcode):
@@ -98,6 +133,21 @@ class ConditionStatement(BlockStatement):
         code += '}'
 
         return code
+
+    @classmethod
+    def generate_check(cls, variable: Variable):
+        """
+        """
+
+        #if self._type.abstract_type == 'ERRORCODE':
+        #    #return 'if(' + self._name + ' != MPI_SUCCESS) exit(0);'
+
+        #    statement = ConditionStatement(self._name + ' != MPI_SUCCESS')
+        #    statement.add_at_start(ExitStatement(self._name))
+        #    
+        #    return statement
+
+        raise NotImplementedError
 
 
 #class FunctionDefinitionStatement(BlockStatement):

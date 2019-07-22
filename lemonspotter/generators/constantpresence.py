@@ -14,7 +14,7 @@ from core.testgenerator import TestGenerator
 from core.constant import Constant
 from core.variable import Variable
 
-from core.statement import DeclarationStatement, AssignmentStatement
+from core.statement import DeclarationStatement, AssignmentStatement, FunctionStatement
 
 class ConstantPresenceGenerator(TestGenerator):
     """
@@ -56,13 +56,15 @@ class ConstantPresenceGenerator(TestGenerator):
         declaration = DeclarationStatement(variable) 
         source.add_at_start(declaration)
 
-        assignment = AssignmentStatement(variable.name, constant.name);
+        variable.value = constant.name
+        assignment = AssignmentStatement(variable);
         source.add_at_start(assignment)
 
         if constant.type.printable:
-            source.add_at_start(variable.generate_print_statement())
+            source.add_at_start(FunctionStatement.generate_print(variable))
 
             test = Test('constant_presence_' + constant.name, source, test_type=TestType.BUILD_AND_RUN)
+            
             test.register_capture(variable.name)
 
         else:

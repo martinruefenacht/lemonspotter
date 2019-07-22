@@ -11,6 +11,7 @@ from core.database import Database
 from core.function import Function
 from core.testgenerator import TestGenerator
 from core.instantiator import Instantiator
+from core.statement import FunctionStatement, ConditionStatement
 
 class StartEndGenerator(TestGenerator):
     """
@@ -79,15 +80,14 @@ class StartEndGenerator(TestGenerator):
         """
 
         test_name = ''.join([func.name for func in path])
-        return Test(test_name, [self.generate_source(path, arguments)])
+        return Test(test_name, self.generate_source(path, arguments))
 
     def generate_source(self, path: List[Function], arguments: List[List[Variable]]) -> Source:
         """
         Generate C source code for a given path between initiator and finalizer.
         """
 
-        source_name = ''.join([func.name for func in path])
-        source = self.generate_main(source_name)
+        source = self.generate_main()
 
         for idx, function in enumerate(path):
             # we have a current set of variables
@@ -95,26 +95,26 @@ class StartEndGenerator(TestGenerator):
             # deepcopy current source, this goes exponential
             # for each source:variables combination generate a function expression
 
-            arguments = arguments[idx]
-            logging.debug('%s %s', str(function), str(arguments))
+            args = arguments[idx]
+            logging.debug('%s %s', str(function), str(args))
 
             # add function call
             self.elements_generated += 1
             return_name = 'return_' + function.name + '_'
             return_name += str(self.elements_generated)
 
-            function_call = function.generate_function_statement(arguments,
+            function_call = function.generate_function_statement(args,
                                                                  return_name,
                                                                  self._database)
             source.add_at_start(function_call)
 
             # add return output
             for name, variable in function_call.variables.items():
-                source.add_at_start(variable.generate_print_statement())
+                source.add_at_start(FunctionStatement.generate_print(variable))
 
             # add return check
             for name, variable in function_call.variables.items():
-                source.add_at_start(variable.generate_check_statement())
+                source.add_at_start(ConditionStatement.generate_check(variable))
 
         return source
 

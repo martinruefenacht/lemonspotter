@@ -11,11 +11,11 @@ class MainDefinitionStatement(BlockStatement):
     def __init__(self, database: Database) -> None:
         super().__init__()
 
-        argc = Variable(database.types_by_abstract_type['INT'],
+        argc = Variable(database.type_by_abstract_type['INT'],
                         'argument_count')
-        argv = Variable(database.types_by_abstract_type['CHAR'],
+        argv = Variable(database.type_by_abstract_type['CHAR'],
                         'argument_list',
-                        2)
+                        pointer_level=2)
 
         self._variables[argc.name] = argc
         self._variables[argv.name] = argv
@@ -83,9 +83,9 @@ class Function:
         statement = ''
 
         #statement += self.return_type.kind + ' ' + return_name
-        statement += database.types_by_abstract_type[self.return_type].language_type + ' ' + return_name
+        statement += database.type_by_abstract_type[self.return_type].language_type + ' ' + return_name
 
-        return_variable = Variable(database.types_by_abstract_type[self.return_type], return_name)
+        return_variable = Variable(database.type_by_abstract_type[self.return_type], return_name)
 
         statement += ' = '
         statement += self.name + '('
@@ -110,7 +110,7 @@ class Function:
 
         statement += ');'
 
-        return FunctionStatement({return_name: return_variable}, statement)
+        return FunctionStatement(statement, {return_name: return_variable})
 
     @property
     def name(self):

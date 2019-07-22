@@ -2,11 +2,13 @@ import sys
 import argparse
 import logging
 from pathlib import Path
+from typing import Optional
 
 # TODO rethink these?
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
 from generators.startend import StartEndGenerator
+from core.database import Database
 
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
@@ -17,7 +19,7 @@ class LemonSpotter:
         Construct the LemonSpotter runtime.
         """
 
-        self._database = None
+        self._database: Optional[Database] = None
 
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
 
@@ -56,15 +58,19 @@ class LemonSpotter:
 
         report = ''
 
-        for constant in self._database.constants:
-            report += constant.name + '\t\t ' + str(constant.properties) + '\n'
+        if self._database:
+            for constant in self._database.constants:
+                report += constant.name + '\t\t ' + str(constant.properties) + '\n'
 
-        report += '\n' + '#' * 80 + '\n\n'
+            report += '\n' + '#' * 80 + '\n\n'
 
-        for function in self._database.functions:
-            report += function.name + '\t\t ' + str(function.properties) + '\n'
+            for function in self._database.functions:
+                report += function.name + '\t\t ' + str(function.properties) + '\n'
 
-        return report
+            return report
+
+        else:
+            raise RuntimeError('No database to report.')
         
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
@@ -169,7 +175,7 @@ def main():
     set_logging_level(arguments.log)
 
     # initialize and load the database
-    runtime = LemonSpotter(arguments.database, arguments.mpicc, arguments.mpiexec)
+    runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
 
     # perform presence testing
     print(runtime.presence_report())

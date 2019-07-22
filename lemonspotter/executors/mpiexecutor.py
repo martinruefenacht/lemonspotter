@@ -70,7 +70,7 @@ class MPIExecutor:
     def build_test(self, test: Test, arguments: List[str]=[]) -> None:
         logging.info('building test %s', test.name)
 
-        if test.build_outcome != TestOutcome.UNTESTED:
+        if test.build_outcome:
             logging.critical('Test %s has build outcome.', test.name)
             return
 
@@ -102,13 +102,15 @@ class MPIExecutor:
             # set executable on test
             test.executable = Path(executable_filename)
 
-            test.build_success_function()
+            if test.build_success_function:
+                test.build_success_function()
 
             logging.info('building successful')
 
         else:
             # TODO evalulate build output, is there ERROR?
-            test.build_fail_function()
+            if test.build_fail_function:
+                test.build_fail_function()
 
             logging.warning('building failed')
 
@@ -123,8 +125,9 @@ class MPIExecutor:
         if test.type is TestType.BUILD_ONLY:
             logging.info('skip running test %s due to BUILD_ONLY', test.name)
 
-        elif test.run_outcome != TestOutcome.UNTESTED:
+        elif test.run_outcome:
             logging.critical('Test %s has run outcome.', test.name)
+            return
 
         else:
             logging.info('preparing test %s.', test.name)
