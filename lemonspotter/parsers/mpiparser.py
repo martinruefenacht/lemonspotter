@@ -82,21 +82,7 @@ class MPIParser:
                 func = self.parse_single_function(path.absolute())
                 self.default_function(func, defaults)
                 
-                func_name = func['name']
-                func_return = func['return']
-                func_parameters = func['parameters'] 
-                func_needs_any = func['needs_any']
-                func_needs_all = func['needs_all']
-                func_leads_any = func['leads_any']
-                func_leads_all = func['leads_all']
-
-                func_obj = Function(func_name, 
-                                        func_return,
-                                        func_parameters,
-                                        func_needs_any,
-                                        func_needs_all,
-                                        func_leads_any,
-                                        func_leads_all)
+                func_obj = Function(database, func)
 
                 database.add_function(func_obj)
 

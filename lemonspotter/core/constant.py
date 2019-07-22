@@ -10,7 +10,7 @@ from core.type import Type
 class Constant:
     """
     """
-    
+
     def __init__(self, database: Database, json: Dict[str, Any]):
         """
         """
@@ -24,7 +24,7 @@ class Constant:
     @property
     def name(self) -> str:
         return self._json['name']
-    
+
     @property
     def type(self) -> Type:
         return self._database.type_by_abstract_type[self._json['abstract_type']]
@@ -45,9 +45,8 @@ class Constant:
 
     def validate(self) -> bool:
         """
-
         """
-        
+
         value = self._properties.get('value', None)
         if value is not None:
             logging.debug('constant has value, operand %s', self._json['defined']['operand'])

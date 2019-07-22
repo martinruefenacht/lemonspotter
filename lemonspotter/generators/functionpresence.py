@@ -74,7 +74,7 @@ class FunctionPresenceGenerator(TestGenerator):
 
         # generate function call statement
         return_name = 'return_' + function.name
-        function_call = function.generate_function_statement(arguments, return_name, self._database)
+        function_call = function.generate_function_statement(arguments, return_name)
 
         source.add_at_start(function_call)
 
