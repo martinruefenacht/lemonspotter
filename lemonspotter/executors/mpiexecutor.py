@@ -15,9 +15,6 @@ class MPIExecutor:
 
         self._test_directory = os.path.abspath(test_directory)
 
-        #self._build_results = {}
-        #self._exec_results = {}
-
         self._mpicc = mpicc
         self._mpiexec = mpiexec
 
@@ -52,11 +49,23 @@ class MPIExecutor:
             os.makedirs(self.test_directory)
 
         if tests:
-            for test in tests:
-                self.build_test(test)
+            try:
+                for test in tests:
+                    self.build_test(test)
 
-            for test in tests:
-                self.run_test(test)
+            except FileNotFoundError as error:
+                logging.error(error)
+                logging.error('Building set of tests failed.')
+                return
+
+            try:
+                for test in tests:
+                    self.run_test(test)
+
+            except FileNotFoundError as error:
+                logging.error(error)
+                logging.error('Runnign set of test failed.')
+                return
 
     def build_test(self, test: Test, arguments: List[str]=[]) -> None:
         logging.info('building test %s', test.name)
@@ -81,9 +90,9 @@ class MPIExecutor:
             stdout, stderr = process.communicate()
 
         except FileNotFoundError as error:
-            logging.error(error)
-            logging.error('skip building test %s', test.name)
-            return
+            logging.error('Test %s failed to build, due to missing mpicc.', test.name)
+            
+            raise error
 
         # evaluate build result
         logging.debug('build stdout:\n%s\n', stdout)
