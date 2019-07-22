@@ -1,4 +1,5 @@
 """
+This module contains the definition of the Constant class.
 """
 
 from typing import Dict, Any, Optional
@@ -9,12 +10,10 @@ from core.type import Type
 
 class Constant:
     """
+    This class represents a Constant from the specification.
     """
 
     def __init__(self, database: Database, json: Dict[str, Any]):
-        """
-        """
-
         self._database: Database = database
         self._json: Dict[str, Any] = json
         self._value: Optional[str] = None
@@ -23,20 +22,25 @@ class Constant:
 
     @property
     def name(self) -> str:
+        """This property provides the name of the Constant."""
+
         return self._json['name']
 
     @property
     def type(self) -> Type:
+        """This property provides the Type object from the Constant."""
+
         return self._database.type_by_abstract_type[self._json['abstract_type']]
 
     @property
     def properties(self) -> Dict[str, Any]:
+        """This property provides access to the properties of this Constant."""
+
         return self._properties
 
     @property
     def defined(self) -> bool:
-        """
-        """
+        """This property determines whether the constant is defined in the specification."""
 
         spec_defined = self._json.get('defined', None) is not None
         logging.debug('constant %s is defined %s', self.name, str(spec_defined))
@@ -44,8 +48,7 @@ class Constant:
         return spec_defined
 
     def validate(self) -> bool:
-        """
-        """
+        """This function validates the constant against the specification."""
 
         value = self._properties.get('value', None)
         if value is not None:

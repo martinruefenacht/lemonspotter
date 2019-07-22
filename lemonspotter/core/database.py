@@ -3,13 +3,11 @@ This module defines the Database class.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Set, Dict, List
 if TYPE_CHECKING:
     from core.function import Function
     from core.constant import Constant
     from core.type import Type
-
-from typing import Set, Dict, List
 
 class Database:
     """
