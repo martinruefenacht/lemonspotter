@@ -30,12 +30,6 @@ class Type:
 
         return self._json['name']
 
-#    def type(self) -> 'Type':
-#        """This property provides access to the Type object."""
-#
-#        logging.warning('Type.type -> Type makes no sense')
-#        return self._database.type_by_abstract_type[self.abstract_type]
-
     @property
     def abstract_type(self) -> str:
         """This property provides the abstract type name."""
@@ -49,6 +43,7 @@ class Type:
         if self._json['base_type']:
             return self._json['language_type']
 
+        logging.debug('performing recursive lookup of language type.')
         return self._database.type_by_abstract_type[self._json['language_type']].language_type
 
     @property
@@ -58,6 +53,7 @@ class Type:
         if self._json['base_type']:
             return self._json['printable']
 
+        logging.debug('performing recursive lookup of printable.')
         return self._database.type_by_abstract_type[self._json['language_type']].printable
 
     @property
@@ -67,4 +63,5 @@ class Type:
         if self._json['base_type']:
             return self._json['print_specifier']
 
+        logging.debug('performing recursive lookup of print specifier.')
         return self._database.type_by_abstract_type[self._json['language_type']].print_specifier
