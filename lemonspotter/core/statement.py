@@ -50,7 +50,7 @@ class DeclarationStatement(Statement):
     def __init__(self, variable: Variable) -> None:
         super().__init__()
 
-        self._statement = variable.kind.language_type + ' ' + variable.name + ';'
+        self._statement = variable.type.language_type + ' ' + variable.name + ';'
 
     @classmethod
     def generate_declaration(cls, variable: Variable) -> 'DeclarationStatement':
@@ -108,7 +108,7 @@ class FunctionStatement(Statement):
             return None
 
         statement = ['printf("', variable.name, '%' + variable.type.print_specifier,
-                     '\\n,', variable.name, ');']
+                     '\\n",', variable.name, ');']
         return FunctionStatement(' '.join(statement))
 
 class ExitStatement(Statement):

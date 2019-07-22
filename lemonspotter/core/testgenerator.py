@@ -29,6 +29,7 @@ class TestGenerator:
 
         # add main function
         block_main = MainDefinitionStatement(self._database)
+        source.variables.update(block_main.variables)
 
         block_main.add_at_end(ReturnStatement('0'))
 

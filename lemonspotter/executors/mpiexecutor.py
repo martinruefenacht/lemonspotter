@@ -90,14 +90,14 @@ class MPIExecutor:
             if test.build_success_function:
                 test.build_success_function()
 
-            logging.info('building successful')
+            logging.info('building successful of test %s', test.name)
 
         else:
             # TODO evalulate build output, is there ERROR?
             if test.build_fail_function:
                 test.build_fail_function()
 
-            logging.warning('building failed')
+            logging.warning('building failed of test %s', test.name)
 
     def run_test(self, test: Test, arguments: List[str]=[]) -> None:
         """

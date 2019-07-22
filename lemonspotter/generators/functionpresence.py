@@ -60,7 +60,6 @@ class FunctionPresenceGenerator(TestGenerator):
 
         for parameter in function.parameters:
             if parameter.name not in source.variables:
-                #variable = instantiator.generate_variable(parameter)
                 variable = Variable(parameter.type, parameter.name)
 
                 source.variables[variable.name] = variable
