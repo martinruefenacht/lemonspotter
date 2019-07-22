@@ -8,12 +8,12 @@ from typing import Set, List
 from core.test import Test, TestOutcome, TestType
 
 class MPIExecutor:
-    def __init__(self, mpicc: str, mpiexec: str, test_directory='tests/'):
+    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
         """
         Initializes a test executor for MPI Libraries
         """
 
-        self._test_directory = os.path.abspath(test_directory)
+        self._test_directory = test_directory.resolve()
 
         self._mpicc = mpicc
         self._mpiexec = mpiexec
@@ -24,21 +24,6 @@ class MPIExecutor:
         Gets the directory where tests will be found/executed in
         """
         return self._test_directory
-
-    @test_directory.setter
-    def test_directory(self, test_directory):
-        """
-        Sets the directory where tests will be found/executed in
-
-        """
-        self._test_directory = test_directory
-
-    @test_directory.deleter
-    def test_directory(self):
-        """
-        Deletes the directory where tests will be found/executed in
-        """
-        del self._test_directory
 
     def execute(self, tests: Set[Test]):
         """
@@ -75,12 +60,12 @@ class MPIExecutor:
             return
 
         # output source file
-        test_filename = self._test_directory + '/' + test.name + ".c"
+        test_filename = self._test_directory / (test.name + '.c')
         test.source.write(Path(test_filename))
 
         # create executable command
-        executable_filename = self.test_directory + '/' + test.name
-        command = [self._mpicc, test_filename] + arguments + ["-o", executable_filename]
+        executable_filename = self.test_directory / test.name
+        command = [self._mpicc, str(test_filename)] + arguments + ["-o", str(executable_filename)]
 
         logging.info('executing: %s', ' '.join(command))
 

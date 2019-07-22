@@ -12,7 +12,7 @@ from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
 from core.database import Database
 
-from generators.startend import StartEndGenerator
+#from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 
@@ -78,23 +78,23 @@ class LemonSpotter:
         raise RuntimeError('No database to report.')
 
     def generate_tests(self):
-        generator = StartEndGenerator(self.database)
-
-        # TODO instantiator make it a functioning object
-        instantiator = None
-        self.tests = []
-        self.tests.extend(list(generator.generate(instantiator)))
-
-
-        logging.debug('generated tests:')
-        for test in self.tests:
-            if not test:
-                logging.warning('test is none')
-                continue
-
-            for source in test.sources:
-                logging.debug(source.get_source())
-                source.write()
+        pass
+#        generator = StartEndGenerator(self.database)
+#
+#        # TODO instantiator make it a functioning object
+#        instantiator = None
+#        self.tests = []
+#        self.tests.extend(list(generator.generate(instantiator)))
+#
+#        logging.debug('generated tests:')
+#        for test in self.tests:
+#            if not test:
+#                logging.warning('test is none')
+#                continue
+#
+#            for source in test.sources:
+#                logging.debug(source.get_source())
+#                source.write()
 
     def build_tests(self):
         results = self._executor.build(tests=self.tests)

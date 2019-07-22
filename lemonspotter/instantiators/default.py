@@ -17,18 +17,4 @@ class DefaultInstantiator:
 
     def generate_variable(self, parameter: Parameter) -> Variable:
         if isinstance(parameter, Parameter):
-            raise NotImplementedError
-
-        else:
-            logging.info('parameter ' + str(parameter))
-
-            if parameter['direction'] == 'out': 
-                variable = Variable(self._database.type_by_abstract_type[parameter['abstract_type']],
-                    parameter['name'])
-
-            else:
-                variable = Variable(self._database.type_by_abstract_type[parameter['abstract_type']],
-                    parameter['name'],
-                    self._database.type_by_abstract_type[parameter['abstract_type']].default)
-
-            return variable
+            return Variable(parameter.type, parameter.name)

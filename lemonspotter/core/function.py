@@ -1,6 +1,6 @@
 """    Defines an function object that can be included in Lemonspotter tests."""
 
-from typing import List, Dict, Any, Set
+from typing import List, Dict, Any, Set, Optional
 
 from core.variable import Variable
 from core.database import Database
@@ -40,6 +40,8 @@ class Function:
 
         self.properties: Dict[str, Any] = {}
 
+        self._cached_parameters: Optional[List[Parameter]] = None
+
     def __repr__(self) -> str:
         """
         Defines informal string behavior for function type
@@ -72,7 +74,7 @@ class Function:
         for idx, (argument, parameter) in enumerate(zip(arguments, self.parameters)):
             mod = ''
 
-            pointer_diff = argument.pointer_level - parameter['pointer']
+            pointer_diff = argument.pointer_level - parameter.pointer_level
             if pointer_diff > 0:
                 # dereference *
                 raise NotImplementedError
@@ -96,8 +98,10 @@ class Function:
 
     @property
     def parameters(self) -> List[Parameter]:
-        # TODO convert parameters json to parameter type
-        return self._json['parameters']
+        if self._cached_parameters is None:
+            self._cached_parameters = [Parameter(self._database, parameter) for parameter in self._json['parameters']]
+
+        return self._cached_parameters
 
     @property
     def return_type(self) -> Type:
@@ -105,16 +109,16 @@ class Function:
 
     @property
     def needs_any(self) -> Set['Function']:
-        return set(self._database.functions_by_name[func_name] for func_name in self._needs_any)
+        return set(self._database.functions_by_name[func_name] for func_name in self._json['needs_any'])
 
     @property
     def needs_all(self) -> Set['Function']:
-        return set(self._database.functions_by_name[func_name] for func_name in self._needs_all)
+        return set(self._database.functions_by_name[func_name] for func_name in self._json['needs_all'])
 
     @property
     def leads_any(self) -> Set['Function']:
-        return set(self._database.functions_by_name[func_name] for func_name in self._leads_any)
+        return set(self._database.functions_by_name[func_name] for func_name in self._json['leads_any'])
 
     @property
     def leads_all(self) -> Set['Function']:
-        return set(self._database.functions_by_name[func_name] for func_name in self._leads_all)
+        return set(self._database.functions_by_name[func_name] for func_name in self._json['leads_all'])
