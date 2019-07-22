@@ -20,8 +20,6 @@ class DefaultInstantiator:
             raise NotImplementedError
 
         else:
-            logging.warning('using temporary DefaultInstantiator path for parameter dict')
-
             logging.info('parameter ' + str(parameter))
 
             if parameter['direction'] == 'out': 
