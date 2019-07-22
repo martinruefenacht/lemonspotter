@@ -2,6 +2,7 @@ from typing import Dict, List, Union
 import logging
 
 from core.variable import Variable
+from core.database import Database
 
 class Statement:
     def __init__(self, variables: Dict[str, Variable] = {}):

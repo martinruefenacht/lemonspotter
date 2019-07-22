@@ -10,8 +10,7 @@ from typing import Dict
 from core.database import Database
 from core.test import Source
 from core.variable import Variable
-from core.statement import IncludeStatement, ReturnStatement
-from core.function import MainDefinitionStatement
+from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
 
 class TestGenerator:
     """

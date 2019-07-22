@@ -90,7 +90,7 @@ class ConstantPresenceGenerator(TestGenerator):
         def run_success(captures: Dict[str, str]):
             logging.info('captures: %s', str(captures))
 
-            constant.properties['value'] = constant.type.convert(captures[variable.name])
+            constant.properties['value'] = captures[variable.name]
 
             if not constant.defined:
                 test.run_outcome = TestOutcome.SUCCESS
