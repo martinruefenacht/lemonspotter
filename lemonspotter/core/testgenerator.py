@@ -4,12 +4,8 @@ The TestGenerator is the base class for all generators.
 It provides the main function definition.
 """
 
-import logging
-from typing import Dict
-
 from core.database import Database
 from core.test import Source
-from core.variable import Variable
 from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
 
 class TestGenerator:
@@ -22,12 +18,9 @@ class TestGenerator:
         self._database = database
 
     def generate_main(self) -> Source:
-        """
-        This function generates the main function for the test.
-        """
+        """This function generates the main function for the test."""
 
-        source: Source = Source()
-        variables: Dict[str, Variable] = {}
+        source = Source()
 
         # add include statements
         source.add_at_start(IncludeStatement('stdio.h'))
@@ -38,7 +31,6 @@ class TestGenerator:
         block_main = MainDefinitionStatement(self._database)
 
         block_main.add_at_end(ReturnStatement('0'))
-        #block_main.add_at_end(ReturnStatement(block_main.variables['argument_count'].name))
 
         source.add_at_start(block_main)
 
