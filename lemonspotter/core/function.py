@@ -103,22 +103,34 @@ class Function:
     def needs_any(self) -> Set['Function']:
         """This property provides access to the any set of needed Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['needs_any'])
+        needs = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['needs_any'])
+        needs.discard(None)
+
+        return needs
 
     @property
     def needs_all(self) -> Set['Function']:
         """This property provides access to the all set of needed Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['needs_all'])
+        needs = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['needs_all'])
+        needs.discard(None)
+
+        return needs
 
     @property
     def leads_any(self) -> Set['Function']:
         """This property provides access to the any set of lead Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['leads_any'])
+        leads = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['leads_any'])
+        leads.discard(None)
+
+        return leads
 
     @property
     def leads_all(self) -> Set['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['leads_all'])
+        leads = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['leads_all'])
+        leads.discard(None)
+
+        return leads
