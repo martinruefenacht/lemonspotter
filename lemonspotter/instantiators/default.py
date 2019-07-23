@@ -15,6 +15,5 @@ class DefaultInstantiator:
     def __init__(self, database: Database) -> None:
         self._database: Database = database
 
-    def generate_variable(self, parameter: Parameter) -> Variable:
-        if isinstance(parameter, Parameter):
-            return Variable(parameter.type, parameter.name)
+    def generate_variable(self, parameter: Parameter) -> List[Variable]:
+        return [Variable(parameter.type, parameter.name)]
