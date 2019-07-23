@@ -172,7 +172,6 @@ def main():
     runtime = LemonSpotter(arguments.database, arguments.mpicc, arguments.mpiexec)
 
     # perform presence testing
-    print(runtime.presence_report())
     runtime.presence_testing()
     print(runtime.presence_report())
 
