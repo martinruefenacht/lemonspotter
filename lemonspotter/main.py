@@ -7,10 +7,11 @@ import logging
 from pathlib import Path
 from typing import Optional
 
+from core.database import Database
+
 # TODO rethink these?
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
-from core.database import Database
 
 #from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
@@ -18,6 +19,7 @@ from generators.functionpresence import FunctionPresenceGenerator
 
 class LemonSpotter:
     """
+    This class is the main run time of Lemonspotter.
     """
 
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
@@ -26,7 +28,6 @@ class LemonSpotter:
         """
 
         self._database: Optional[Database] = None
-
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
 
         self.parse_database(database_path)
@@ -78,29 +79,12 @@ class LemonSpotter:
         raise RuntimeError('No database to report.')
 
     def generate_tests(self):
-        pass
-#        generator = StartEndGenerator(self.database)
-#
-#        # TODO instantiator make it a functioning object
-#        instantiator = None
-#        self.tests = []
-#        self.tests.extend(list(generator.generate(instantiator)))
-#
-#        logging.debug('generated tests:')
-#        for test in self.tests:
-#            if not test:
-#                logging.warning('test is none')
-#                continue
-#
-#            for source in test.sources:
-#                logging.debug(source.get_source())
-#                source.write()
+        instantiator = DefaultInstantiator()
 
-    def build_tests(self):
-        results = self._executor.build(tests=self.tests)
+        generator = StartEndGenerator(self.database)
+        start_end_tests = generator.generate(instantiator)
 
-    def run_tests(self):
-        results = self._executor.run(tests=self.tests)
+        self._executor.execute(start_end_tests)
 
 def parse_arguments():
     """
