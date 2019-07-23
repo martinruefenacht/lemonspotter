@@ -60,7 +60,7 @@ class LemonSpotter:
         self._executor.execute(constant_tests)
         self._executor.execute(function_tests)
 
-    def presence_report(self) -> str:
+    def report(self) -> str:
         """
         """
 
@@ -79,8 +79,8 @@ class LemonSpotter:
 
         raise RuntimeError('No database to report.')
 
-    def generate_tests(self):
-        instantiator = DefaultInstantiator()
+    def start_end_testing(self):
+        instantiator = DefaultInstantiator(self.database)
 
         generator = StartEndGenerator(self.database)
         start_end_tests = generator.generate(instantiator)
@@ -168,13 +168,13 @@ def main():
     runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
 
     # perform presence testing
-    print(runtime.presence_report())
-    runtime.presence_testing()
-    print(runtime.presence_report())
+    print(runtime.report())
 
-    #runtime.generate_tests()
-    #runtime.build_tests()
-    #runtime.run_tests()
+    runtime.presence_testing()
+    print(runtime.report())
+
+    runtime.start_end_testing()
+    print(runtime.report())
 
 if __name__ == '__main__':
     main()
