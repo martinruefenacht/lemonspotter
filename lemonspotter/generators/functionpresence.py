@@ -11,9 +11,11 @@ from core.database import Database
 from core.test import Test, TestType
 from core.source import Source
 from core.function import Function
+from core.variable import Variable
 from core.testgenerator import TestGenerator
-from instantiators.defaultinstantiator import DefaultInstantiator
-from core.statement import DeclarationAssignmentStatement
+from core.statement import DeclarationAssignmentStatement, DeclarationStatement
+
+from instantiators.default import DefaultInstantiator
 
 class FunctionPresenceGenerator(TestGenerator):
     """
@@ -54,26 +56,23 @@ class FunctionPresenceGenerator(TestGenerator):
 
         # generate default function arguments
         arguments = [] 
-        instantiator = DefaultInstantiator(self._database)
+        #instantiator = DefaultInstantiator(self._database)
 
         for parameter in function.parameters:
-            if parameter['name'] not in source.variables:
-                variable = instantiator.generate_variable(parameter)
+            if parameter.name not in source.variables:
+                variable = Variable(parameter.type, parameter.name)
 
                 source.variables[variable.name] = variable
-
-
-                variable_statement = variable.generate_declaration_statement()
-                source.add_at_start(variable_statement)
+                source.add_at_start(DeclarationStatement.generate_declaration(variable))
 
             else:
-                variable = source.variables[parameter['name']]
+                variable = source.variables[parameter.name]
 
             arguments.append(variable)
 
         # generate function call statement
         return_name = 'return_' + function.name
-        function_call = function.generate_function_statement(arguments, return_name, self._database)
+        function_call = function.generate_function_statement(arguments, return_name)
 
         source.add_at_start(function_call)
 

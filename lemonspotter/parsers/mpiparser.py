@@ -23,9 +23,10 @@ class MPIParser:
 
     def parse_constants(self, path: Path, database: Database) -> None:
         # parse single file
-        constants_filename = path + 'constants.json'
-        if os.path.isfile(constants_filename):
-            with open(constants_filename) as constants_file:
+        constants_filename = path / 'constants.json'
+
+        if constants_filename.exists():
+            with constants_filename.open() as constants_file:
                 constants_array = json.load(constants_file)
                 
                 for constant in constants_array:
@@ -61,52 +62,39 @@ class MPIParser:
                 if key not in parameter:
                     parameter[key] = defaults['parameter'][key]
 
-    def parse_functions(self, path: str, database: Database) -> None:
+    def parse_functions(self, path: Path, database: Database) -> None:
         # load defaults
-        with open(path + 'defaults.json') as default_file:
+        defaults_filename = path / 'defaults.json'
+        with defaults_filename.open() as default_file:
             defaults = json.load(default_file)
 
         # load single file
-        function_filename = path + 'functions.json'
-        if os.path.isfile(function_filename):
+        function_filename = path / 'functions.json'
+        if function_filename.exists():
             raise NotImplementedError
 
         # load directory function definitions
-        functions_directory = path + 'functions/'
-        if os.path.isdir(functions_directory):
-            files = Path(functions_directory).glob('**/*.json')
+        functions_directory = path / 'functions/'
+        if functions_directory.is_dir():
+            files = functions_directory.glob('**/*.json')
 
             for path in files:
                 func = self.parse_single_function(path.absolute())
                 self.default_function(func, defaults)
                 
-                func_name = func['name']
-                func_return = func['return']
-                func_parameters = func['parameters'] 
-                func_needs_any = func['needs_any']
-                func_needs_all = func['needs_all']
-                func_leads_any = func['leads_any']
-                func_leads_all = func['leads_all']
-
-                func_obj = Function(func_name, 
-                                        func_return,
-                                        func_parameters,
-                                        func_needs_any,
-                                        func_needs_all,
-                                        func_leads_any,
-                                        func_leads_all)
+                func_obj = Function(database, func)
 
                 database.add_function(func_obj)
 
-    def parse_single_function(self, path) -> Dict[str, Any]:
+    def parse_single_function(self, path: Path) -> Dict[str, Any]:
         with open(path) as funcfile:
             return json.load(funcfile)
 
-    def parse_types(self, path: str, database: Database) -> None:
+    def parse_types(self, path: Path, database: Database) -> None:
         # load single file definitions
-        types_filename = path + 'types.json'
-        if os.path.isfile(types_filename):
-            with open(types_filename) as types_file:
+        types_filename = path / 'types.json'
+        if types_filename.is_file():
+            with types_filename.open() as types_file:
                 type_array = json.load(types_file)
 
                 for mpi_type in type_array:
@@ -138,6 +126,6 @@ class MPIParser:
 #
 #                database.add_type(type_obj)
 
-    def parse_single_type(self, path) -> Dict[str, Any]:
-        with open(path) as typefile:
-            return json.loads(typefile)
+    def parse_single_type(self, path: Path)-> Dict[str, Any]:
+        with path.open() as typefile:
+            return json.load(typefile)

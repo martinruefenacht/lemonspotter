@@ -1,25 +1,33 @@
+"""
+"""
+
 import sys
 import argparse
 import logging
 from pathlib import Path
+from typing import Optional
 
 # TODO rethink these?
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
-from generators.startend import StartEndGenerator
+from core.database import Database
 
+#from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 
 from core.report import TestReport
 
 class LemonSpotter:
+    """
+    """
+
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
         """
         Construct the LemonSpotter runtime.
         """
 
-        self._database = None
+        self._database: Optional[Database] = None
 
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
 
@@ -53,25 +61,44 @@ class LemonSpotter:
 
         self._executor.execute(constant_tests)
         self._executor.execute(function_tests)
-        
+
+    def presence_report(self) -> str:
+        """
+        """
+
+        report = ''
+
+        if self._database:
+            for constant in self._database.constants:
+                report += constant.name + '\t\t ' + str(constant.properties) + '\n'
+
+            report += '\n' + '#' * 80 + '\n\n'
+
+            for function in self._database.functions:
+                report += function.name + '\t\t ' + str(function.properties) + '\n'
+
+            return report
+
+        raise RuntimeError('No database to report.')
+
     def generate_tests(self):
-        generator = StartEndGenerator(self.database)
-
-        # TODO instantiator make it a functioning object
-        instantiator = None
-        self.tests.extend(list(generator.generate(instantiator)))
-
-        self.tests = []
-
-        logging.debug('generated tests:')
-        for test in self.tests:
-            if not test:
-                logging.warning('test is none')
-                continue
-
-            for source in test.sources:
-                logging.debug(source.get_source())
-                source.write()
+        pass
+#        generator = StartEndGenerator(self.database)
+#
+#        # TODO instantiator make it a functioning object
+#        instantiator = None
+#        self.tests = []
+#        self.tests.extend(list(generator.generate(instantiator)))
+#
+#        logging.debug('generated tests:')
+#        for test in self.tests:
+#            if not test:
+#                logging.warning('test is none')
+#                continue
+#
+#            for source in test.sources:
+#                logging.debug(source.get_source())
+#                source.write()
 
     def build_tests(self):
         results = self._executor.build(tests=self.tests)
@@ -134,7 +161,7 @@ def parse_arguments():
         sys.exit(0)
 
     return arguments
-        
+
 def set_logging_level(log_level: str):
     """
     Set the logging level to the one specified on the command line.
@@ -157,7 +184,7 @@ def main():
     set_logging_level(arguments.log)
 
     # initialize and load the database
-    runtime = LemonSpotter(arguments.database, arguments.mpicc, arguments.mpiexec)
+    runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
 
     # perform presence testing
     runtime.presence_testing()

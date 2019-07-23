@@ -8,12 +8,12 @@ from typing import Set, List
 from core.test import Test, TestOutcome, TestType
 
 class MPIExecutor:
-    def __init__(self, mpicc: str, mpiexec: str, test_directory='tests/'):
+    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
         """
         Initializes a test executor for MPI Libraries
         """
 
-        self._test_directory = os.path.abspath(test_directory)
+        self._test_directory = test_directory.resolve()
 
         self._mpicc = mpicc
         self._mpiexec = mpiexec
@@ -24,21 +24,6 @@ class MPIExecutor:
         Gets the directory where tests will be found/executed in
         """
         return self._test_directory
-
-    @test_directory.setter
-    def test_directory(self, test_directory):
-        """
-        Sets the directory where tests will be found/executed in
-
-        """
-        self._test_directory = test_directory
-
-    @test_directory.deleter
-    def test_directory(self):
-        """
-        Deletes the directory where tests will be found/executed in
-        """
-        del self._test_directory
 
     def execute(self, tests: Set[Test]):
         """
@@ -70,17 +55,17 @@ class MPIExecutor:
     def build_test(self, test: Test, arguments: List[str]=[]) -> None:
         logging.info('building test %s', test.name)
 
-        if test.build_outcome != TestOutcome.UNTESTED:
+        if test.build_outcome:
             logging.critical('Test %s has build outcome.', test.name)
             return
 
         # output source file
-        test_filename = self._test_directory + '/' + test.name + ".c"
+        test_filename = self._test_directory / (test.name + '.c')
         test.source.write(Path(test_filename))
 
         # create executable command
-        executable_filename = self.test_directory + '/' + test.name
-        command = [self._mpicc, test_filename] + arguments + ["-o", executable_filename]
+        executable_filename = self.test_directory / test.name
+        command = [self._mpicc, str(test_filename)] + arguments + ["-o", str(executable_filename)]
 
         logging.info('executing: %s', ' '.join(command))
 
@@ -102,15 +87,17 @@ class MPIExecutor:
             # set executable on test
             test.executable = Path(executable_filename)
 
-            test.build_success_function()
+            if test.build_success_function:
+                test.build_success_function()
 
-            logging.info('building successful')
+            logging.info('building successful of test %s', test.name)
 
         else:
             # TODO evalulate build output, is there ERROR?
-            test.build_fail_function()
+            if test.build_fail_function:
+                test.build_fail_function()
 
-            logging.warning('building failed')
+            logging.warning('building failed of test %s', test.name)
 
     def run_test(self, test: Test, arguments: List[str]=[]) -> None:
         """
@@ -123,8 +110,9 @@ class MPIExecutor:
         if test.type is TestType.BUILD_ONLY:
             logging.info('skip running test %s due to BUILD_ONLY', test.name)
 
-        elif test.run_outcome != TestOutcome.UNTESTED:
+        elif test.run_outcome:
             logging.critical('Test %s has run outcome.', test.name)
+            return
 
         else:
             logging.info('preparing test %s.', test.name)

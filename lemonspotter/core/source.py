@@ -1,7 +1,8 @@
 """
+This module contains the Source class.
 """
 
-from typing import Dict
+from typing import Dict, Optional
 from pathlib import Path
 
 from core.statement import Statement, BlockStatement
@@ -20,22 +21,32 @@ class Source:
 
     @property
     def variables(self) -> Dict[str, Variable]:
+        """This property provides access to the Variable objects of this Source."""
+
         return self._variables
 
-    def get_variable(self, name: str) -> Variable:
+    def get_variable(self, name: str) -> Optional[Variable]:
+        """This method looks up a variable by name."""
+
         if name in self.variables:
             return self.variables[name]
 
-        else:
-            for statement in self._front_statements:
-                if issubclass(type(statement), BlockStatement):
-                    if name in statement.variables:
-                        return statement.variables[name]
+        # search sub-blocks for variables
+        # TODO end statements as well?
+        for statement in self._front_statements:
+            if issubclass(type(statement), BlockStatement):
+                if name in statement.variables:
+                    return statement.variables[name]
 
-    def add_at_start(self, statement: Statement) -> None:
+        return None
+
+    def add_at_start(self, statement: Optional[Statement]) -> None:
         """
         Adds a generated string to the front of the source code.
         """
+
+        if not statement:
+            return
 
         # TODO currently only able to add to nested block
         if self._front_statements and issubclass(type(self._front_statements[-1]),
