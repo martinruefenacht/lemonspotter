@@ -11,6 +11,8 @@ from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 
+from core.report import TestReport
+
 class LemonSpotter:
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
         """
@@ -20,6 +22,8 @@ class LemonSpotter:
         self._database = None
 
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
+
+        self._reporter = TestReport()
 
         self.parse_database(database_path)
 
@@ -49,22 +53,6 @@ class LemonSpotter:
 
         self._executor.execute(constant_tests)
         self._executor.execute(function_tests)
-
-    def presence_report(self) -> str:
-        """
-        """
-
-        report = ''
-
-        for constant in self._database.constants:
-            report += constant.name + '\t\t ' + str(constant.properties) + '\n'
-
-        report += '\n' + '#' * 80 + '\n\n'
-
-        for function in self._database.functions:
-            report += function.name + '\t\t ' + str(function.properties) + '\n'
-
-        return report
         
     def generate_tests(self):
         generator = StartEndGenerator(self.database)
@@ -173,7 +161,9 @@ def main():
 
     # perform presence testing
     runtime.presence_testing()
-    print(runtime.presence_report())
+    
+    # Log presence report to file
+    runtime._reporter.write_presence_report()
 
     #runtime.generate_tests()
     #runtime.build_tests()
