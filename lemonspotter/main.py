@@ -13,9 +13,10 @@ from core.database import Database
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
 
-#from generators.startend import StartEndGenerator
+from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
+from instantiators.default import DefaultInstantiator
 
 class LemonSpotter:
     """
