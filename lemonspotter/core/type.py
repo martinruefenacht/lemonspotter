@@ -1,99 +1,81 @@
-"""Defines a type object of from library that can be included in Lemonspotter tests."""
+"""
+Defines a type object of from library that can be included in Lemonspotter tests.
+"""
+
+from typing import Dict, Any
+import logging
+
+from core.database import Database
 
 class Type:
     """
-    Defines a type object of from library that can be included in Lemonspotter tests.
     """
-    def __init__(self, abstract_type, source, ctype, range=[], name="CONSTANT_UNDEFINED"):
-        """
-        Initializes object of class Type.
 
-        Parameters:
-        abstract_type  (string)    : Coorespondes to what this type is classified as
-        source         (list)      : Holds information about type
-        ctype          (string)    : Holds the c-style datatype of the type
-        range          (list)      : Holds lower & upper bounds of type
-        name           (string)    : Name of the type
+    def __init__(self, database: Database, json: Dict[str, Any]):
         """
-        self._name = name
-        self._abstract_type = abstract_type
-        self._ctype = ctype
-        self._source = source
-        self._range = range
-        self._validation = False
+        """
 
-    def __str__(self):
-        """
-        Defines formal string represenation of Type
-        """
-        return self._name
+        self._json = json
+        self._database: Database = database
 
-    def __repr__(self):
-        """
-        Defines informal string represenation of Type
-        """
+        self._partitions = []
+
+    @property
+    def base_type(self) -> bool:
+        return self._json['base_type']
+
+    @property
+    def default(self) -> str:
+        return self._json['default']
+
+    @property
+    def name(self) -> str:
         return self._name
 
     @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @name.deleter
-    def name(self):
-        del self._name
+    def type(self) -> 'Type':
+        logging.warning('Type.type -> Type makes no sense')
+        return self._database.types_by_abstract_type[self.abstract_type]
 
     @property
-    def abstract_type(self):
-        return self._abstract_type
-
-    @abstract_type.setter
-    def abstract_type(self, abstract_type):
-        self._abstract_type = abstract_type
-
-    @abstract_type.deleter
-    def abstract_type(self):
-        del self._abstract_type
+    def abstract_type(self) -> str:
+        return self._json['abstract_type']
 
     @property
-    def ctype(self):
-        return self._ctype
+    def language_type(self) -> str:
+        if self._json['base_type']:
+            return self._json['language_type']
 
-    @ctype.setter
-    def ctype(self, ctype):
-        self._ctype = ctype
-
-    @ctype.deleter
-    def ctype(self):
-        del self._ctype
+        else:
+            return self._database.types_by_abstract_type[self._json['language_type']].language_type
 
     @property
-    def lower_range(self):
-        return self._range[0]
+    def printable(self) -> bool:
+        if self.base_type:
+            return self._json['printable']
 
-    @lower_range.setter
-    def lower_range(self, lower_range):
-        self._range[0] = lower_range
-
-    @property
-    def upper_range(self):
-        return self._range[1]
-
-    @lower_range.setter
-    def upper_range(self, upper_range):
-        self._range[1] = upper_range
+        else:
+            return self._database.types_by_abstract_type[self._json['language_type']].printable
 
     @property
-    def validation(self):
-        return self._validation
+    def print_specifier(self):
+        if self.base_type:
+            return self._json['print_specifier']
 
-    @validation.setter
-    def validation(self, validation):
-        self._validation = validation
+        else:
+            return self._database.types_by_abstract_type[self._json['language_type']].print_specifier
 
-    @validation.deleter
-    def validation(self):
-        del self.validation
+    def convert(self, string: str) -> Any:
+        """
+
+        """
+        
+        if self.language_type == 'int':
+            return int(string)
+
+        elif self.language_type == 'double' or self.language_type == 'float':
+            return float(string)
+
+        else:
+            logging.error('unrecognized language type in Python.')
+            raise RuntimeError('unrecognized')

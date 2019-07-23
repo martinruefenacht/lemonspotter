@@ -1,6 +1,8 @@
 import logging
 
-class ConstantExtractionGenerator:
+from core.testgenerator import TestGenerator
+
+class ConstantExtractionGenerator(TestGenerator):
     """
     """
 

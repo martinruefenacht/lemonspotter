@@ -1,6 +1,7 @@
-import os
-import pathlib
+from pathlib import Path
 import json
+from typing import Dict, Any
+import os
 
 from core.database import Database
 from core.function import Function
@@ -8,21 +9,19 @@ from core.type     import Type
 from core.constant import Constant
 
 class MPIParser:
-#    def __call__(self, database_path: str) -> Database:
-    def __call__(self, database_path):
+    def __call__(self, database_path: Path) -> Database:
         return self.parse(database_path)
         
-#    def parse(self, database_path: str) -> Database:
-    def parse(self, path):
+    def parse(self, database_path: Path) -> Database:
         database = Database()
 
-        self.parse_types(path, database)
-        self.parse_constants(path, database)
-        self.parse_functions(path, database)
+        self.parse_types(database_path, database)
+        self.parse_constants(database_path, database)
+        self.parse_functions(database_path, database)
 
         return database
 
-    def parse_constants(self, path, database):
+    def parse_constants(self, path: Path, database: Database) -> None:
         # parse single file
         constants_filename = path + 'constants.json'
         if os.path.isfile(constants_filename):
@@ -30,30 +29,25 @@ class MPIParser:
                 constants_array = json.load(constants_file)
                 
                 for constant in constants_array:
-                    constant_name = constant['name']
-                    constant_abstract_type = constant['abstract_type']
-                    constant_obj = Constant(constant_abstract_type, constant_name)
+                    database.add_constant(Constant(database, constant))
 
-                    database.add_constant(constant_obj)
-
-        # parse subdirectory of constants
-        constants_directory = path + 'constants/'
-        if os.path.isdir(constants_directory):
-            files = pathlib.Path(types_directory).glob('**/*.json')
-
-            for path in files:
-                constant = self.parse_single_constant(path)
-                
-                constant_name = constant['name']
-                constant_abstract_type = constant['abstract_type']
-                constant_obj = Constant(constant_abstract_type, constant_name)
-
-                database.constants[constant_name] = constant_obj
-                database.constants[constant_name] = constant_obj
-       
-    def parse_single_constant(self):
-        with open(path) as constantfile:
-            return json.loads(constantfile) 
+        # TODO parse subdirectory of constants
+#        constants_directory = path + 'constants/'
+#        if os.path.isdir(constants_directory):
+#            files = pathlib.Path(types_directory).glob('**/*.json')
+#
+#            for path in files:
+#                constant = self.parse_single_constant(path)
+#                
+#                constant_name = constant['name']
+#                constant_abstract_type = constant['abstract_type']
+#                constant_obj = Constant(constant_abstract_type, constant_name)
+#
+#                database.constants[constant_name] = constant_obj
+#       
+#    def parse_single_constant(self) -> Dict[str, Any]:
+#        with open(path) as constantfile:
+#            return json.loads(constantfile) 
 
     def default_function(self, func, defaults):
         # default function level
@@ -67,7 +61,7 @@ class MPIParser:
                 if key not in parameter:
                     parameter[key] = defaults['parameter'][key]
 
-    def parse_functions(self, path, database):
+    def parse_functions(self, path: str, database: Database) -> None:
         # load defaults
         with open(path + 'defaults.json') as default_file:
             defaults = json.load(default_file)
@@ -80,7 +74,7 @@ class MPIParser:
         # load directory function definitions
         functions_directory = path + 'functions/'
         if os.path.isdir(functions_directory):
-            files = pathlib.Path(functions_directory).glob('**/*.json')
+            files = Path(functions_directory).glob('**/*.json')
 
             for path in files:
                 func = self.parse_single_function(path.absolute())
@@ -102,14 +96,13 @@ class MPIParser:
                                         func_leads_any,
                                         func_leads_all)
 
-                #database.functions[func_name] = func_obj
                 database.add_function(func_obj)
 
-    def parse_single_function(self, path):
+    def parse_single_function(self, path) -> Dict[str, Any]:
         with open(path) as funcfile:
             return json.load(funcfile)
 
-    def parse_types(self, path, database):
+    def parse_types(self, path: str, database: Database) -> None:
         # load single file definitions
         types_filename = path + 'types.json'
         if os.path.isfile(types_filename):
@@ -117,52 +110,34 @@ class MPIParser:
                 type_array = json.load(types_file)
 
                 for mpi_type in type_array:
-
-                    type_name = mpi_type['name']
-                    type_abstract_type = mpi_type['abstract_type']
-                    type_ctype = mpi_type['ctype']
-
-                    type_source = mpi_type['source']
-                    for source in type_source:
-                        if source == "range":   
-                            type_lower_range = mpi_type['range'][0]
-                            type_upper_range = mpi_type['range'][1]
-
-                    type_obj = Type(type_abstract_type,
-                                    type_source,
-                                    type_ctype,
-                                    [type_lower_range, type_upper_range],
-                                    type_name)
-
-                    #database.types[mpi_type['name']] = type_obj
-                    database.add_type(type_obj)
+                    database.add_type(Type(database, mpi_type))
         
-        # load directory definitions
-        types_directory = path + 'types/'
-        if os.path.isdir(types_directory):
-            files = pathlib.Path(types_directory).glob('**/*.json')
+        # TODO load directory definitions
+#        types_directory = path + 'types/'
+#        if os.path.isdir(types_directory):
+#            files = pathlib.Path(types_directory).glob('**/*.json')
+#
+#            for path in files:
+#                mpi_type = self.parse_single_type(path)
+#                
+#                type_name = mpi_type['name']
+#                type_abstract_type = mpi_type['abstract_type']
+#                type_ctype = mpi_type['ctype']
+#
+#                type_source = mpi_type['source']
+#                for source in type_source:
+#                    if source == "range":
+#                        type_lower_range = mpi_type['range'][0]
+#                        type_upper_range = mpi_type['range'][1]
+#
+#                type_obj = Type(type_abstract_type,
+#                                type_source,
+#                                type_ctype,
+#                                [type_lower_range, type_upper_range], 
+#                                type_name)
+#
+#                database.add_type(type_obj)
 
-            for path in files:
-                mpi_type = self.parse_single_type(path)
-                
-                type_name = mpi_type['name']
-                type_abstract_type = mpi_type['abstract_type']
-                type_ctype = mpi_type['ctype']
-
-                type_source = mpi_type['source']
-                for source in type_source:
-                    if source == "range":
-                        type_lower_range = mpi_type['range'][0]
-                        type_upper_range = mpi_type['range'][1]
-
-                type_obj = Type(type_abstract_type,
-                                type_source,
-                                type_ctype,
-                                [type_lower_range, type_upper_range], 
-                                type_name)
-
-                database.add_type(type_obj)
-
-    def parse_single_type(self, path):
+    def parse_single_type(self, path) -> Dict[str, Any]:
         with open(path) as typefile:
             return json.loads(typefile)

@@ -1,110 +1,142 @@
-import os
+"""
+"""
+
+from typing import Callable, Set, Union
+from enum import Enum
+from pathlib import Path
+
+from core.source import Source
+from core.variable import Variable
+
+class TestType(Enum):
+    BUILD_AND_RUN = 0
+    BUILD_ONLY = 1
+
+class TestOutcome(Enum):
+    FAILED = 0
+    SUCCESS = 1
+    UNTESTED = 2
 
 class Test:
-    def __init__(self, name: str, sources=[], expected_result='pass'):
-        self._name = name
-        self._sources = sources
+    """
+    """
 
-        self._build_results = []
-        self._exec_results = []
+    def __init__(self, name: str, source: Source, test_type: TestType=TestType.BUILD_AND_RUN) -> None:
+        self._name: str = name
+        self._type: TestType = test_type
 
-        # Outcome can be pass/fail/xfail/xpass
-        self._expected_result = expected_result
+        self._source: Source = source
+        self._executable: Path = None
+
+        # build closures
+        self._build_success_func: Callable[[], None] = None
+        self._build_fail_func: Callable[[], None] = None
+
+        # run closures
+        self._run_success_func = None
+        self._run_fail_func = None
+
+        self._captures: Set[str] = set()
+        self._build_outcome: TestOutcome = TestOutcome.UNTESTED
+        self._run_outcome: TestOutcome = TestOutcome.UNTESTED
+
+        #self._build_results = []
+        #self._exec_results = []
 
         # Actual outcome after tested.
         # Until set default value is ''
         # Once tested can be set to pass/fail/xfail/xpass
-        self._result = ''
+        #self._result = ''
 
     @property
-    def name(self):
+    def build_success_function(self) -> Callable[[], None]:
+        return self._build_success_func
+    @build_success_function.setter
+    def build_success_function(self, func: Callable[[], None]) -> None:
+        self._build_success_func = func
+
+    @property
+    def build_fail_function(self) -> Callable[[], None]:
+        return self._build_fail_func
+    @build_fail_function.setter
+    def build_fail_function(self, func: Callable[[], None]) -> None:
+        self._build_fail_func = func
+
+    @property
+    def run_success_function(self):
+        return self._run_success_func
+    @run_success_function.setter
+    def run_success_function(self, func) -> None:
+        self._run_success_func = func
+
+    @property
+    def run_fail_function(self):
+        return self._run_fail_func
+    @run_fail_function.setter
+    def run_fail_function(self, func) -> None:
+        self._run_fail_func = func
+
+    @property
+    def captures(self) -> Set[str]:
+        return self._captures
+
+    def register_capture(self, token: str) -> None:
+        self._captures.add(token)
+
+    @property
+    def name(self) -> str:
         return self._name
 
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @name.deleter
-    def name(self):
-        del self._name
+    @property
+    def type(self) -> TestType:
+        return self._type
 
     @property
-    def sources(self):
-        return self._sources
-
-    @sources.setter
-    def sources(self, sources):
-        self._sources = sources
-
-    @sources.deleter
-    def sources(self):
-        del self._sources
+    def source(self) -> Source:
+        return self._source
+    
+    @property
+    def executable(self) -> Union[Path, None]:
+        return self._executable
+    @executable.setter
+    def executable(self, path: Path):
+        self._executable = path
 
     @property
-    def build_results(self):
-        return self._build_results
-
-    @build_results.setter
-    def build_results(self, build_results):
-        self._build_results = build_results
-
-    @build_results.deleter
-    def build_results(self):
-        del self._build_results
+    def build_outcome(self) -> TestOutcome:
+        return self._build_outcome
+    @build_outcome.setter
+    def build_outcome(self, outcome: TestOutcome) -> None:
+        self._build_outcome = outcome 
 
     @property
-    def exec_results(self):
-        return self._exec_results
+    def run_outcome(self) -> TestOutcome:
+        return self._run_outcome
+    @run_outcome.setter
+    def run_outcome(self, outcome: TestOutcome) -> None:
+        self._run_outcome = outcome 
 
-    @exec_results.setter
-    def exec_results(self, exec_results):
-        self._exec_results = exec_results
+    def __str__(self) -> str:
+        return 'Test: ' + self.name + ' : ' + self.test_type
 
-    @exec_results.deleter
-    def exec_results(self):
-        del self._exec_results
-
-    @property
-    def expected_result(self):
-        return self._expected_result
-
-    @expected_result.setter
-    def expected_result(self, expected_result):
-        self._expected_result = expected_result
-
-    @expected_result.deleter
-    def expected_result(self):
-        del self._expected_result
-
-    @property
-    def result(self):
-        return self._result
-
-    @result.setter
-    def result(self, result):
-        self._result = result
-
-    @result.deleter
-    def result(self):
-        del self._result
-
-
-
-    def write(self):
-        """
-        Writes source object to file that can be compiled/run
-        by executors.
-        """
-        if not os.path.isdir('../tests'):
-            os.makedirs("../tests")
-
-        file_name = self.name + ".c"
-        test_file = open("../tests/" + file_name, "w+")
-
-        for source in self.sources:
-            test_file.write(source.get_source())
-
-        test_file.close()
+#    def write(self):
+#        """
+#        Writes source object to file that can be compiled/run
+#        by executors.
+#        """
+#
+#        # TODO this is hard coding paths
+#
+#        if not os.path.isdir('../tests'):
+#            os.makedirs("../tests")
+#
+#        file_name = self.name + ".c"
+#        test_file = open("../tests/" + file_name, "w+")
+#
+#        for line in self.get_source():
+#            test_file.write(line+"\n")
+#
+#        test_file.close()
 
     def build_result_parser(self):
         """
@@ -124,44 +156,3 @@ class Test:
                 print(self.exec_results[1])
 
 
-class Source:
-    def __init__(self, name: str):
-        self._name = name
-        self._front_lines = []
-        self._back_lines = []
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @name.deleter
-    def name(self):
-        del self._name
-
-    def add_at_start(self, line: str) -> None:
-        """
-        Adds a generated string to the front of the source code.
-        """
-
-        self._front_lines.append(line)
-
-    def add_at_end(self, line: str) -> None:
-        """
-        Adds a generated string to the back of the source code.
-        """
-
-        self._back_lines.append(line)
-
-    def get_source(self) -> str:
-        """
-        Combines the front and back lines into a single string.
-        """
-
-        lines = '\n'.join(self._front_lines) + '\n'
-        lines = lines + '\n'.join(self._back_lines)
-
-        return lines
