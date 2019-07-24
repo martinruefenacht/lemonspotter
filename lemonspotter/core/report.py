@@ -1,4 +1,6 @@
-import os, datetime
+import os, datetime, logging
+
+from core.test import Test
 
 class TestReport():
     def __init__(self, database):
@@ -17,8 +19,21 @@ class TestReport():
     def report_id(self):
         del self._report_id
 
-    def log_test_result(self, test, msg):
-        raise NotImplementedError
+    def log_test_result(self, test, msg=None):
+        """
+        Prints results for single test
+        """
+        log_msg = ''
+        if test.build_outcome and test.run_outcome:
+            log_msg += '[PASS] ' + test.name
+        else:
+            log_msg += '[FAIL] ' + test.name
+            
+        if msg:
+            log_msg += '\n\t' + msg
+        
+        logging.log(0, log)
+        
 
     def write_presence_report(self):
         """
