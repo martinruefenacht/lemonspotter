@@ -1,6 +1,6 @@
 import os, datetime, logging
 
-from core.test import Test
+from core.test import Test, TestStage
 
 class TestReport():
     def __init__(self, database):
@@ -19,21 +19,33 @@ class TestReport():
     def report_id(self):
         del self._report_id
 
-    def log_test_result(self, test, msg=None):
+    def log_test_result(self, test, msg=None) -> None:
         """
         Prints results for single test
         """
         log_msg = ''
-        if test.build_outcome and test.run_outcome:
-            log_msg += '[PASS] ' + test.name
+        
+        if test.stage == TestStage.BUILD:
+            log_msg += '[BUILD]'
+            if test.build_outcome:
+                log_msg += '[PASS]'
+            else:
+                log_msg += '[FAIL]'
+        elif test.stage == TestStage.RUN:
+            log_msg += '[RUN]'
+            if test.run_outcome:
+                log_msg += '[PASS]'
+            else:
+                log_msg += '[FAIL]'
         else:
-            log_msg += '[FAIL] ' + test.name
+            log_msg += '[STAGE NOT SET]'
             
+        log_msg += test.name
         if msg:
-            log_msg += '\n\t' + msg
-        
+            log_msg += '\n\t ' + msg
+
         logging.log(0, log)
-        
+                
 
     def write_presence_report(self):
         """
