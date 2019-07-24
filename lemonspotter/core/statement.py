@@ -26,6 +26,9 @@ class Statement:
     def express(self) -> str:
         """This method converts the Statement to a string."""
 
+        if self._statement is None:
+            raise RuntimeError('Trying to express Statement with _statement is None.')
+
         return self._statement
 
 class IncludeStatement(Statement):
@@ -77,7 +80,7 @@ class DeclarationAssignmentStatement(Statement):
         super().__init__()
 
         if variable.value:
-            line = [variable.kind.language_type, variable.name, '=', variable.value, ';']
+            line = [variable.type.language_type, variable.name, '=', variable.value, ';']
             self._statement = ' '.join(line)
 
         else:
@@ -206,7 +209,12 @@ class MainDefinitionStatement(BlockStatement):
         self._variables[argc.name] = argc
         self._variables[argv.name] = argv
 
-        self._statement = 'int main(int argument_count, char **argument_list)'
+        self._statement: str = 'int main(int argument_count, char **argument_list)'
 
     def express(self) -> str:
+        """"""
+
+        if self._statement is None:
+            raise RuntimeError('Trying to express MainDefinitionStatement with _statement is None.')
+
         return self._statement + '\n' + super().express()

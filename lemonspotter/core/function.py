@@ -2,7 +2,7 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import List, Dict, Any, Set, Optional
+from typing import Dict, Any, Set, Tuple
 
 from core.variable import Variable
 from core.database import Database
@@ -24,7 +24,11 @@ class Function:
 
         self.properties: Dict[str, Any] = {}
 
-        self._cached_parameters: Optional[List[Parameter]] = None
+        self._cached_parameters: Tuple[Parameter]
+        self._cached_needs_any: Set['Function']
+        self._cached_needs_all: Set['Function']
+        self._cached_leads_any: Set['Function']
+        self._cached_leads_all: Set['Function']
 
     def __repr__(self) -> str:
         """
@@ -40,7 +44,7 @@ class Function:
 
         return repr(self)
 
-    def generate_function_statement(self, arguments: List[Variable],
+    def generate_function_statement(self, arguments: Tuple[Variable],
                                     return_name: str) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
@@ -84,12 +88,12 @@ class Function:
         return self._json['name']
 
     @property
-    def parameters(self) -> List[Parameter]:
+    def parameters(self) -> Tuple[Parameter]:
         """This property provides access to the parameter list of this Function object."""
 
         if self._cached_parameters is None:
-            self._cached_parameters = [Parameter(self._db, parameter)
-                                       for parameter in self._json['parameters']]
+            self._cached_parameters = tuple(Parameter(self._db, parameter)
+                                            for parameter in self._json['parameters'])
 
         return self._cached_parameters
 
@@ -103,34 +107,50 @@ class Function:
     def needs_any(self) -> Set['Function']:
         """This property provides access to the any set of needed Function objects."""
 
-        needs = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['needs_any'])
-        needs.discard(None)
+        if self._cached_needs_any is None:
+            subset = filter(lambda name: name in self._db.functions_by_name,
+                            self._json['needs_any'])
 
-        return needs
+            self._cached_needs_any = set(self._db.functions_by_name[func_name]
+                                         for func_name in subset)
+
+        return self._cached_needs_any
 
     @property
     def needs_all(self) -> Set['Function']:
         """This property provides access to the all set of needed Function objects."""
 
-        needs = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['needs_all'])
-        needs.discard(None)
+        if self._cached_needs_all is None:
+            subset = filter(lambda name: name in self._db.functions_by_name,
+                            self._json['needs_all'])
 
-        return needs
+            self._cached_needs_all = set(self._db.functions_by_name[func_name]
+                                         for func_name in subset)
+
+        return self._cached_needs_all
 
     @property
     def leads_any(self) -> Set['Function']:
         """This property provides access to the any set of lead Function objects."""
 
-        leads = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['leads_any'])
-        leads.discard(None)
+        if self._cached_leads_any is None:
+            subset = filter(lambda name: name in self._db.functions_by_name,
+                            self._json['leads_any'])
 
-        return leads
+            self._cached_leads_any = set(self._db.functions_by_name[func_name]
+                                         for func_name in subset)
+
+        return self._cached_leads_any
 
     @property
     def leads_all(self) -> Set['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
-        leads = set(self._db.functions_by_name.get(func_name, None) for func_name in self._json['leads_all'])
-        leads.discard(None)
+        if self._cached_leads_all is None:
+            subset = filter(lambda name: name in self._db.functions_by_name,
+                            self._json['leads_all'])
 
-        return leads
+            self._cached_leads_all = set(self._db.functions_by_name[func_name]
+                                         for func_name in subset)
+
+        return self._cached_leads_all
