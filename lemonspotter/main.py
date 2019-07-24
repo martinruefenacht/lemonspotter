@@ -28,12 +28,11 @@ class LemonSpotter:
         """
 
         self._database: Optional[Database] = None
-
-        self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
-
         self.parse_database(database_path)
 
         self._reporter = TestReport(self._database)
+
+        self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec, reporter=self._reporter)
 
     @property
     def database(self):
