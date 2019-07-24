@@ -5,10 +5,11 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Set, List
 
-from core.test import Test, TestOutcome, TestType
+from core.test import Test, TestOutcome, TestType, TestStage
+from core.report import TestReport
 
 class MPIExecutor:
-    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
+    def __init__(self, mpicc: str, mpiexec: str, reporter:TestReport, test_directory: Path=Path('tests/')):
         """
         Initializes a test executor for MPI Libraries
         """
@@ -17,6 +18,8 @@ class MPIExecutor:
 
         self._mpicc = mpicc
         self._mpiexec = mpiexec
+        
+        self._reporter = reporter
 
     @property
     def test_directory(self):
@@ -36,7 +39,9 @@ class MPIExecutor:
         if tests:
             try:
                 for test in tests:
+                    test.stage(TestStage.BUILD)
                     self.build_test(test)
+                    self.reporter.log_test_output(test)
 
             except FileNotFoundError as error:
                 logging.error(error)
@@ -45,11 +50,13 @@ class MPIExecutor:
 
             try:
                 for test in tests:
+                    test.stage(TestStage.RUN)
                     self.run_test(test)
+                    self.reporter.log_test_output(test)
 
             except FileNotFoundError as error:
                 logging.error(error)
-                logging.error('Runnign set of test failed.')
+                logging.error('Running set of test failed.')
                 return
 
     def build_test(self, test: Test, arguments: List[str]=[]) -> None:
