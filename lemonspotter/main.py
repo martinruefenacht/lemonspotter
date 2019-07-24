@@ -61,25 +61,6 @@ class LemonSpotter:
         self._executor.execute(constant_tests)
         self._executor.execute(function_tests)
 
-    def presence_report(self) -> str:
-        """
-        """
-
-        report = ''
-
-        if self._database:
-            for constant in self._database.constants:
-                report += constant.name + '\t\t ' + str(constant.properties) + '\n'
-
-            report += '\n' + '#' * 80 + '\n\n'
-
-            for function in self._database.functions:
-                report += function.name + '\t\t ' + str(function.properties) + '\n'
-
-            return report
-
-        raise RuntimeError('No database to report.')
-
     def generate_tests(self):
         pass
 #        generator = StartEndGenerator(self.database)
@@ -190,6 +171,7 @@ def main():
     
     # Log presence report to file
     runtime._reporter.write_presence_report()
+    runtime._reporter.presence_report()
 
     #runtime.generate_tests()
     #runtime.build_tests()
