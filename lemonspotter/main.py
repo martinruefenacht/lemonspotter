@@ -31,13 +31,9 @@ class LemonSpotter:
         self._database: Optional[Database] = None
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
 
-        self.parse_database(database_path)
+        self._parse_database(database_path)
 
-    @property
-    def database(self):
-        return self._database
-
-    def parse_database(self, database_path: Path):
+    def _parse_database(self, database_path: Path):
         """
         Parse the database pointed to by the command line argument.
         """
