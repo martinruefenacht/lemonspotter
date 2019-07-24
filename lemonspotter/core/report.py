@@ -3,6 +3,9 @@ import os, datetime, logging
 from core.test import Test, TestStage
 
 class TestReport():
+    """
+    Singleton for generating logging statements for tests
+    """
     def __init__(self, database):
         self._now = datetime.datetime.now()
         self._report_id = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")

@@ -1,4 +1,5 @@
 """
+Lemonspotter Runtime
 """
 
 import sys
@@ -20,6 +21,7 @@ from core.report import TestReport
 
 class LemonSpotter:
     """
+    Lemonspotter Runtime Object
     """
 
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
