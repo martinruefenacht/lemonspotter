@@ -2,7 +2,7 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import Dict, Any, Set, Sequence
+from typing import Mapping, Any, AbstractSet, Sequence, Callable
 from functools import lru_cache
 
 from core.variable import Variable
@@ -12,11 +12,11 @@ from core.type import Type
 from core.parameter import Parameter
 
 
-#class FunctionSample:
-#    def __init__(self, function: Function, arguments: Sequence[Variable], evaluator: Callable[[], None]):
-#        self._function = function
-#        self._arguments = arguments
-#        self._evaluator = evaluator
+class FunctionSample:
+    def __init__(self, function: 'Function', arguments: Sequence[Variable], evaluator: Callable[[], None]):
+        self._function = function
+        self._arguments = arguments
+        self._evaluator = evaluator
 
 
 class Function:
@@ -24,14 +24,14 @@ class Function:
     Defines an function object that can be included in Lemonspotter tests.
     """
 
-    def __init__(self, database: Database, json: Dict[str, Any]) -> None:
+    def __init__(self, database: Database, json: Mapping[str, Any]) -> None:
         """
         """
 
         self._db: Database = database
-        self._json: Dict[str, Any] = json
+        self._json: Mapping[str, Any] = json
 
-        self.properties: Dict[str, Any] = {}
+        self.properties: Mapping[str, Any] = {}
 
     def __repr__(self) -> str:
         """
@@ -105,7 +105,7 @@ class Function:
 
     @property  # type: ignore
     @lru_cache()
-    def needs_any(self) -> Set['Function']:
+    def needs_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of needed Function objects."""
 
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_any'])
@@ -114,7 +114,7 @@ class Function:
 
     @property  # type: ignore
     @lru_cache()
-    def needs_all(self) -> Set['Function']:
+    def needs_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of needed Function objects."""
 
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_all'])
@@ -123,7 +123,7 @@ class Function:
 
     @property  # type: ignore
     @lru_cache()
-    def leads_any(self) -> Set['Function']:
+    def leads_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of lead Function objects."""
 
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_any'])
@@ -132,7 +132,7 @@ class Function:
 
     @property  # type: ignore
     @lru_cache()
-    def leads_all(self) -> Set['Function']:
+    def leads_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_all'])
