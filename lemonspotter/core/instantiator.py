@@ -3,6 +3,7 @@
 
 from core.database import Database
 
+
 class Instantiator:
     """
     """

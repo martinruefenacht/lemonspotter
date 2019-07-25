@@ -1,7 +1,8 @@
 """
 This module defines the function presence test generator.
 
-Tests whether a specific function is linkable. No execution is required only building success or fail.
+Tests whether a specific function is linkable. No execution is required only
+building success or fail.
 """
 
 import logging
@@ -9,13 +10,11 @@ from typing import Set
 
 from core.database import Database
 from core.test import Test, TestType
-from core.source import Source
 from core.function import Function
 from core.variable import Variable
 from core.testgenerator import TestGenerator
-from core.statement import DeclarationAssignmentStatement, DeclarationStatement
+from core.statement import DeclarationStatement
 
-from instantiators.default import DefaultInstantiator
 
 class FunctionPresenceGenerator(TestGenerator):
     """
@@ -32,7 +31,8 @@ class FunctionPresenceGenerator(TestGenerator):
         tests = set()
 
         # find all functions which have not been tested
-        functions = filter(lambda f: not f.properties.get('presence_tested', False), self._database.functions)
+        functions = filter(lambda f: not f.properties.get('presence_tested', False),
+                           self._database.functions)
 
         # for all applicable functions
         for func in functions:
@@ -55,14 +55,15 @@ class FunctionPresenceGenerator(TestGenerator):
         source = self.generate_main()
 
         # generate default function arguments
-        arguments = [] 
-        #instantiator = DefaultInstantiator(self._database)
+        arguments = []
 
         for parameter in function.parameters:
             if parameter.name not in source.variables:
                 variable = Variable(parameter.type, parameter.name)
 
                 source.variables[variable.name] = variable
+
+                # only requires valid types, not correct code for presence testing
                 source.add_at_start(DeclarationStatement.generate_declaration(variable))
 
             else:

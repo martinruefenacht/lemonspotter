@@ -3,7 +3,7 @@ This module defines the initiation point to finalization point generator.
 """
 
 import logging
-from typing import Set, List, Dict, Optional, Tuple
+from typing import Set, List, Dict, Tuple
 
 from core.test import Test, Source
 from core.variable import Variable
