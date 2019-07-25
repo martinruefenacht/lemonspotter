@@ -150,6 +150,7 @@ class MPIExecutor:
                         if variable is not None:
                             # currently only supports key-value captures
                             variable.value = tokens[1]
+                            logging.debug('captured %s = %s', variable.name, tokens[1])
 
                 # call success function
                 if test.run_success_function is not None:

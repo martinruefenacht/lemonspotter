@@ -55,32 +55,6 @@ class DefaultInstantiator(Instantiator):
             else:
                 raise NotImplementedError('no default partition, but parameters exist.')
 
-#            for parameter in default:
-#                #arguments.append(Variable(parameter.type, parameter.name, parameter.type.default))
-#                # TODO
-#                pass
-#
-#            sample.arguments = arguments
-#
-#            # create evaluator
-#            def evaluator() -> bool:
-#
-#                if default['_expected']['type'] == 'constant':
-#                    if sample.return_variable.value != self._db.constant_by_name[default['_expected']['name']]['value']:
-#                        return False
-#                    else:
-#                        return True
-#                else:
-#                    raise NotImplementedError('other return types not implemented')
-#            
-#            sample.evaluator = tester
-#
-#        else:
-#            raise NotImplementedError('Function %s does not provide a default argument partition.', function.name)
-#            # TODO go through parameters looking for defaults
-#
-#            # else go through types using defaults
-#
-#            # else raise ERROR
+                # arguments.append(Variable(parameter.type, parameter.name, parameter.type.default))
 
         return set([sample])
