@@ -19,6 +19,7 @@ from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 from instantiators.default import DefaultInstantiator
 
+
 class LemonSpotter:
     """
     This class is the main run time of Lemonspotter.
@@ -83,6 +84,7 @@ class LemonSpotter:
         start_end_tests = generator.generate(instantiator)
 
         self._executor.execute(start_end_tests)
+
 
 def parse_arguments():
     """
@@ -153,6 +155,7 @@ def parse_arguments():
 
     return arguments
 
+
 def set_logging_level(log_level: str):
     """
     Set the logging level to the one specified on the command line.
@@ -164,6 +167,7 @@ def set_logging_level(log_level: str):
         raise ValueError('Invalid log level: %s' % log_level)
 
     logging.basicConfig(level=numeric_level)
+
 
 def main() -> None:
     """
@@ -178,7 +182,7 @@ def main() -> None:
         raise NotImplementedError
 
     elif arguments.flake:
-        process = Popen('flake8', stdout=PIPE, stderr=PIPE, cwd='../')
+        process = Popen('flake8', stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()
         print(stdout.decode('utf-8'))
 
@@ -190,13 +194,14 @@ def main() -> None:
         runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
 
         # perform presence testing
-        print(runtime.presence_report())
+        print(runtime.report())
 
         runtime.presence_testing()
-        print(runtime.presence_report())
+        print(runtime.report())
 
         runtime.start_end_testing()
         print(runtime.report())
+
 
 if __name__ == '__main__':
     main()
