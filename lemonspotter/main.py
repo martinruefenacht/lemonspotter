@@ -47,10 +47,10 @@ class LemonSpotter:
         """
 
         # generate all constant presence tests
-        generator = ConstantPresenceGenerator(self.database)
+        generator = ConstantPresenceGenerator(self._database)
         constant_tests = generator.generate()
 
-        func_gen = FunctionPresenceGenerator(self.database)
+        func_gen = FunctionPresenceGenerator(self._database)
         function_tests = func_gen.generate()
 
         self._executor.execute(constant_tests)
@@ -76,9 +76,9 @@ class LemonSpotter:
         raise RuntimeError('No database to report.')
 
     def start_end_testing(self):
-        instantiator = DefaultInstantiator(self.database)
+        instantiator = DefaultInstantiator(self._database)
 
-        generator = StartEndGenerator(self.database)
+        generator = StartEndGenerator(self._database)
         start_end_tests = generator.generate(instantiator)
 
         self._executor.execute(start_end_tests)
