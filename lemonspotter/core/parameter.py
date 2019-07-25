@@ -7,6 +7,7 @@ from typing import Dict, Any
 from core.database import Database
 from core.type import Type
 
+
 class Parameter:
     """
     This class represents parameters of Function objects translated from the specification.

@@ -1,17 +1,17 @@
 from pathlib import Path
 import json
 from typing import Dict, Any
-import os
 
 from core.database import Database
 from core.function import Function
-from core.type     import Type
+from core.type import Type
 from core.constant import Constant
+
 
 class MPIParser:
     def __call__(self, database_path: Path) -> Database:
         return self.parse(database_path)
-        
+
     def parse(self, database_path: Path) -> Database:
         database = Database()
 
@@ -28,7 +28,7 @@ class MPIParser:
         if constants_filename.exists():
             with constants_filename.open() as constants_file:
                 constants_array = json.load(constants_file)
-                
+
                 for constant in constants_array:
                     database.add_constant(Constant(database, constant))
 
@@ -36,26 +36,26 @@ class MPIParser:
 #        constants_directory = path + 'constants/'
 #        if os.path.isdir(constants_directory):
 #            files = pathlib.Path(types_directory).glob('**/*.json')
-#
+
 #            for path in files:
 #                constant = self.parse_single_constant(path)
-#                
+
 #                constant_name = constant['name']
 #                constant_abstract_type = constant['abstract_type']
 #                constant_obj = Constant(constant_abstract_type, constant_name)
 #
 #                database.constants[constant_name] = constant_obj
-#       
+
 #    def parse_single_constant(self) -> Dict[str, Any]:
 #        with open(path) as constantfile:
-#            return json.loads(constantfile) 
+#            return json.loads(constantfile)
 
     def default_function(self, func, defaults):
         # default function level
         for key in defaults['function'].keys():
             if key not in func:
-                func[key] = defaults['function'][key] 
-        
+                func[key] = defaults['function'][key]
+
         # default parameter level
         for parameter in func['parameters']:
             for key in defaults['parameter'].keys():
@@ -81,7 +81,7 @@ class MPIParser:
             for path in files:
                 func = self.parse_single_function(path.absolute())
                 self.default_function(func, defaults)
-                
+
                 func_obj = Function(database, func)
 
                 database.add_function(func_obj)
@@ -99,33 +99,33 @@ class MPIParser:
 
                 for mpi_type in type_array:
                     database.add_type(Type(database, mpi_type))
-        
+
         # TODO load directory definitions
 #        types_directory = path + 'types/'
 #        if os.path.isdir(types_directory):
 #            files = pathlib.Path(types_directory).glob('**/*.json')
-#
+
 #            for path in files:
 #                mpi_type = self.parse_single_type(path)
-#                
+
 #                type_name = mpi_type['name']
 #                type_abstract_type = mpi_type['abstract_type']
 #                type_ctype = mpi_type['ctype']
-#
+
 #                type_source = mpi_type['source']
 #                for source in type_source:
 #                    if source == "range":
 #                        type_lower_range = mpi_type['range'][0]
 #                        type_upper_range = mpi_type['range'][1]
-#
+
 #                type_obj = Type(type_abstract_type,
 #                                type_source,
 #                                type_ctype,
-#                                [type_lower_range, type_upper_range], 
+#                                [type_lower_range, type_upper_range],
 #                                type_name)
-#
+
 #                database.add_type(type_obj)
 
-    def parse_single_type(self, path: Path)-> Dict[str, Any]:
+    def parse_single_type(self, path: Path) -> Dict[str, Any]:
         with path.open() as typefile:
             return json.load(typefile)

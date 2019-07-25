@@ -7,6 +7,7 @@ from typing import Optional
 
 from core.type import Type
 
+
 class Variable:
     """
     This class represents any C variable for source code generation.

@@ -8,6 +8,7 @@ import logging
 from core.database import Database
 from core.type import Type
 
+
 class Constant:
     """
     This class represents a Constant from the specification.

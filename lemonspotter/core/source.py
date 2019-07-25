@@ -8,6 +8,7 @@ from pathlib import Path
 from core.statement import Statement, BlockStatement
 from core.variable import Variable
 
+
 class Source:
     """
     The Source object manages all C statments and variables.

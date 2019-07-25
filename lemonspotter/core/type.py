@@ -7,6 +7,7 @@ import logging
 
 from core.database import Database
 
+
 class Type:
     """
     This class represents the type abstraction from the specification.

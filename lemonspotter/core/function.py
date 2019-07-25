@@ -11,6 +11,7 @@ from core.statement import FunctionStatement
 from core.type import Type
 from core.parameter import Parameter
 
+
 class Function:
     """
     Defines an function object that can be included in Lemonspotter tests.

@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from core.constant import Constant
     from core.type import Type
 
+
 class Database:
     """
     This class stores all functions, types, and constants read in from

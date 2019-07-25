@@ -8,6 +8,7 @@ from core.database import Database
 from core.test import Source
 from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
 
+
 class TestGenerator:
     """
     This class is the base generator class. It provides the main function

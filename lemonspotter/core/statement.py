@@ -8,6 +8,7 @@ import logging
 from core.variable import Variable
 from core.database import Database
 
+
 class Statement:
     """
     This class is the base class for all Statements.
@@ -31,13 +32,15 @@ class Statement:
 
         return self._statement
 
+
 class IncludeStatement(Statement):
     """This class represents any include statements in C."""
 
     def __init__(self, header: str) -> None:
         super().__init__()
 
-        self._statement = '#include <'+ header + '>'
+        self._statement = '#include <' + header + '>'
+
 
 class ReturnStatement(Statement):
     """This class represents any return statements in C."""
@@ -46,6 +49,7 @@ class ReturnStatement(Statement):
         super().__init__()
 
         self._statement = 'return ' + expression + ';'
+
 
 class DeclarationStatement(Statement):
     """This class represents any variable declaration."""
@@ -61,6 +65,7 @@ class DeclarationStatement(Statement):
 
         return DeclarationStatement(variable)
 
+
 class AssignmentStatement(Statement):
     """This class represents any variable assignment."""
 
@@ -72,6 +77,7 @@ class AssignmentStatement(Statement):
 
         else:
             raise RuntimeError('AssignmentStatement needs Variable.value to be non-none.')
+
 
 class DeclarationAssignmentStatement(Statement):
     """This class represents any declaration and assignment in a single statement."""
@@ -91,6 +97,7 @@ class DeclarationAssignmentStatement(Statement):
         """This method generates a DeclarationAssignmentStatement from a variable."""
 
         return DeclarationAssignmentStatement(variable)
+
 
 class FunctionStatement(Statement):
     """This class represents any Function call statement."""
@@ -114,6 +121,7 @@ class FunctionStatement(Statement):
                      '\\n",', variable.name, ');']
         return FunctionStatement(' '.join(statement))
 
+
 class ExitStatement(Statement):
     """This class represents any exit call."""
 
@@ -121,6 +129,7 @@ class ExitStatement(Statement):
         super().__init__()
 
         self._statement: str = 'exit(' + errorcode + ');'
+
 
 class BlockStatement(Statement):
     """This class serves are a base class for block definitions."""
@@ -154,6 +163,7 @@ class BlockStatement(Statement):
 
         return code
 
+
 class ConditionStatement(BlockStatement):
     """This class represents if statements."""
 
@@ -181,7 +191,7 @@ class ConditionStatement(BlockStatement):
         This method generates a ConditionStatement for a variable.
         """
 
-        #if self._type.abstract_type == 'ERRORCODE':
+        # if self._type.abstract_type == 'ERRORCODE':
         #    #return 'if(' + self._name + ' != MPI_SUCCESS) exit(0);'
 
         #    statement = ConditionStatement(self._name + ' != MPI_SUCCESS')
@@ -191,8 +201,6 @@ class ConditionStatement(BlockStatement):
 
         raise NotImplementedError
 
-
-#class FunctionDefinitionStatement(BlockStatement):
 
 class MainDefinitionStatement(BlockStatement):
     """This class represents the main function definition."""
@@ -213,8 +221,5 @@ class MainDefinitionStatement(BlockStatement):
 
     def express(self) -> str:
         """"""
-
-        if self._statement is None:
-            raise RuntimeError('Trying to express MainDefinitionStatement with _statement is None.')
 
         return self._statement + '\n' + super().express()

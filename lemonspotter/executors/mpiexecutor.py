@@ -5,10 +5,11 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Set, List
 
-from core.test import Test, TestOutcome, TestType
+from core.test import Test, TestType
+
 
 class MPIExecutor:
-    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
+    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path = Path('tests/')):
         """
         Initializes a test executor for MPI Libraries
         """
@@ -52,7 +53,7 @@ class MPIExecutor:
                 logging.error('Runnign set of test failed.')
                 return
 
-    def build_test(self, test: Test, arguments: List[str]=[]) -> None:
+    def build_test(self, test: Test, arguments: List[str] = []) -> None:
         logging.info('building test %s', test.name)
 
         if test.build_outcome:
@@ -76,7 +77,7 @@ class MPIExecutor:
 
         except FileNotFoundError as error:
             logging.error('Test %s failed to build, due to missing mpicc.', test.name)
-            
+
             raise error
 
         # evaluate build result
@@ -99,7 +100,7 @@ class MPIExecutor:
 
             logging.warning('building failed of test %s', test.name)
 
-    def run_test(self, test: Test, arguments: List[str]=[]) -> None:
+    def run_test(self, test: Test, arguments: List[str] = []) -> None:
         """
         """
 

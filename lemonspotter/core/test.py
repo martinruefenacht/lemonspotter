@@ -8,17 +8,20 @@ from pathlib import Path
 
 from core.source import Source
 
+
 class TestType(Enum):
     """This Enumeration stores the type of tests available."""
 
     BUILD_AND_RUN = 0
     BUILD_ONLY = 1
 
+
 class TestOutcome(Enum):
     """This Enumeration stores the type of test outcomes."""
 
     FAILED = 0
     SUCCESS = 1
+
 
 class Test:
     """
