@@ -70,7 +70,7 @@ class ConstantPresenceGenerator(TestGenerator):
                         source,
                         test_type=TestType.BUILD_AND_RUN)
 
-            test.register_capture(variable.name)
+            test.register_capture(variable)
 
         else:
             test = Test('constant_presence_' + constant.name,
@@ -98,11 +98,14 @@ class ConstantPresenceGenerator(TestGenerator):
 
         test.run_fail_function = run_fail
 
-        def run_success(captures: Dict[str, str]):
-            logging.info('captures: %s', str(captures))
+        def run_success():
+            # assign constant value found
+            if variable.type.printable and variable.value is None:
+                raise RuntimeError('Variable is printable, but no value is set.')
 
-            constant.properties['value'] = captures[variable.name]
+            constant.properties['value'] = variable.value
 
+            # verify against specification
             if not constant.defined:
                 test.run_outcome = TestOutcome.SUCCESS
 

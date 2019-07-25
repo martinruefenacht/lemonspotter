@@ -140,21 +140,20 @@ class MPIExecutor:
                 logging.info('test %s successfully run.', test.name)
 
                 # filter for captures
-                captured = {}
+                logging.debug('test capturing: %s', str(test.captures))
                 for line in stdout.split('\n'):
                     if line:
                         tokens = line.split()
-
                         logging.debug(str(tokens))
-                        logging.debug(test.captures)
 
-                        if tokens[0] in test.captures:
-                            # only supports capturing single value
-                            captured[tokens[0]] = tokens[1]
+                        variable = test.captures.get(tokens[0], None)
+                        if variable is not None:
+                            # currently only supports key-value captures
+                            variable.value = tokens[1]
 
                 # call success function
                 if test.run_success_function is not None:
-                    test.run_success_function(captured)
+                    test.run_success_function()
 
                 return
 

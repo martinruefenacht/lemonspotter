@@ -2,11 +2,12 @@
 This modules defines the Test class.
 """
 
-from typing import Callable, Set, Optional
+from typing import Callable, AbstractSet, Optional, Mapping
 from enum import Enum
 from pathlib import Path
 
 from core.source import Source
+from core.variable import Variable
 
 
 class TestType(Enum):
@@ -36,20 +37,28 @@ class Test:
         self._source: Source = source
         self._executable: Optional[Path] = None
 
+        self._captures: Mapping[str, Variable] = {}
+
+        # TODO is there a better than Optional method?
+        # MR: I remember reading something!
         self._build_success_func: Optional[Callable[[], None]] = None
         self._build_fail_func: Optional[Callable[[], None]] = None
 
         self._run_success_func: Optional[Callable[[], None]] = None
         self._run_fail_func: Optional[Callable[[], None]] = None
 
-        self._captures: Set[str] = set()
-
         self._build_outcome: Optional[TestOutcome] = None
         self._run_outcome: Optional[TestOutcome] = None
 
     @property
-    def build_success_function(self) -> Optional[Callable[[], None]]:
+    def build_success_function(self) -> Callable[[], None]:
         """This property provides access to the build success callback."""
+
+        if self._build_success_func is None:
+            def set_build_outcome_success():
+                self._build_outcome = TestOutcome.SUCCESS
+
+            return set_build_outcome_success
 
         return self._build_success_func
 
@@ -60,8 +69,14 @@ class Test:
         self._build_success_func = func
 
     @property
-    def build_fail_function(self) -> Optional[Callable[[], None]]:
+    def build_fail_function(self) -> Callable[[], None]:
         """This property provides access of the build failure function."""
+
+        if self._build_fail_func is None:
+            def set_build_outcome_failed():
+                self._build_outcome = TestOutcome.FAILED
+
+            return set_build_outcome_failed
 
         return self._build_fail_func
 
@@ -72,8 +87,14 @@ class Test:
         self._build_fail_func = func
 
     @property
-    def run_success_function(self):
+    def run_success_function(self) -> Callable[[], None]:
         """This property provides access to the run success callback."""
+
+        if self._run_success_func is None:
+            def set_run_outcome_success():
+                self._run_outcome = TestOutcome.SUCCESS
+
+            return set_run_outcome_success
 
         return self._run_success_func
 
@@ -84,25 +105,33 @@ class Test:
         self._run_success_func = func
 
     @property
-    def run_fail_function(self):
+    def run_fail_function(self) -> Callable[[], None]:
         """This property provides access to the run fail callback."""
+
+        if self._run_fail_func is None:
+            def set_run_outcome_failed():
+                self._run_outcome = TestOutcome.FAILED
+
+            return set_run_outcome_failed
+
         return self._run_fail_func
 
     @run_fail_function.setter
     def run_fail_function(self, func) -> None:
         """This provides setting the run fail callback."""
+
         self._run_fail_func = func
 
-    @property
-    def captures(self) -> Set[str]:
-        """This property provides access to the defined captures of the test."""
-
-        return self._captures
-
-    def register_capture(self, token: str) -> None:
+    def register_capture(self, variable: Variable) -> None:
         """This method allows registering a capture from the stdout."""
 
-        self._captures.add(token)
+        self._captures[variable.name] = variable
+
+    @property
+    def captures(self) -> Mapping[str, Variable]:
+        """"""
+
+        return self._captures
 
     @property
     def name(self) -> str:
@@ -156,6 +185,16 @@ class Test:
         """This allows setting the run outcome."""
 
         self._run_outcome = outcome
+
+    @property
+    def outcome(self) -> TestOutcome:
+        """"""
+
+        if self._build_outcome is not TestOutcome.SUCCESS:
+            return self._build_outcome
+
+        else:
+            return self._run_outcome
 
     def __str__(self) -> str:
         return 'Test: ' + self.name + ' : ' + str(self.type)

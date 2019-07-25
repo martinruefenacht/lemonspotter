@@ -12,6 +12,13 @@ from core.type import Type
 from core.parameter import Parameter
 
 
+#class FunctionSample:
+#    def __init__(self, function: Function, arguments: Sequence[Variable], evaluator: Callable[[], None]):
+#        self._function = function
+#        self._arguments = arguments
+#        self._evaluator = evaluator
+
+
 class Function:
     """
     Defines an function object that can be included in Lemonspotter tests.
