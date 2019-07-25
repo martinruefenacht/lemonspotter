@@ -5,7 +5,7 @@ Tests whether a specific constant exists. No execution is required only building
 """
 
 import logging
-from typing import Set, Dict
+from typing import Set
 
 from core.database import Database
 from core.test import Test, TestType, TestOutcome

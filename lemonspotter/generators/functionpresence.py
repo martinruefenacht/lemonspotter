@@ -59,6 +59,7 @@ class FunctionPresenceGenerator(TestGenerator):
 
         for parameter in function.parameters:  # type: ignore
             if parameter.name not in source.variables:
+                # TODO doesn't take into account pointer_level
                 variable = Variable(parameter.type, parameter.name)
 
                 source.variables[variable.name] = variable
