@@ -69,3 +69,15 @@ class Constant:
                 raise RuntimeError("unknown operand")
 
         return self._properties.get('valid', False)
+
+    @property
+    def present(self) -> bool:
+        """"""
+
+        return self.properties.get('present', False)
+
+    @property
+    def valid(self) -> bool:
+        """"""
+
+        return self.properties.get('valid', False)

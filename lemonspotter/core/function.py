@@ -131,3 +131,11 @@ class Function:
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_all'])
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
+
+    @property
+    def present(self) -> bool:
+        """"""
+
+        return self.properties.get('present', False)
+
+

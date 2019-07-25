@@ -80,18 +80,22 @@ class ConstantPresenceGenerator(TestGenerator):
         def build_fail():
             constant.properties['presence_tested'] = True
             constant.properties['present'] = False
+
             test.build_outcome = TestOutcome.FAILED
+
         test.build_fail_function = build_fail
 
         def build_success():
             constant.properties['presence_tested'] = True
             constant.properties['present'] = True
+
             test.build_outcome = TestOutcome.SUCCESS
+
         test.build_success_function = build_success
 
         def run_fail():
-            # todo do we need to do anything here?
             test.run_outcome = TestOutcome.FAILED
+
         test.run_fail_function = run_fail
 
         def run_success(captures: Dict[str, str]):
@@ -109,6 +113,7 @@ class ConstantPresenceGenerator(TestGenerator):
                     test.run_outcome = TestOutcome.FAILED
 
             logging.info('test %s successful', test.name)
+
         test.run_success_function = run_success
 
         return test

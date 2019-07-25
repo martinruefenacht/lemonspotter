@@ -30,16 +30,16 @@ class StartEndGenerator(TestGenerator):
         """
 
         # determine all start functions
-        starts = filter(lambda f: not f.needs_all and not f.needs_any and
-                        (f.leads_any or f.leads_all),
+        starts = filter(lambda f: (not (f.needs_all or f.needs_any) and
+                        (f.leads_any or f.leads_all)) and f.present,
                         self._database.functions)
+        logging.info('present starts found %s', ' '.join([start.name for start in starts]))
 
         # determine all end points
-        ends = filter(lambda f: not f.leads_all and not f.leads_any and
-                      (f.needs_any or f.needs_all),
+        ends = filter(lambda f: (not (f.leads_all or f.leads_any) and
+                      (f.needs_any or f.needs_all)) and f.present,
                       self._database.functions)
-
-        # TODO filter for present property
+        logging.info('present ends found %s', ' '.join([end.name for end in ends]))
 
         # for all combinations
         tests = set()
