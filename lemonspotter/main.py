@@ -182,9 +182,17 @@ def main() -> None:
         raise NotImplementedError
 
     elif arguments.flake:
-        process = Popen('flake8', stdout=PIPE, stderr=PIPE)
+
+        command = [sys.executable, '-m', 'flake8']
+
+        logging.info('executing flake8 with %s', ' '.join(command))
+        process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+
         stdout, stderr = process.communicate()
-        print(stdout.decode('utf-8'))
+        print(stdout)
+
+        if stderr:
+            logging.error(stderr)
 
     elif not arguments.database:
         logging.error("Database path not defined")

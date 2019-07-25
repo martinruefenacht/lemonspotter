@@ -57,7 +57,7 @@ class FunctionPresenceGenerator(TestGenerator):
         # generate default function arguments
         arguments = []
 
-        for parameter in function.parameters: # type: ignore
+        for parameter in function.parameters:  # type: ignore
             if parameter.name not in source.variables:
                 variable = Variable(parameter.type, parameter.name)
 

@@ -83,7 +83,7 @@ class Function:
 
         return self._json['name']
 
-    @property # type: ignore
+    @property  # type: ignore
     @lru_cache()
     def parameters(self) -> Sequence[Parameter]:
         """This property provides access to the parameter list of this Function object."""
@@ -96,7 +96,7 @@ class Function:
 
         return self._db.type_by_abstract_type[self._json['return']]
 
-    @property # type: ignore
+    @property  # type: ignore
     @lru_cache()
     def needs_any(self) -> Set['Function']:
         """This property provides access to the any set of needed Function objects."""
@@ -105,7 +105,7 @@ class Function:
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
 
-    @property # type: ignore
+    @property  # type: ignore
     @lru_cache()
     def needs_all(self) -> Set['Function']:
         """This property provides access to the all set of needed Function objects."""
@@ -114,7 +114,7 @@ class Function:
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
 
-    @property # type: ignore
+    @property  # type: ignore
     @lru_cache()
     def leads_any(self) -> Set['Function']:
         """This property provides access to the any set of lead Function objects."""
@@ -123,7 +123,7 @@ class Function:
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
 
-    @property # type: ignore
+    @property  # type: ignore
     @lru_cache()
     def leads_all(self) -> Set['Function']:
         """This property provides access to the all set of lead the Function objects."""
