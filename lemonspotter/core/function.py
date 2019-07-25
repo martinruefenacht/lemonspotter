@@ -4,6 +4,7 @@ This module defines the function class which respresents functions from the spec
 
 from typing import Mapping, Any, AbstractSet, Sequence, Callable, NamedTuple, Optional
 from functools import lru_cache
+import logging
 
 from core.variable import Variable
 from core.database import Database
@@ -11,6 +12,7 @@ from core.statement import FunctionStatement
 from core.type import Type
 from core.parameter import Parameter
 from core.source import Source
+from core.partition import Partition
 
 
 class Function:
@@ -59,18 +61,10 @@ class Function:
         return tuple(Parameter(self._db, parameter) for parameter in self._json['parameters'])
 
     @property
-    def default_partition(self) -> Optional[Sequence[Parameter]]:
+    def default_partition(self) -> Partition:
         """"""
 
-        if 'partitions' not in self._json or 'default' not in self._json['partitions']:
-            return None
-
-        partitions = self._json['partitions']
-
-        if 'default' in partitions:
-            return partitions['default']
-
-        return None
+        return Partition(self._db, self, self._json['partitions']['default'])
 
     @property
     def return_type(self) -> Type:
@@ -126,7 +120,7 @@ class FunctionSample:
 
     def __init__(self, function: Function) -> None:
         self._function: Function = function
-        self._return_variable: Variable = Variable(Function.return_type)
+        self._return_variable: Variable = Variable(function.return_type)
 
         self._arguments: Optional[Sequence[Variable]] = None
         self._evaluator: Optional[Callable[[], bool]] = None
@@ -147,7 +141,9 @@ class FunctionSample:
     def arguments(self) -> Sequence[Variable]:
         """"""
         
-        assert self._arguments is not None
+        if self._arguments is None:
+            return []
+
         return self._arguments
 
     @arguments.setter
@@ -187,22 +183,26 @@ class FunctionSample:
         statement += self.function.name + '('
 
         # add arguments
-        for idx, (argument, parameter) in enumerate(zip(self._arguments, self.function.parameters)):
-            mod = ''
+        logging.debug('arguments %s', str(self._arguments))
+        logging.debug('parameters %s', str(self.function.parameters))
 
-            pointer_diff = argument.pointer_level - parameter.pointer_level
-            if pointer_diff < 0:
-                # addressof &
-                mod += '&'
+        if self.function.has_parameters:
+            for idx, (argument, parameter) in enumerate(zip(self._arguments, self.function.parameters)):
+                mod = ''
 
-            elif pointer_diff > 0:
-                # dereference *
-                raise NotImplementedError
+                pointer_diff = argument.pointer_level - parameter.pointer_level
+                if pointer_diff < 0:
+                    # addressof &
+                    mod += '&'
 
-            statement += (mod + argument.name)
+                elif pointer_diff > 0:
+                    # dereference *
+                    raise NotImplementedError
 
-            if (idx + 1) != len(self._arguments):
-                statement += ', '
+                statement += (mod + argument.name)
+
+                if (idx + 1) != len(self._arguments):
+                    statement += ', '
 
         statement += ');'
 

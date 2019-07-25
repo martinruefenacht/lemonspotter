@@ -11,7 +11,7 @@ from core.database import Database
 from core.function import Function, FunctionSample
 from core.testgenerator import TestGenerator
 from core.instantiator import Instantiator
-from core.statement import FunctionStatement, ConditionStatement
+from core.statement import FunctionStatement, ConditionStatement, DeclarationAssignmentStatement
 
 
 class StartEndGenerator(TestGenerator):
@@ -93,23 +93,29 @@ class StartEndGenerator(TestGenerator):
         Generate C source code for a given path between initiator and finalizer.
         """
 
-        source = self.generate_main()
+        source = self._gen_main()
 
+        # generate start
+        for variable in start.arguments:
+            if variable.name not in source.variables:
+                source.add_at_start(DeclarationAssignmentStatement(variable))
+    
         source.add_at_start(start.generate_statement(source))
-
-        # print and check
         source.add_at_start(FunctionStatement.generate_print(start.return_variable))
         source.add_at_start(ConditionStatement.generate_check(start.return_variable))
 
-        source.add_at_start(end.generate_statement(source))
+        # generate end
+        for variable in end.arguments:
+            if variable.name not in source.variables:
+                source.add_at_start(DeclarationAssignmentStatement(variable))
 
-        # print and check
+        source.add_at_start(end.generate_statement(source))
         source.add_at_start(FunctionStatement.generate_print(end.return_variable))
         source.add_at_start(ConditionStatement.generate_check(end.return_variable))
 
         # create test
-        test = Test(test_name, source, TestType.BUILD_AND_RUN)
-        logging.debug('test source:\n%s', str(test.source))
+        test = Test(test_name, TestType.BUILD_AND_RUN, source)
+        logging.debug('test %s source:\n' + repr(test.source).replace('%', '%%'), test.name)
 
         def run_success():
             # use evaluator of both start_sample

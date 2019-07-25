@@ -63,7 +63,8 @@ class FunctionPresenceGenerator(TestGenerator):
         sample = instantiator.generate_samples(function)[0]
 
         for variable in sample.arguments:
-            test.source.add_at_start(DeclarationStatement(variable))
+            if variable.name not in test.source.variables:
+                test.source.add_at_start(DeclarationStatement(variable))
 
         test.source.add_at_start(sample.generate_statement(test.source))
 

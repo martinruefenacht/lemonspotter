@@ -30,46 +30,57 @@ class DefaultInstantiator(Instantiator):
         """
 
         sample = FunctionSample(function)
-        
-        # handle zero parameter functions
-        # TODO this still has an expected partition result
-        if not function.has_parameters:
-            def tester() -> bool:
-                function.default_partition 
 
-            sample.return_variable
-            sample.evaluator
+        def evaluator() -> bool:
+            return function.default_partition.validate(sample.return_variable)
+        sample.evaluator = evaluator
 
-        # does the function have a default parameter set
-        default = function.default_parameters
-        if default is not None:
-            arguments: MutableSequence = []
+        if function.has_parameters:
+            if function.default_partition:
+                partition = function.default_partition
+                arguments = []
 
-            for parameter in default:
-                #arguments.append(Variable(parameter.type, parameter.name, parameter.type.default))
-                # TODO
-                pass
+                for parameter in function.parameters:
+                    if parameter.name not in partition:
+                        raise RuntimeError('Found parameter which is not part of the default_partition.')
 
-            sample.arguments = arguments
+                    if partition[parameter.name]['type'] == 'literal':
+                        arguments.append(Variable(parameter.type, parameter.name, partition[parameter.name]['literal']))
 
-            # create evaluator
-            def tester() -> None:
-                if default['_expected']['type'] == 'constant':
-                    if sample.return_variable.value != self._db.constant_by_name[default['_expected']['name']]['value']:
-                        return False
                     else:
-                        return True
-                else:
-                    raise NotImplementedError('other return types not implemented')
-            
-            sample.evaluator = tester
+                        raise NotImplementedError('Partition argument type is not literal.')
 
-        else:
-            raise NotImplementedError('Function %s does not provide a default argument partition.', function.name)
-            # TODO go through parameters looking for defaults
+                sample.arguments = arguments
 
-            # else go through types using defaults
+            else:
+                raise NotImplementedError('no default partition, but parameters exist.')
 
-            # else raise ERROR
+#            for parameter in default:
+#                #arguments.append(Variable(parameter.type, parameter.name, parameter.type.default))
+#                # TODO
+#                pass
+#
+#            sample.arguments = arguments
+#
+#            # create evaluator
+#            def evaluator() -> bool:
+#
+#                if default['_expected']['type'] == 'constant':
+#                    if sample.return_variable.value != self._db.constant_by_name[default['_expected']['name']]['value']:
+#                        return False
+#                    else:
+#                        return True
+#                else:
+#                    raise NotImplementedError('other return types not implemented')
+#            
+#            sample.evaluator = tester
+#
+#        else:
+#            raise NotImplementedError('Function %s does not provide a default argument partition.', function.name)
+#            # TODO go through parameters looking for defaults
+#
+#            # else go through types using defaults
+#
+#            # else raise ERROR
 
         return set([sample])

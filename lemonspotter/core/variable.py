@@ -41,6 +41,7 @@ class Variable:
     def type(self, kind: Type) -> None:
         """"""
 
+        assert kind is not None
         self._type = kind
 
     @property
@@ -53,7 +54,8 @@ class Variable:
     @name.setter
     def name(self, name: str) -> None:
         """"""
-
+        
+        assert name is not None
         self._name = name
 
     @property
@@ -66,6 +68,7 @@ class Variable:
     def pointer_level(self, level: int) -> None:
         """"""
 
+        assert level is not None
         self._pointer_level = level
 
     @property
@@ -78,4 +81,5 @@ class Variable:
     def value(self, value: str) -> None:
         """This allows setting the value of the Variable."""
 
+        assert value is not None
         self._value = value

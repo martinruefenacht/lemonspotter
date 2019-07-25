@@ -81,3 +81,9 @@ class Constant:
         """"""
 
         return self.properties.get('valid', False)
+
+    @property
+    def value(self) -> str:
+        """"""
+
+        return self.properties['value']

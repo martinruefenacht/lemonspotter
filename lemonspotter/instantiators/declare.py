@@ -35,7 +35,6 @@ class DeclarationInstantiator(Instantiator):
             raise NotImplementedError('DeclarationInstantiator only generates compilable code, not runnable.')
 
         sample.evaluator = evaluator
-        sample.return_variable.type = function.return_type
         
         # generate valid but empty arguments
         arguments = []
