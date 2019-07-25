@@ -4,6 +4,7 @@
 import sys
 import argparse
 import logging
+from subprocess import Popen, PIPE
 from pathlib import Path
 from typing import Optional
 
@@ -195,7 +196,9 @@ def main():
     if arguments.test:
         raise NotImplementedError
     elif arguments.flake:
-        raise NotImplementedError
+        process = Popen('flake8', stdout=PIPE, stderr=PIPE, cwd='../')
+        stdout, stderr = process.communicate()
+        print(stdout.decode('utf-8'))
     elif not arguments.database:
         logging.error("Database path not defined")
     else:
