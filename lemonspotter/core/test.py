@@ -35,7 +35,7 @@ class Test:
     def __init__(self, name: str, source: Source, test_type: TestType) -> None:
         self._name: str = name
         self._type: TestType = test_type
-        self._stage: TestStage = Optional[TestStage] = None
+        self._stage: Optional[TestStage] = None
 
         self._source: Source = source
         self._executable: Optional[Path] = None

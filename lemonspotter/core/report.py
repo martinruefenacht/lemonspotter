@@ -83,7 +83,7 @@ class TestReport():
         """
         Writes presence_report to report file
         """
-        if self.presence_report = None
+        if self.presence_report == None:
             self.generate_presence_report()
         
         if not os.path.exists('../reports/'):
