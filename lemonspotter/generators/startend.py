@@ -3,12 +3,12 @@ This module defines the initiation point to finalization point generator.
 """
 
 import logging
-from typing import Set, List, Dict, Tuple
+from typing import Iterable, MutableSet, MutableMapping, Optional
 
-from core.test import Test, Source
+from core.test import Test, TestType
 from core.variable import Variable
 from core.database import Database
-from core.function import Function
+from core.function import Function, FunctionSample
 from core.testgenerator import TestGenerator
 from core.instantiator import Instantiator
 from core.statement import FunctionStatement, ConditionStatement
@@ -24,7 +24,7 @@ class StartEndGenerator(TestGenerator):
 
         self.elements_generated = 0
 
-    def generate(self, instantiator: Instantiator) -> Set[Test]:
+    def generate(self, instantiator: Instantiator) -> Iterable[Test]:
         """
         Generate all possible C programs for all initiators and finalizers.
         """
@@ -33,16 +33,14 @@ class StartEndGenerator(TestGenerator):
         starts = filter(lambda f: (not (f.needs_all or f.needs_any) and
                         (f.leads_any or f.leads_all)) and f.present,
                         self._database.functions)
-        logging.info('present starts found %s', ' '.join([start.name for start in starts]))
 
         # determine all end points
         ends = filter(lambda f: (not (f.leads_all or f.leads_any) and
                       (f.needs_any or f.needs_all)) and f.present,
                       self._database.functions)
-        logging.info('present ends found %s', ' '.join([end.name for end in ends]))
 
         # for all combinations
-        tests = set()
+        tests: MutableSet[Test] = set()
 
         for start in starts:
             logging.info('using start %s', str(start))
@@ -51,98 +49,75 @@ class StartEndGenerator(TestGenerator):
                 logging.info('using start %s', str(start))
 
                 # generate individual test
-                path = (start, end)
-                tests = tests.union(self.generate_tests(path, instantiator))
+                logging.debug('generating tests for %s-%s with %s', start, end, instantiator)
+                for test in self._gen_tests(start, end, instantiator):
+                    tests.add(test)
 
         return tests
 
-    def generate_tests(self, path: Tuple[Function], instantiator: Instantiator) -> Set[Test]:
+    def _gen_tests(self, start: Function, end: Function, sampler: Instantiator) -> Iterable[Test]:
         """
         Using the functions selected and the given instantiator generate a test
         for each argument set extracted from instantiator.
         """
 
-        test_base_name = ''.join([func.name for func in path])
+        tests: MutableSet[Test] = set()
+        test_base_name = '_'.join([func.name for func in [start, end]])
 
-        tests: Set[Test] = set()
+        # generate function samples
+        samples: MutableMapping[Function, MutableSet[FunctionSample]] = {}
 
-        # for all arguments (N,)^path generate test
+        for function in [start, end]:
+            if function not in samples:
+                samples[function] = set()
 
-        argument_samples: Dict[str, Tuple[Tuple[Variable]]] = {}
+            for sample in sampler.generate_samples(function):
+                samples[function].add(sample)
 
-        # TODO this is a ^len(path) process
-        for function in path:
-            argument_samples.update(instantiator.generate_variables(function.parameters))
+        # generate testcases
+        for sidx, start_sample in enumerate(samples[start]):
+            for eidx, end_sample in enumerate(samples[end]):
+                # generate unique id
+                test_specifier = eidx + len(samples[start]) * sidx
 
-        for argument_sample_name, argument_sample in argument_samples.items():
-            test_name = test_base_name + '_' + argument_sample_name
+                logging.info('generating test of %s and %s', str(start_sample), str(end_sample))
+                test = self._gen_test(test_base_name + '_' + str(test_specifier),
+                                      start_sample, end_sample)
 
-            logging.debug('generating test %s ', test_name)
-            tests.add(Test(test_name, self.generate_source(path, argument_sample)))
+                tests.add(test)
 
         return tests
 
-    def generate_source(self, path: List[Function], arguments: List[List[Variable]]) -> Source:
+    def _gen_test(self, test_name: str, start: FunctionSample, end: FunctionSample) -> Test:
         """
         Generate C source code for a given path between initiator and finalizer.
         """
 
         source = self.generate_main()
 
-        for idx, function in enumerate(path):
-            # we have a current set of variables
+        source.add_at_start(start.generate_statement(source))
 
-            # deepcopy current source, this goes exponential
-            # for each source:variables combination generate a function expression
+        # print and check
+        source.add_at_start(FunctionStatement.generate_print(start.return_variable))
+        source.add_at_start(ConditionStatement.generate_check(start.return_variable))
 
-            args = arguments[idx]
-            logging.debug('%s %s', str(function), str(args))
+        source.add_at_start(end.generate_statement(source))
 
-            # add function call
-            self.elements_generated += 1
-            return_name = 'return_' + function.name + '_'
-            return_name += str(self.elements_generated)
+        # print and check
+        source.add_at_start(FunctionStatement.generate_print(end.return_variable))
+        source.add_at_start(ConditionStatement.generate_check(end.return_variable))
 
-            function_call = function.generate_function_statement(args,
-                                                                 return_name,
-                                                                 self._database)
-            source.add_at_start(function_call)
+        # create test
+        test = Test(test_name, source, TestType.BUILD_AND_RUN)
+        logging.debug('test source:\n%s', str(test.source))
 
-            # add return output
-            for name, variable in function_call.variables.items():
-                source.add_at_start(FunctionStatement.generate_print(variable))
+        def run_success():
+            # use evaluator of both start_sample
+            # and end_sample
+            pass
 
-            # add return check
-            for name, variable in function_call.variables.items():
-                source.add_at_start(ConditionStatement.generate_check(variable))
+        # TODO register return_start return_end
 
-        return source
+        test.run_success_function = run_success
 
-#        # add arguments
-#        for parameter in element.parameters:
-#            # match parameter with available variable
-#            if parameter['name'] not in variables:
-#                raise NotImplementedError
-#                # generate variable, causes additional paths!
-#                # how do we handle branching points?
-
-#            variable = variables[parameter['name']]
-#
-#            if variable.kind.abstract_type != parameter['abstract_type']:
-#                raise ValueError('Mismatch between abstract types of parameter and variable.')
-#
-#            argument = []
-#
-#            # add argument pointer level
-#            level_difference = parameter['pointer'] - variable.pointer_level
-#            if level_difference > 0:
-#                argument.append('&' * level_difference)
-#
-#            # add argument name
-#            argument.append(variable.name)
-#
-#            # add comma
-#            if parameter is not element.parameters[-1]:
-#                argument.append(',')
-#
-#            line.append(''.join(argument))
+        return test

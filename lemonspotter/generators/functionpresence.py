@@ -10,10 +10,11 @@ from typing import Set
 
 from core.database import Database
 from core.test import Test, TestType
-from core.function import Function
+from core.function import Function, FunctionSample
 from core.variable import Variable
 from core.testgenerator import TestGenerator
 from core.statement import DeclarationStatement
+from instantiators.declare import DeclarationInstantiator
 
 
 class FunctionPresenceGenerator(TestGenerator):
@@ -52,43 +53,31 @@ class FunctionPresenceGenerator(TestGenerator):
 
         logging.info('generating test for %s', function.name)
 
-        source = self.generate_main()
-
-        # generate default function arguments
-        arguments = []
-
-        for parameter in function.parameters:  # type: ignore
-            if parameter.name not in source.variables:
-                # TODO doesn't take into account pointer_level
-                variable = Variable(parameter.type, parameter.name)
-
-                source.variables[variable.name] = variable
-
-                # only requires valid types, not correct code for presence testing
-                source.add_at_start(DeclarationStatement.generate_declaration(variable))
-
-            else:
-                variable = source.variables[parameter.name]
-
-            arguments.append(variable)
-
-        # generate function call statement
-        return_name = 'return_' + function.name
-        function_call = function.generate_function_statement(tuple(arguments), return_name)
-
-        source.add_at_start(function_call)
-
         # create Test and assign build success/fail closures
-        test = Test('function_presence_' + function.name, source, test_type=TestType.BUILD_ONLY)
+        test = Test('function_presence_' + function.name, test_type=TestType.BUILD_ONLY)
 
+        test.source = self._gen_main()
+
+        # generate declaration of arguments
+        instantiator = DeclarationInstantiator(self._database)
+        sample = instantiator.generate_samples(function)[0]
+
+        for variable in sample.arguments:
+            test.source.add_at_start(DeclarationStatement(variable))
+
+        test.source.add_at_start(sample.generate_statement(test.source))
+
+        # add evaluation closures
         def build_fail():
             function.properties['presence_tested'] = True
             function.properties['present'] = False
+
         test.build_fail_function = build_fail
 
         def build_success():
             function.properties['presence_tested'] = True
             function.properties['present'] = True
+
         test.build_success_function = build_success
 
         return test

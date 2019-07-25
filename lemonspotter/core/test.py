@@ -2,7 +2,7 @@
 This modules defines the Test class.
 """
 
-from typing import Callable, AbstractSet, Optional, Mapping
+from typing import Callable, Optional, MutableMapping
 from enum import Enum
 from pathlib import Path
 
@@ -30,14 +30,14 @@ class Test:
     source code level information.
     """
 
-    def __init__(self, name: str, source: Source, test_type: TestType) -> None:
+    def __init__(self, name: str, test_type: TestType, source: Optional[Source] = None) -> None:
         self._name: str = name
         self._type: TestType = test_type
 
-        self._source: Source = source
+        self._source: Optional[Source] = source
         self._executable: Optional[Path] = None
 
-        self._captures: Mapping[str, Variable] = {}
+        self._captures: MutableMapping[str, Variable] = {}
 
         self._build_success_func: Optional[Callable[[], None]] = None
         self._build_fail_func: Optional[Callable[[], None]] = None
@@ -126,7 +126,7 @@ class Test:
         self._captures[variable.name] = variable
 
     @property
-    def captures(self) -> Mapping[str, Variable]:
+    def captures(self) -> MutableMapping[str, Variable]:
         """"""
 
         return self._captures
@@ -147,7 +147,14 @@ class Test:
     def source(self) -> Source:
         """This property provides the Source of the Test."""
 
+        assert self._source is not None
         return self._source
+
+    @source.setter
+    def source(self, source: Source) -> None:
+        """"""
+        
+        self._source = source
 
     @property
     def executable(self) -> Optional[Path]:

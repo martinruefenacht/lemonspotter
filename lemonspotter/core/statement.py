@@ -186,10 +186,12 @@ class ConditionStatement(BlockStatement):
         return code
 
     @classmethod
-    def generate_check(cls, variable: Variable):
+    def generate_check(cls, variable: Variable) -> None:
         """
         This method generates a ConditionStatement for a variable.
         """
+
+        # TODO implement this functionality
 
         # if self._type.abstract_type == 'ERRORCODE':
         #    #return 'if(' + self._name + ' != MPI_SUCCESS) exit(0);'
@@ -199,7 +201,9 @@ class ConditionStatement(BlockStatement):
         #
         #    return statement
 
-        raise NotImplementedError
+        #  raise NotImplementedError
+
+        return None
 
 
 class MainDefinitionStatement(BlockStatement):

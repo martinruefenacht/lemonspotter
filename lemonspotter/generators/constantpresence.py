@@ -52,7 +52,7 @@ class ConstantPresenceGenerator(TestGenerator):
         the given constant.
         """
 
-        source = self.generate_main()
+        source = self._gen_main()
 
         variable = Variable(constant.type, 'variable_' + constant.name)
 
@@ -67,15 +67,15 @@ class ConstantPresenceGenerator(TestGenerator):
             source.add_at_start(FunctionStatement.generate_print(variable))
 
             test = Test('constant_presence_' + constant.name,
-                        source,
-                        test_type=TestType.BUILD_AND_RUN)
+                        TestType.BUILD_AND_RUN,
+                        source)
 
             test.register_capture(variable)
 
         else:
             test = Test('constant_presence_' + constant.name,
-                        source,
-                        test_type=TestType.BUILD_ONLY)
+                        TestType.BUILD_ONLY,
+                        source)
 
         def build_fail():
             constant.properties['presence_tested'] = True

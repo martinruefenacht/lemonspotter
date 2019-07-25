@@ -23,6 +23,7 @@ class Database:
 
         self.functions_by_name: Dict[str, Function] = {}
         self.constants_by_abstract_type: Dict[str, List[Constant]] = {}
+        self.constants_by_name: Dict[str, Constant] = {}
         self.type_by_abstract_type: Dict[str, Type] = {}
 
     def add_constant(self, constant: Constant) -> None:
@@ -33,11 +34,12 @@ class Database:
         # add to set of constants
         self.constants.add(constant)
 
-        # add to lookup
+        # add to lookups
         if constant.type.abstract_type not in self.constants_by_abstract_type:
             self.constants_by_abstract_type[constant.type.abstract_type] = []
 
         self.constants_by_abstract_type[constant.type.abstract_type].append(constant)
+        self.constants_by_name[constant.name] = constant
 
     def add_function(self, function: Function) -> None:
         """

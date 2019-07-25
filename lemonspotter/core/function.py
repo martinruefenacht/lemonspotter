@@ -2,7 +2,7 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import Mapping, Any, AbstractSet, Sequence, Callable
+from typing import Mapping, Any, AbstractSet, Sequence, Callable, NamedTuple, Optional
 from functools import lru_cache
 
 from core.variable import Variable
@@ -10,13 +10,7 @@ from core.database import Database
 from core.statement import FunctionStatement
 from core.type import Type
 from core.parameter import Parameter
-
-
-class FunctionSample:
-    def __init__(self, function: 'Function', arguments: Sequence[Variable], evaluator: Callable[[], None]):
-        self._function = function
-        self._arguments = arguments
-        self._evaluator = evaluator
+from core.source import Source
 
 
 class Function:
@@ -47,48 +41,15 @@ class Function:
 
         return repr(self)
 
-    def generate_function_statement(self, arguments: Sequence[Variable],
-                                    return_name: str) -> FunctionStatement:
-        """
-        Generates a compilable expression of the function with the given arguments.
-        """
-
-        statement = ''
-
-        statement += self.return_type.language_type + ' ' + return_name
-
-        return_variable = Variable(self.return_type, return_name)
-
-        statement += ' = '
-        statement += self.name + '('
-
-        # add arguments
-        for idx, (argument, parameter) in enumerate(zip(arguments, self.parameters)):
-            mod = ''
-
-            pointer_diff = argument.pointer_level - parameter.pointer_level
-            if pointer_diff < 0:
-                # addressof &
-                mod += '&'
-
-            elif pointer_diff > 0:
-                # dereference *
-                raise NotImplementedError
-
-            statement += (mod + argument.name)
-
-            if (idx + 1) != len(arguments):
-                statement += ', '
-
-        statement += ');'
-
-        return FunctionStatement(statement, {return_name: return_variable})
-
     @property
     def name(self) -> str:
         """This property provides access to the Function name."""
 
         return self._json['name']
+
+    @property
+    def has_parameters(self) -> bool:
+        return self._json['parameters']
 
     @property  # type: ignore
     @lru_cache()
@@ -96,6 +57,20 @@ class Function:
         """This property provides access to the parameter list of this Function object."""
 
         return tuple(Parameter(self._db, parameter) for parameter in self._json['parameters'])
+
+    @property
+    def default_partition(self) -> Optional[Sequence[Parameter]]:
+        """"""
+
+        if 'partitions' not in self._json or 'default' not in self._json['partitions']:
+            return None
+
+        partitions = self._json['partitions']
+
+        if 'default' in partitions:
+            return partitions['default']
+
+        return None
 
     @property
     def return_type(self) -> Type:
@@ -146,3 +121,89 @@ class Function:
         return self.properties.get('present', False)
 
 
+class FunctionSample:
+    """"""
+
+    def __init__(self, function: Function) -> None:
+        self._function: Function = function
+        self._return_variable: Variable = Variable(Function.return_type)
+
+        self._arguments: Optional[Sequence[Variable]] = None
+        self._evaluator: Optional[Callable[[], bool]] = None
+
+    @property
+    def function(self) -> Function:
+        """"""
+
+        return self._function
+
+    @property
+    def return_variable(self) -> Variable:
+        """"""
+        
+        return self._return_variable
+
+    @property
+    def arguments(self) -> Sequence[Variable]:
+        """"""
+        
+        assert self._arguments is not None
+        return self._arguments
+
+    @arguments.setter
+    def arguments(self, arguments: Sequence[Variable]) -> None:
+        """"""
+
+        assert arguments is not None
+        self._arguments = arguments
+
+    @property
+    def evaluator(self) -> Callable[[], bool]:
+        """"""
+
+        assert self._evaluator is not None
+        return self._evaluator
+
+    @evaluator.setter
+    def evaluator(self, evaluator: Callable[[], bool]) -> None:
+        """"""
+
+        assert evaluator is not None
+        self._evaluator = evaluator
+
+    def generate_statement(self, source: Source) -> FunctionStatement:
+        """
+        Generates a compilable expression of the function with the given arguments.
+        """
+
+        self._return_variable.name = 'return_' + self._function.name 
+
+        if self._return_variable.name in source.variables:
+            raise NotImplementedError('Test if the variable already exists.')
+
+        statement = ''
+        statement += self.function.return_type.language_type + ' ' + self._return_variable.name
+        statement += ' = '
+        statement += self.function.name + '('
+
+        # add arguments
+        for idx, (argument, parameter) in enumerate(zip(self._arguments, self.function.parameters)):
+            mod = ''
+
+            pointer_diff = argument.pointer_level - parameter.pointer_level
+            if pointer_diff < 0:
+                # addressof &
+                mod += '&'
+
+            elif pointer_diff > 0:
+                # dereference *
+                raise NotImplementedError
+
+            statement += (mod + argument.name)
+
+            if (idx + 1) != len(self._arguments):
+                statement += ', '
+
+        statement += ');'
+
+        return FunctionStatement(statement, {self._return_variable.name: self._return_variable})

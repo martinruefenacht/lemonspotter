@@ -8,7 +8,6 @@ from core.database import Database
 from core.test import Source
 from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
 
-
 class TestGenerator:
     """
     This class is the base generator class. It provides the main function
@@ -18,7 +17,7 @@ class TestGenerator:
     def __init__(self, database: Database) -> None:
         self._database = database
 
-    def generate_main(self) -> Source:
+    def _gen_main(self) -> Source:
         """This function generates the main function for the test."""
 
         source = Source()
