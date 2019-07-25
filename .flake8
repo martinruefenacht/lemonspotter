@@ -1,0 +1,13 @@
+[flake8]
+exclude =
+    .git,
+    .gitignore,
+    __pycache__,
+    reports,
+    lemonspotter/tests/,
+    RELEASE_NOTES,
+    README.md,
+    Makefile,
+    AUTHORS,
+    CHANGELOG,
+    LICENSE
