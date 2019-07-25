@@ -39,8 +39,6 @@ class Test:
 
         self._captures: Mapping[str, Variable] = {}
 
-        # TODO is there a better than Optional method?
-        # MR: I remember reading something!
         self._build_success_func: Optional[Callable[[], None]] = None
         self._build_fail_func: Optional[Callable[[], None]] = None
 
@@ -158,7 +156,7 @@ class Test:
         return self._executable
 
     @executable.setter
-    def executable(self, path: Path):
+    def executable(self, path: Path) -> None:
         """This allows setting the executable Path."""
         self._executable = path
 
@@ -187,10 +185,10 @@ class Test:
         self._run_outcome = outcome
 
     @property
-    def outcome(self) -> TestOutcome:
+    def outcome(self) -> Optional[TestOutcome]:
         """"""
 
-        if self._build_outcome is not TestOutcome.SUCCESS:
+        if self._build_outcome is None or self._build_outcome is TestOutcome.FAILED:
             return self._build_outcome
 
         else:
