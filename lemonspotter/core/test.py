@@ -1,89 +1,158 @@
-import os
+"""
+This modules defines the Test class.
+"""
+
+from typing import Callable, Set, Optional
+from enum import Enum
+from pathlib import Path
+
+from core.source import Source
+
+class TestType(Enum):
+    """This Enumeration stores the type of tests available."""
+
+    BUILD_AND_RUN = 0
+    BUILD_ONLY = 1
+
+class TestOutcome(Enum):
+    """This Enumeration stores the type of test outcomes."""
+
+    FAILED = 0
+    SUCCESS = 1
 
 class Test:
-    def __init__(self, name: str, sources=[]):
-        self._name = name
-        self._sources = sources
+    """
+    This class represents a single Test case. Metadata is stored in the Test while Source stores
+    source code level information.
+    """
+
+    def __init__(self, name: str, source: Source, test_type: TestType) -> None:
+        self._name: str = name
+        self._type: TestType = test_type
+
+        self._source: Source = source
+        self._executable: Optional[Path] = None
+
+        self._build_success_func: Optional[Callable[[], None]] = None
+        self._build_fail_func: Optional[Callable[[], None]] = None
+
+        self._run_success_func: Optional[Callable[[], None]] = None
+        self._run_fail_func: Optional[Callable[[], None]] = None
+
+        self._captures: Set[str] = set()
+
+        self._build_outcome: Optional[TestOutcome] = None
+        self._run_outcome: Optional[TestOutcome] = None
 
     @property
-    def name(self):
+    def build_success_function(self) -> Optional[Callable[[], None]]:
+        """This property provides access to the build success callback."""
+
+        return self._build_success_func
+
+    @build_success_function.setter
+    def build_success_function(self, func: Callable[[], None]) -> None:
+        """This provides setting the build success function."""
+
+        self._build_success_func = func
+
+    @property
+    def build_fail_function(self) -> Optional[Callable[[], None]]:
+        """This property provides access of the build failure function."""
+
+        return self._build_fail_func
+
+    @build_fail_function.setter
+    def build_fail_function(self, func: Callable[[], None]) -> None:
+        """This provides setting the build failure function."""
+
+        self._build_fail_func = func
+
+    @property
+    def run_success_function(self):
+        """This property provides access to the run success callback."""
+
+        return self._run_success_func
+
+    @run_success_function.setter
+    def run_success_function(self, func) -> None:
+        """This provides setting the run success callback."""
+
+        self._run_success_func = func
+
+    @property
+    def run_fail_function(self):
+        """This property provides access to the run fail callback."""
+        return self._run_fail_func
+
+    @run_fail_function.setter
+    def run_fail_function(self, func) -> None:
+        """This provides setting the run fail callback."""
+        self._run_fail_func = func
+
+    @property
+    def captures(self) -> Set[str]:
+        """This property provides access to the defined captures of the test."""
+
+        return self._captures
+
+    def register_capture(self, token: str) -> None:
+        """This method allows registering a capture from the stdout."""
+
+        self._captures.add(token)
+
+    @property
+    def name(self) -> str:
+        """This property provides the name of the Test."""
+
         return self._name
 
-    @name.setter
-    def name(self, name):
-        self._name = name
+    @property
+    def type(self) -> TestType:
+        """This property provides the TestType of the Test."""
 
-    @name.deleter
-    def name(self):
-        del self._name
+        return self._type
 
     @property
-    def sources(self):
-        return self._sources
+    def source(self) -> Source:
+        """This property provides the Source of the Test."""
 
-    @sources.setter
-    def sources(self, sources):
-        self._sources = sources
-
-    @sources.deleter
-    def sources(self):
-        del self._sources
-
-    def write(self):
-        """
-        Writes source object to file that can be compiled/run
-        by executors.
-        """
-        if not os.path.isdir('../tests'):
-            os.makedirs("../tests")
-
-        file_name = self.name + ".c"
-        test_file = open("../tests/" + file_name, "w+")
-
-        for source in self.sources:
-            test_file.write(source.get_source())
-
-        test_file.close()
-
-
-class Source:
-    def __init__(self, name: str):
-        self._name = name
-        self._front_lines = []
-        self._back_lines = []
+        return self._source
 
     @property
-    def name(self):
-        return self._name
+    def executable(self) -> Optional[Path]:
+        """This property provides the executable Path."""
 
-    @name.setter
-    def name(self, name):
-        self._name = name
+        return self._executable
 
-    @name.deleter
-    def name(self):
-        del self._name
+    @executable.setter
+    def executable(self, path: Path):
+        """This allows setting the executable Path."""
+        self._executable = path
 
-    def add_at_start(self, line: str) -> None:
-        """
-        Adds a generated string to the front of the source code.
-        """
+    @property
+    def build_outcome(self) -> Optional[TestOutcome]:
+        """This property provides the build outcome."""
 
-        self._front_lines.append(line)
+        return self._build_outcome
 
-    def add_at_end(self, line: str) -> None:
-        """
-        Adds a generated string to the back of the source code.
-        """
+    @build_outcome.setter
+    def build_outcome(self, outcome: TestOutcome) -> None:
+        """This allows setting the build outcome."""
 
-        self._back_lines.append(line)
+        self._build_outcome = outcome
 
-    def get_source(self) -> str:
-        """
-        Combines the front and back lines into a single string.
-        """
+    @property
+    def run_outcome(self) -> Optional[TestOutcome]:
+        """This property provides the run outcome."""
 
-        lines = '\n'.join(self._front_lines) + '\n'
-        lines = lines + '\n'.join(self._back_lines)
+        return self._run_outcome
 
-        return lines
+    @run_outcome.setter
+    def run_outcome(self, outcome: TestOutcome) -> None:
+        """This allows setting the run outcome."""
+
+        self._run_outcome = outcome
+
+    def __str__(self) -> str:
+        return 'Test: ' + self.name + ' : ' + str(self.type)

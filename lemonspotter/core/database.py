@@ -2,11 +2,12 @@
 This module defines the Database class.
 """
 
-from typing import Set
-
-from core.function import Function
-from core.type import Type
-from core.constant import Constant
+from __future__ import annotations
+from typing import TYPE_CHECKING, Set, Dict, List
+if TYPE_CHECKING:
+    from core.function import Function
+    from core.constant import Constant
+    from core.type import Type
 
 class Database:
     """
@@ -17,11 +18,11 @@ class Database:
     def __init__(self) -> None:
         self.functions: Set[Function] = set()
         self.constants: Set[Constant] = set()
-        self.types: Set[Type] = set()
+        self.types: Set['Type'] = set()
 
-        self.functions_by_name = {}
-        self.constants_by_abstract_type = {}
-        self.types_by_abstract_type = {}
+        self.functions_by_name: Dict[str, Function] = {}
+        self.constants_by_abstract_type: Dict[str, List[Constant]] = {}
+        self.type_by_abstract_type: Dict[str, Type] = {}
 
     def add_constant(self, constant: Constant) -> None:
         """
@@ -32,10 +33,10 @@ class Database:
         self.constants.add(constant)
 
         # add to lookup
-        if constant.abstract_type not in self.constants_by_abstract_type:
-            self.constants_by_abstract_type[constant.abstract_type] = []
+        if constant.type.abstract_type not in self.constants_by_abstract_type:
+            self.constants_by_abstract_type[constant.type.abstract_type] = []
 
-        self.constants_by_abstract_type[constant.abstract_type].append(constant)
+        self.constants_by_abstract_type[constant.type.abstract_type].append(constant)
 
     def add_function(self, function: Function) -> None:
         """
@@ -57,4 +58,4 @@ class Database:
         self.types.add(kind)
 
         # add to dictionary of types
-        self.types_by_abstract_type[kind.abstract_type] = kind
+        self.type_by_abstract_type[kind.abstract_type] = kind

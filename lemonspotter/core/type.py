@@ -1,99 +1,67 @@
-"""Defines a type object of from library that can be included in Lemonspotter tests."""
+"""
+Defines a type object of from library that can be included in Lemonspotter tests.
+"""
+
+from typing import Dict, Any, List
+import logging
+
+from core.database import Database
 
 class Type:
     """
-    Defines a type object of from library that can be included in Lemonspotter tests.
+    This class represents the type abstraction from the specification.
     """
-    def __init__(self, abstract_type, source, ctype, range=[], name="CONSTANT_UNDEFINED"):
-        """
-        Initializes object of class Type.
 
-        Parameters:
-        abstract_type  (string)    : Coorespondes to what this type is classified as
-        source         (list)      : Holds information about type
-        ctype          (string)    : Holds the c-style datatype of the type
-        range          (list)      : Holds lower & upper bounds of type
-        name           (string)    : Name of the type
-        """
-        self._name = name
-        self._abstract_type = abstract_type
-        self._ctype = ctype
-        self._source = source
-        self._range = range
-        self._validation = False
+    def __init__(self, database: Database, json: Dict[str, Any]) -> None:
+        self._json = json
+        self._database: Database = database
 
-    def __str__(self):
-        """
-        Defines formal string represenation of Type
-        """
-        return self._name
-
-    def __repr__(self):
-        """
-        Defines informal string represenation of Type
-        """
-        return self._name
+        self._partitions: List[Dict] = []
 
     @property
-    def name(self):
-        return self._name
+    def default(self) -> str:
+        """This property provides the default value of the Type."""
 
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @name.deleter
-    def name(self):
-        del self._name
+        return self._json['default']
 
     @property
-    def abstract_type(self):
-        return self._abstract_type
+    def name(self) -> str:
+        """This property provides the Type name."""
 
-    @abstract_type.setter
-    def abstract_type(self, abstract_type):
-        self._abstract_type = abstract_type
-
-    @abstract_type.deleter
-    def abstract_type(self):
-        del self._abstract_type
+        return self._json['name']
 
     @property
-    def ctype(self):
-        return self._ctype
+    def abstract_type(self) -> str:
+        """This property provides the abstract type name."""
 
-    @ctype.setter
-    def ctype(self, ctype):
-        self._ctype = ctype
-
-    @ctype.deleter
-    def ctype(self):
-        del self._ctype
+        return self._json['abstract_type']
 
     @property
-    def lower_range(self):
-        return self._range[0]
+    def language_type(self) -> str:
+        """This property provides the language type name."""
 
-    @lower_range.setter
-    def lower_range(self, lower_range):
-        self._range[0] = lower_range
+        if self._json['base_type']:
+            return self._json['language_type']
 
-    @property
-    def upper_range(self):
-        return self._range[1]
-
-    @lower_range.setter
-    def upper_range(self, upper_range):
-        self._range[1] = upper_range
+        logging.debug('performing recursive lookup of language type.')
+        return self._database.type_by_abstract_type[self._json['language_type']].language_type
 
     @property
-    def validation(self):
-        return self._validation
+    def printable(self) -> bool:
+        """This property provides whether this is a C printable type."""
 
-    @validation.setter
-    def validation(self, validation):
-        self._validation = validation
+        if self._json['base_type']:
+            return self._json['printable']
 
-    @validation.deleter
-    def validation(self):
-        del self.validation
+        logging.debug('performing recursive lookup of printable.')
+        return self._database.type_by_abstract_type[self._json['language_type']].printable
+
+    @property
+    def print_specifier(self):
+        """This property provides the C printf type specifier."""
+
+        if self._json['base_type']:
+            return self._json['print_specifier']
+
+        logging.debug('performing recursive lookup of print specifier.')
+        return self._database.type_by_abstract_type[self._json['language_type']].print_specifier

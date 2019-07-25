@@ -1,104 +1,70 @@
-"""Defines an constant that can be included in Lemonspotter tests."""
+"""
+This module contains the definition of the Constant class.
+"""
+
+from typing import Dict, Any, Optional
+import logging
+
+from core.database import Database
+from core.type import Type
 
 class Constant:
     """
-    Defines an constant that can be included in Lemonspotter tests.
+    This class represents a Constant from the specification.
     """
-    def __init__(self, abstract_type, name="CONSTANT_UNDEFINED"):
-        """
-        Initializes object of class Constant.
 
-        Parameters:
-        abstract_type  (string)    : Underlying type of constant
-        name           (string)    : Name of the constant
-        """
+    def __init__(self, database: Database, json: Dict[str, Any]):
+        self._database: Database = database
+        self._json: Dict[str, Any] = json
+        self._value: Optional[str] = None
 
-        self._name = name
-        self._abstract_type = abstract_type
-
-        self._attempted = False
-        self._validated = False
-
-    def __repr__(self):
-        """
-        Defines informal string behavior for constant class
-        """
-        return self._name
-
-    def __str__(self):
-        """
-        Defines formal string behavior for constant class
-        """
-        return self._name
+        self._properties: Dict[str, Any] = {}
 
     @property
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, name):
-        self._name = name
+    def name(self) -> str:
+        """This property provides the name of the Constant."""
 
-    @name.deleter
-    def name(self):
-        del self._name
-    
-    @property
-    def abstract_type(self):
-        return self._abstract_type
-
-    @abstract_type.setter
-    def abstract_type(self, abstract_type):
-        self._abstract_type = abstract_type
-    
-    @abstract_type.deleter
-    def abstract_type(self):
-        del self._abstract_type
+        return self._json['name']
 
     @property
-    def validated(self):
-        return self._validated
+    def type(self) -> Type:
+        """This property provides the Type object from the Constant."""
 
-    @validated.setter
-    def validated(self, validated):
-        self._validated = validated
-
-    @validated.deleter
-    def validated(self):
-        del self._validated
+        return self._database.type_by_abstract_type[self._json['abstract_type']]
 
     @property
-    def attempted(self):
-        return self._attempted
+    def properties(self) -> Dict[str, Any]:
+        """This property provides access to the properties of this Constant."""
 
-    @attempted.setter
-    def attempted(self, attempted):
-        self._attempted = attempted
+        return self._properties
 
-    @attempted.deleter
-    def attempted(self):
-        del self._attempted
+    @property
+    def defined(self) -> bool:
+        """This property determines whether the constant is defined in the specification."""
 
-    def has_failed(self):
-        """
-        Deterministic test to determine if function has failed tests
-        """
-        return self._attempted and not self._validated
+        spec_defined = self._json.get('defined', None) is not None
+        logging.debug('constant %s is defined %s', self.name, str(spec_defined))
 
-    def validate(self):
-        """
-        Sets the validation state of the function to true
-        """
-        self._validated = True
+        return spec_defined
 
-    def invalidate(self):
-        """
-        Sets the validation state of the function to false
-        """
-        self._validated = True
+    def validate(self) -> bool:
+        """This function validates the constant against the specification."""
 
-    def attempt(self):
-        """
-        Sets the attempt state of the function
-        """
-        self._attempted = True
+        value = self._properties.get('value', None)
+        if value is not None:
+            logging.debug('constant has value, operand %s', self._json['defined']['operand'])
+
+            if self._json['defined']['operand'] == 'equal':
+                if self._json['defined']['value'] == value:
+                    logging.info('validating constant %s', self.name)
+                    self._properties['valid'] = True
+
+                else:
+                    logging.critical('constant %s failed to validate', self.name)
+                    self._properties['valid'] = False
+
+            else:
+                logging.error('unknown operand')
+                raise RuntimeError("unknown operand")
+
+        return self._properties.get('valid', False)

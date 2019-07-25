@@ -1,57 +1,22 @@
 import os
-import pathlib
+
+from pathlib import Path
+import logging
 from subprocess import Popen, PIPE
+from typing import Set, List
+
+from core.test import Test, TestOutcome, TestType
 
 class MPIExecutor:
-    def __init__(self, test_directory='../tests/'):
+    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
         """
         Initializes a test executor for MPI Libraries
         """
-        self._test_directory = os.path.abspath(test_directory)
-        self._build_results = {}
-        self._exec_results = {}
 
-    @property
-    def build_results(self):
-        """
-        Returns build_results of a test
-        """
-        return self._build_results
+        self._test_directory = test_directory.resolve()
 
-    @build_results.setter
-    def build_results(self, build_results):
-        """
-        Sets the build_results of a test
-        """
-        self._build_results = build_results
-
-    @build_results.deleter
-    def build_results(self):
-        """
-        Delets the build_results of a test
-        """
-        del self._build_results
-
-    @property
-    def exec_results(self):
-        """
-        Returns exec_results of a test
-        """
-        return self._exec_results
-
-    @exec_results.setter
-    def exec_results(self, exec_results):
-        """
-        Sets the exec_results of a test
-        """
-        self._exec_results = exec_results
-
-    @exec_results.deleter
-    def exec_results(self):
-        """
-        Delets the exec_results of a test
-        """
-        del self._exec_results
+        self._mpicc = mpicc
+        self._mpiexec = mpiexec
 
     @property
     def test_directory(self):
@@ -60,72 +25,140 @@ class MPIExecutor:
         """
         return self._test_directory
 
-    @test_directory.setter
-    def test_directory(self, test_directory):
+    def execute(self, tests: Set[Test]):
         """
-        Sets the directory where tests will be found/executed in
+        """
 
-        """
-        self._test_directory = test_directory
-
-    @test_directory.deleter
-    def test_directory(self):
-        """
-        Deletes the directory where tests will be found/executed in
-        """
-        del self._test_directory
-
-    def build(self, tests=[], args=[]):
-        """
-        Builds a test into a runnable executable
-
-        tests: list of test objects that define the tests to run
-        """
+        # check for test directory
         if not os.path.isdir(self.test_directory):
-            os.makedirs(test_directory)
+            os.makedirs(self.test_directory)
 
         if tests:
-            for test in tests:
-                # Generate MPICC command that compiles test excutable
-                file_name = test.name + ".c"
-                mpicc = ["mpicc", file_name] + args + ["-o", self.test_directory, test.name]
+            try:
+                for test in tests:
+                    self.build_test(test)
 
-                process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = process.communicate()
-                self.build_results[test.name] = [str(stdout), str(stderr)]
+            except FileNotFoundError as error:
+                logging.error(error)
+                logging.error('Building set of tests failed.')
+                return
+
+            try:
+                for test in tests:
+                    self.run_test(test)
+
+            except FileNotFoundError as error:
+                logging.error(error)
+                logging.error('Runnign set of test failed.')
+                return
+
+    def build_test(self, test: Test, arguments: List[str]=[]) -> None:
+        logging.info('building test %s', test.name)
+
+        if test.build_outcome:
+            logging.critical('Test %s has build outcome.', test.name)
+            return
+
+        # output source file
+        test_filename = self._test_directory / (test.name + '.c')
+        test.source.write(Path(test_filename))
+
+        # create executable command
+        executable_filename = self.test_directory / test.name
+        command = [self._mpicc, str(test_filename)] + arguments + ["-o", str(executable_filename)]
+
+        logging.info('executing: %s', ' '.join(command))
+
+        # execute command
+        try:
+            process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+            stdout, stderr = process.communicate()
+
+        except FileNotFoundError as error:
+            logging.error('Test %s failed to build, due to missing mpicc.', test.name)
+            
+            raise error
+
+        # evaluate build result
+        logging.debug('build stdout:\n%s\n', stdout)
+        logging.debug('build stderr:\n%s\n', stderr)
+
+        if not stdout and not stderr:
+            # set executable on test
+            test.executable = Path(executable_filename)
+
+            if test.build_success_function:
+                test.build_success_function()
+
+            logging.info('building successful of test %s', test.name)
 
         else:
-            files = pathlib.Path(self.test_directory).glob('**/*.c')
-            for test in files:
-                test_name = str(test)[len(self._test_directory): len(str(test))-2]
-                # Generate MPICC command that compiles test excutable
-                mpicc = ["mpicc", str(test)] + args + ["-o", self.test_directory, test_name]
+            # TODO evalulate build output, is there ERROR?
+            if test.build_fail_function:
+                test.build_fail_function()
 
-                process = Popen(mpicc, shell=True, stdout=PIPE, stderr=PIPE)
-                self.build_results[test_name] = [str(stdout), str(stderr)]
+            logging.warning('building failed of test %s', test.name)
 
-        return self.build_results
+    def run_test(self, test: Test, arguments: List[str]=[]) -> None:
+        """
+        """
 
-    def run(self, tests=[],args=[]):
+        # TODO test should define how many processes it needs
+        arguments = ['-n', '1']
 
-        if not os.path.isdir(self.test_directory):
-            os.makedirs(test_directory)
+        # check if valid test
+        if test.type is TestType.BUILD_ONLY:
+            logging.info('skip running test %s due to BUILD_ONLY', test.name)
 
-        if tests:
-            # Runs if a defined list of tests to run is passed into run()
-            for test in tests:
-                mpiexec = ["mpiexec"] + args + [self.test_directory + test.name]
-                process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = process.communicate()
-                self.exec_results[test.name] = [str(stdout), str(stderr)]
+        elif test.run_outcome:
+            logging.critical('Test %s has run outcome.', test.name)
+            return
+
         else:
-            # If specific list isn't defined, all exectuables are run
-            files = pathlib.Path(self.test_directory).glob('**/*.c')
-            for test in files:
-                test_name = str(test)[len(self._test_directory)+1: len(str(test))-2]
-                mpiexec = ["mpiexec"] + args + [self.test_directory + test_name]
-                process = Popen(mpiexec, shell=True, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = process.communicate()
-                self.exec_results[test_name] = [str(stdout), str(stderr)]
+            logging.info('preparing test %s.', test.name)
 
-        return self.exec_results
+            # create command
+            command = [self._mpiexec] + arguments + [str(test.executable)]
+
+            # run test executable
+            logging.info('executing "%s"', ' '.join(command))
+            try:
+                process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+                stdout, stderr = process.communicate()
+
+            except FileNotFoundError as error:
+                logging.error(error)
+                logging.error('skip running test %s', test.name)
+                return
+
+            logging.debug('run stdout:\n%s\n', stdout)
+            logging.debug('run stderr:\n%s\n', stderr)
+
+            # test run check
+            if not stderr and process.returncode == 0:
+                logging.info('test %s successfully run.', test.name)
+
+                # filter for captures
+                captured = {}
+                for line in stdout.split('\n'):
+                    if line:
+                        tokens = line.split()
+
+                        logging.debug(str(tokens))
+                        logging.debug(test.captures)
+
+                        if tokens[0] in test.captures:
+                            # only supports capturing single value
+                            captured[tokens[0]] = tokens[1]
+
+                # call success function
+                test.run_success_function(captured)
+                return
+
+            elif process.returncode > 0:
+                logging.critical('test crashed')
+
+            else:
+                logging.warning('test %s failed with internal error.', test.name)
+
+            test.run_fail_function()

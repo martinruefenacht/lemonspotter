@@ -1,38 +1,54 @@
 """
-This module defines the Variable class.
+This module defines the Variable class which represents Variables and their values in
+Source classes.
 """
+
+from typing import Optional
+
+from core.type import Type
 
 class Variable:
     """
     This class represents any C variable for source code generation.
     """
 
-    def __init__(self, kind: str, name: str, pointer_level: int = 0) -> None:
+    def __init__(self, kind: Type, name: str, value: str = None, pointer_level: int = 0) -> None:
         """
         This method constructs the Variable from a type, name and pointer level.
         """
 
-        self.kind = kind
-        self.name = name
-        self.pointer_level = pointer_level
+        self._type: Type = kind
+        self._name: str = name
+        self._value: Optional[str] = value
+        self._pointer_level: int = pointer_level
 
-    def generate_print_expression(self) -> str:
-        """
-        Generates a C printf expression for this variable.
-        """
+    def __str__(self) -> str:
+        return self._name
 
-        # hard coded mapping between printf format and C type
-        if self.kind.ctype == 'int':
-            return 'printf("' + self.name + ' %i\\n", ' + self.name + ');'
+    def __repr__(self) -> str:
+        return self._name
 
-        raise NotImplementedError
+    @property
+    def type(self) -> Type:
+        """This property provides the Type object of the Variable."""
+        return self._type
 
-    def generate_check_expression(self) -> str:
-        """
-        Generates a C expression to check if the variable is valid.
-        """
+    @property
+    def name(self) -> str:
+        """This property provides the name of the Variable."""
+        return self._name
 
-        if self.kind.abstract_type == 'ERRORCODE':
-            return 'if(' + self.name + ' != MPI_SUCCESS) exit(0);'
+    @property
+    def pointer_level(self) -> int:
+        """This property provides the pointer level of this Variable."""
+        return self._pointer_level
 
-        raise NotImplementedError
+    @property
+    def value(self) -> Optional[str]:
+        """This property provides the value of the Variable."""
+        return self._value
+
+    @value.setter
+    def value(self, value: str) -> None:
+        """This allows setting the value of the Variable."""
+        self._value = value
