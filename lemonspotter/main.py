@@ -134,6 +134,12 @@ def parse_arguments():
                         default=False,
                         help='Runs flake8 test on Lemonspotter project')
 
+    parser.add_argument('--mypy',
+                        action='store_true',
+                        dest='mypy',
+                        default=False,
+                        help='Runs the mypy type checker on LemonSpotter.')
+
     parser.add_argument('--test',
                         action='store_true',
                         dest='test',
@@ -182,11 +188,22 @@ def main() -> None:
         raise NotImplementedError
 
     elif arguments.flake:
-
         command = [sys.executable, '-m', 'flake8']
 
         logging.info('executing flake8 with %s', ' '.join(command))
-        process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+        process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
+
+        stdout, stderr = process.communicate()
+        print(stdout)
+
+        if stderr:
+            logging.error(stderr)
+
+    elif arguments.mypy:
+        command = [sys.executable, '-m', 'mypy', __file__]
+
+        logging.info('executing mypy with %s', ' '.join(command))
+        process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
 
         stdout, stderr = process.communicate()
         print(stdout)
