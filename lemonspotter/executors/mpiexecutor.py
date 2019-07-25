@@ -28,6 +28,20 @@ class MPIExecutor:
         """
         return self._test_directory
 
+    @property
+    def reporter(self):
+        """
+        Gets reporter object
+        """
+        return self._reporter
+
+    @reporter.setter
+    def reporter(self, reporter):
+        """
+        Sets reporter object
+        """
+        self._reporter = reporter
+
     def execute(self, tests: Set[Test]):
         """
         """
@@ -41,7 +55,7 @@ class MPIExecutor:
                 for test in tests:
                     test.stage = TestStage.BUILD
                     self.build_test(test)
-                    self.reporter.log_test_output(test)
+                    self.reporter.log_test_result(test)
 
             except FileNotFoundError as error:
                 logging.error(error)
@@ -52,7 +66,7 @@ class MPIExecutor:
                 for test in tests:
                     test.stage = TestStage.RUN
                     self.run_test(test)
-                    self.reporter.log_test_output(test)
+                    self.reporter.log_test_result(test)
 
             except FileNotFoundError as error:
                 logging.error(error)

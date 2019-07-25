@@ -10,10 +10,10 @@ class TestReport():
         self._now = datetime.datetime.now()
         self._report_id = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
         self._database = database
-        
+
         self._presence_report = None
         self._tests = []
-        
+
     @property
     def report_id(self):
         return self._report_id
@@ -25,7 +25,15 @@ class TestReport():
     @property
     def presence_report(self):
         return self._presence_report
-        
+
+    @property
+    def tests(self):
+        return self._tests
+
+    @tests.setter
+    def tests(self, tests):
+        self._tests = tests
+
     @presence_report.setter
     def presence_report(self, presence_report):
         self._presence_report = presence_report
@@ -36,9 +44,9 @@ class TestReport():
         """
         if test not in self.tests:
             self.tests.append(test)
-        
+
         log_msg = ''
-        
+
         if test.stage == TestStage.BUILD:
             log_msg += '[BUILD]'
             if test.build_outcome:
@@ -53,14 +61,14 @@ class TestReport():
                 log_msg += '[FAIL]'
         else:
             log_msg += '[STAGE NOT SET]'
-            
+
         log_msg += test.name
         if msg:
             log_msg += '\n\t ' + msg
 
-        logging.log(0, log)
-                
-                
+        logging.log(0, log_msg)
+
+
     def generate_presence_report(self):
         """
         Generates presence_report to report file
@@ -85,16 +93,16 @@ class TestReport():
         """
         if self.presence_report == None:
             self.generate_presence_report()
-        
+
         if not os.path.exists('../reports/'):
             os.mkdir('../reports')
 
         report_file_name = self._report_id + '.log'
         with open('../reports/' + report_file_name, 'a+') as report_file:
-            report_file.write(self.presence_report)
-            
-    
-    def presence_report(self) -> str:
+            report_file.write(str(self.presence_report))
+
+
+    def print_presence_report(self) -> str:
         """
         Prints Presence Report to Console
         """
@@ -103,8 +111,8 @@ class TestReport():
             self.generate_presence_report()
 
         print(self.presence_report)
-        
-        
+
+
 
 
     def write(self):
