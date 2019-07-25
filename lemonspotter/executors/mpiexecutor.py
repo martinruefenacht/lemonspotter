@@ -87,14 +87,14 @@ class MPIExecutor:
             # set executable on test
             test.executable = Path(executable_filename)
 
-            if test.build_success_function:
+            if test.build_success_function is not None:
                 test.build_success_function()
 
             logging.info('building successful of test %s', test.name)
 
         else:
             # TODO evalulate build output, is there ERROR?
-            if test.build_fail_function:
+            if test.build_fail_function is not None:
                 test.build_fail_function()
 
             logging.warning('building failed of test %s', test.name)
@@ -152,7 +152,9 @@ class MPIExecutor:
                             captured[tokens[0]] = tokens[1]
 
                 # call success function
-                test.run_success_function(captured)
+                if test.run_success_function is not None:
+                    test.run_success_function(captured)
+
                 return
 
             elif process.returncode > 0:
@@ -161,4 +163,5 @@ class MPIExecutor:
             else:
                 logging.warning('test %s failed with internal error.', test.name)
 
-            test.run_fail_function()
+            if test.run_fail_function is not None:
+                test.run_fail_function()
