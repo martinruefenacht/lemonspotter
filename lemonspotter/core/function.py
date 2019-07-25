@@ -3,6 +3,7 @@ This module defines the function class which respresents functions from the spec
 """
 
 from typing import Dict, Any, Set, Tuple
+from functools import lru_cache
 
 from core.variable import Variable
 from core.database import Database
@@ -23,12 +24,6 @@ class Function:
         self._json: Dict[str, Any] = json
 
         self.properties: Dict[str, Any] = {}
-
-        self._cached_parameters: Tuple[Parameter]
-        self._cached_needs_any: Set['Function']
-        self._cached_needs_all: Set['Function']
-        self._cached_leads_any: Set['Function']
-        self._cached_leads_all: Set['Function']
 
     def __repr__(self) -> str:
         """
@@ -88,6 +83,7 @@ class Function:
         return self._json['name']
 
     @property
+    @lru_cache()
     def parameters(self) -> Tuple[Parameter]:
         """This property provides access to the parameter list of this Function object."""
 
@@ -104,6 +100,7 @@ class Function:
         return self._db.type_by_abstract_type[self._json['return']]
 
     @property
+    @lru_cache()
     def needs_any(self) -> Set['Function']:
         """This property provides access to the any set of needed Function objects."""
 
@@ -117,6 +114,7 @@ class Function:
         return self._cached_needs_any
 
     @property
+    @lru_cache()
     def needs_all(self) -> Set['Function']:
         """This property provides access to the all set of needed Function objects."""
 
@@ -130,6 +128,7 @@ class Function:
         return self._cached_needs_all
 
     @property
+    @lru_cache()
     def leads_any(self) -> Set['Function']:
         """This property provides access to the any set of lead Function objects."""
 
@@ -143,6 +142,7 @@ class Function:
         return self._cached_leads_any
 
     @property
+    @lru_cache()
     def leads_all(self) -> Set['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
