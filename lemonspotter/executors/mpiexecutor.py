@@ -72,7 +72,7 @@ class MPIExecutor:
 
         # execute command
         try:
-            process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+            process = Popen(command, stdout=PIPE, stderr=PIPE, text=True) # type: ignore
             stdout, stderr = process.communicate()
 
         except FileNotFoundError as error:
@@ -124,7 +124,7 @@ class MPIExecutor:
             # run test executable
             logging.info('executing "%s"', ' '.join(command))
             try:
-                process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+                process = Popen(command, stdout=PIPE, stderr=PIPE, text=True) # type: ignore
                 stdout, stderr = process.communicate()
 
             except FileNotFoundError as error:

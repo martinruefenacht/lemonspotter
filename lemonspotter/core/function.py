@@ -2,7 +2,7 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import Dict, Any, Set, Tuple
+from typing import Dict, Any, Set, Sequence
 from functools import lru_cache
 
 from core.variable import Variable
@@ -40,7 +40,7 @@ class Function:
 
         return repr(self)
 
-    def generate_function_statement(self, arguments: Tuple[Variable],
+    def generate_function_statement(self, arguments: Sequence[Variable],
                                     return_name: str) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
@@ -83,9 +83,9 @@ class Function:
 
         return self._json['name']
 
-    @property
+    @property # type: ignore
     @lru_cache()
-    def parameters(self) -> Tuple[Parameter]:
+    def parameters(self) -> Sequence[Parameter]:
         """This property provides access to the parameter list of this Function object."""
 
         return tuple(Parameter(self._db, parameter) for parameter in self._json['parameters'])
@@ -96,7 +96,7 @@ class Function:
 
         return self._db.type_by_abstract_type[self._json['return']]
 
-    @property
+    @property # type: ignore
     @lru_cache()
     def needs_any(self) -> Set['Function']:
         """This property provides access to the any set of needed Function objects."""
@@ -105,7 +105,7 @@ class Function:
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
 
-    @property
+    @property # type: ignore
     @lru_cache()
     def needs_all(self) -> Set['Function']:
         """This property provides access to the all set of needed Function objects."""
@@ -114,7 +114,7 @@ class Function:
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
 
-    @property
+    @property # type: ignore
     @lru_cache()
     def leads_any(self) -> Set['Function']:
         """This property provides access to the any set of lead Function objects."""
@@ -123,7 +123,7 @@ class Function:
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
 
-    @property
+    @property # type: ignore
     @lru_cache()
     def leads_all(self) -> Set['Function']:
         """This property provides access to the all set of lead the Function objects."""
