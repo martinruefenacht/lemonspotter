@@ -87,11 +87,7 @@ class Function:
     def parameters(self) -> Tuple[Parameter]:
         """This property provides access to the parameter list of this Function object."""
 
-        if self._cached_parameters is None:
-            self._cached_parameters = tuple(Parameter(self._db, parameter)
-                                            for parameter in self._json['parameters'])
-
-        return self._cached_parameters
+        return tuple(Parameter(self._db, parameter) for parameter in self._json['parameters'])
 
     @property
     def return_type(self) -> Type:
@@ -104,53 +100,33 @@ class Function:
     def needs_any(self) -> Set['Function']:
         """This property provides access to the any set of needed Function objects."""
 
-        if self._cached_needs_any is None:
-            subset = filter(lambda name: name in self._db.functions_by_name,
-                            self._json['needs_any'])
+        subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_any'])
 
-            self._cached_needs_any = set(self._db.functions_by_name[func_name]
-                                         for func_name in subset)
-
-        return self._cached_needs_any
+        return set(self._db.functions_by_name[func_name] for func_name in subset)
 
     @property
     @lru_cache()
     def needs_all(self) -> Set['Function']:
         """This property provides access to the all set of needed Function objects."""
 
-        if self._cached_needs_all is None:
-            subset = filter(lambda name: name in self._db.functions_by_name,
-                            self._json['needs_all'])
+        subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_all'])
 
-            self._cached_needs_all = set(self._db.functions_by_name[func_name]
-                                         for func_name in subset)
-
-        return self._cached_needs_all
+        return set(self._db.functions_by_name[func_name] for func_name in subset)
 
     @property
     @lru_cache()
     def leads_any(self) -> Set['Function']:
         """This property provides access to the any set of lead Function objects."""
 
-        if self._cached_leads_any is None:
-            subset = filter(lambda name: name in self._db.functions_by_name,
-                            self._json['leads_any'])
+        subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_any'])
 
-            self._cached_leads_any = set(self._db.functions_by_name[func_name]
-                                         for func_name in subset)
-
-        return self._cached_leads_any
+        return set(self._db.functions_by_name[func_name] for func_name in subset)
 
     @property
     @lru_cache()
     def leads_all(self) -> Set['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
-        if self._cached_leads_all is None:
-            subset = filter(lambda name: name in self._db.functions_by_name,
-                            self._json['leads_all'])
+        subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_all'])
 
-            self._cached_leads_all = set(self._db.functions_by_name[func_name]
-                                         for func_name in subset)
-
-        return self._cached_leads_all
+        return set(self._db.functions_by_name[func_name] for func_name in subset)
