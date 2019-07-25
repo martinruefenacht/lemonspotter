@@ -13,6 +13,7 @@ from core.testgenerator import TestGenerator
 from core.instantiator import Instantiator
 from core.statement import FunctionStatement, ConditionStatement
 
+
 class StartEndGenerator(TestGenerator):
     """
     Source code generator for initiator and finalizer functions.
@@ -102,7 +103,6 @@ class StartEndGenerator(TestGenerator):
             return_name = 'return_' + function.name + '_'
             return_name += str(self.elements_generated)
 
-
             function_call = function.generate_function_statement(args,
                                                                  return_name,
                                                                  self._database)
@@ -118,31 +118,31 @@ class StartEndGenerator(TestGenerator):
 
         return source
 
-        # add arguments
-        for parameter in element.parameters:
-            # match parameter with available variable
-            if parameter['name'] not in variables:
-                raise NotImplementedError
-                # generate variable, causes additional paths!
-                # how do we handle branching points?
+#        # add arguments
+#        for parameter in element.parameters:
+#            # match parameter with available variable
+#            if parameter['name'] not in variables:
+#                raise NotImplementedError
+#                # generate variable, causes additional paths!
+#                # how do we handle branching points?
 
-            variable = variables[parameter['name']]
-
-            if variable.kind.abstract_type != parameter['abstract_type']:
-                raise ValueError('Mismatch between abstract types of parameter and variable.')
-
-            argument = []
-
-            # add argument pointer level
-            level_difference = parameter['pointer'] - variable.pointer_level
-            if level_difference > 0:
-                argument.append('&' * level_difference)
-
-            # add argument name
-            argument.append(variable.name)
-
-            # add comma
-            if parameter is not element.parameters[-1]:
-                argument.append(',')
-
-            line.append(''.join(argument))
+#            variable = variables[parameter['name']]
+#
+#            if variable.kind.abstract_type != parameter['abstract_type']:
+#                raise ValueError('Mismatch between abstract types of parameter and variable.')
+#
+#            argument = []
+#
+#            # add argument pointer level
+#            level_difference = parameter['pointer'] - variable.pointer_level
+#            if level_difference > 0:
+#                argument.append('&' * level_difference)
+#
+#            # add argument name
+#            argument.append(variable.name)
+#
+#            # add comma
+#            if parameter is not element.parameters[-1]:
+#                argument.append(',')
+#
+#            line.append(''.join(argument))
