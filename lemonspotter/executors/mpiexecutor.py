@@ -39,7 +39,7 @@ class MPIExecutor:
         if tests:
             try:
                 for test in tests:
-                    test.stage(TestStage.BUILD)
+                    test.stage = TestStage.BUILD
                     self.build_test(test)
                     self.reporter.log_test_output(test)
 
@@ -50,7 +50,7 @@ class MPIExecutor:
 
             try:
                 for test in tests:
-                    test.stage(TestStage.RUN)
+                    test.stage = TestStage.RUN
                     self.run_test(test)
                     self.reporter.log_test_output(test)
 
