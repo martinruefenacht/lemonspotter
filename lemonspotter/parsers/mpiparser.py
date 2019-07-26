@@ -32,23 +32,15 @@ class MPIParser:
                 for constant in constants_array:
                     database.add_constant(Constant(database, constant))
 
-        # TODO parse subdirectory of constants
-#        constants_directory = path + 'constants/'
-#        if os.path.isdir(constants_directory):
-#            files = pathlib.Path(types_directory).glob('**/*.json')
+        # parse subdirectory of constants
+        constants_directory = path / 'constants/'
+        if constants_directory.is_dir():
+            files = constants_directory.glob('**/*.json')
 
-#            for path in files:
-#                constant = self.parse_single_constant(path)
+            for path in files:
+                constant = self.parse_single_constant(path.absolute())
 
-#                constant_name = constant['name']
-#                constant_abstract_type = constant['abstract_type']
-#                constant_obj = Constant(constant_abstract_type, constant_name)
-#
-#                database.constants[constant_name] = constant_obj
-
-#    def parse_single_constant(self) -> Dict[str, Any]:
-#        with open(path) as constantfile:
-#            return json.loads(constantfile)
+                database.add_constant(Constant(database, constant))
 
     def default_function(self, func, defaults):
         # default function level
