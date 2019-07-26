@@ -92,31 +92,15 @@ class MPIParser:
                 for mpi_type in type_array:
                     database.add_type(Type(database, mpi_type))
 
-        # TODO load directory definitions
-#        types_directory = path + 'types/'
-#        if os.path.isdir(types_directory):
-#            files = pathlib.Path(types_directory).glob('**/*.json')
+        # load directory definitions
+        types_directory = path / 'types/'
+        if types_directory.is_dir():
+            files = types_directory.glob('**/*.json')
 
-#            for path in files:
-#                mpi_type = self.parse_single_type(path)
+            for path in files:
+                mpi_type = self.parse_single_type(path)
 
-#                type_name = mpi_type['name']
-#                type_abstract_type = mpi_type['abstract_type']
-#                type_ctype = mpi_type['ctype']
-
-#                type_source = mpi_type['source']
-#                for source in type_source:
-#                    if source == "range":
-#                        type_lower_range = mpi_type['range'][0]
-#                        type_upper_range = mpi_type['range'][1]
-
-#                type_obj = Type(type_abstract_type,
-#                                type_source,
-#                                type_ctype,
-#                                [type_lower_range, type_upper_range],
-#                                type_name)
-
-#                database.add_type(type_obj)
+                database.add_type(Type(database, mpi_type))
 
     def parse_single_type(self, path: Path) -> Dict[str, Any]:
         with path.open() as typefile:
