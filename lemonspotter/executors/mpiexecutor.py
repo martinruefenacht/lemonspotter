@@ -94,8 +94,7 @@ class MPIExecutor:
 
         else:
             # TODO evalulate build output, is there ERROR?
-            if test.build_fail_function is not None:
-                test.build_fail_function()
+            test.build_fail_function() 
 
             logging.warning('building failed of test %s', test.name)
 
@@ -104,6 +103,8 @@ class MPIExecutor:
         """
 
         # TODO test should define how many processes it needs
+        # TODO check it is <= available with current run
+        # TODO testgenerators should not generate any tests with more
         arguments = ['-n', '1']
 
         # check if valid test
@@ -161,5 +162,4 @@ class MPIExecutor:
             else:
                 logging.warning('test %s failed with internal error.', test.name)
 
-            if test.run_fail_function is not None:
-                test.run_fail_function()
+            test.run_fail_function()

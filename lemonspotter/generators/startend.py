@@ -101,7 +101,7 @@ class StartEndGenerator(TestGenerator):
 
         source.add_at_start(start.generate_statement(source))
         source.add_at_start(FunctionStatement.generate_print(start.return_variable))
-        source.add_at_start(ConditionStatement.generate_check(start.return_variable))
+        source.add_at_start(start.generate_check())
 
         # generate end
         for variable in end.arguments:
@@ -110,7 +110,7 @@ class StartEndGenerator(TestGenerator):
 
         source.add_at_start(end.generate_statement(source))
         source.add_at_start(FunctionStatement.generate_print(end.return_variable))
-        source.add_at_start(ConditionStatement.generate_check(end.return_variable))
+        source.add_at_start(end.generate_check())
 
         # create test
         test = Test(test_name, TestType.BUILD_AND_RUN, source)

@@ -29,37 +29,34 @@ class DefaultInstantiator(Instantiator):
 
         logging.debug('DefaultInstantiator used for %s.', function.name)
 
-        sample = FunctionSample(function)
+        sample = FunctionSample(function, function.default_partition)
 
         def evaluator() -> bool:
             return function.default_partition.validate(sample.return_variable)
         sample.evaluator = evaluator
 
         if function.has_parameters:
-            if function.default_partition:
-                partition = function.default_partition
-                arguments = []
+            partition = function.default_partition
+            arguments = []
 
-                for parameter in function.parameters:  # type: ignore
-                    if parameter.name not in partition:
-                        raise RuntimeError('Found parameter which is not part of ' +
-                                           'the default_partition.')
+            for parameter in function.parameters:  # type: ignore
+                if parameter.name not in partition:
+                    raise RuntimeError('Found parameter which is not part of ' +
+                                       'the default_partition.')
 
-                    if partition[parameter.name]['type'] == 'literal':
-                        arguments.append(Variable(parameter.type,
-                                         parameter.name,
-                                         partition[parameter.name]['literal']))
+                if partition[parameter.name]['type'] == 'literal':
+                    arguments.append(Variable(parameter.type,
+                                     parameter.name,
+                                     partition[parameter.name]['literal']))
 
-                    else:
-                        raise NotImplementedError('Partition argument type is not literal.')
+                else:
+                    raise NotImplementedError('Partition argument type is not literal.')
 
-                sample.arguments = arguments
+            sample.arguments = arguments
 
-            else:
-                raise NotImplementedError('no default partition, but parameters exist.')
 
-                # arguments.append(Variable(parameter.type,
-                #                  parameter.name,
-                #                  parameter.type.default))
+            # arguments.append(Variable(parameter.type,
+            #                  parameter.name,
+            #                  parameter.type.default))
 
         return set([sample])

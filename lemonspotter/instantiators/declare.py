@@ -29,7 +29,7 @@ class DeclarationInstantiator(Instantiator):
 
         logging.debug('DeclarationInstantiator used for %s', function.name)
 
-        sample = FunctionSample(function)
+        sample = FunctionSample(function, function.default_partition)
 
         def evaluator() -> bool:
             raise NotImplementedError('DeclarationInstantiator only generates compilable ' +

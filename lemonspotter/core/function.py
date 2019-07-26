@@ -8,7 +8,7 @@ import logging
 
 from core.variable import Variable
 from core.database import Database
-from core.statement import FunctionStatement
+from core.statement import FunctionStatement, ConditionStatement, ExitStatement
 from core.type import Type
 from core.parameter import Parameter
 from core.source import Source
@@ -47,29 +47,36 @@ class Function:
     def name(self) -> str:
         """This property provides access to the Function name."""
 
+        assert self._json.get('name', None) is not None
         return self._json['name']
 
     @property
     def has_parameters(self) -> bool:
-        return self._json['parameters']
+        """"""
+        
+        return self._json.get('parameters', False)
 
     @property  # type: ignore
     @lru_cache()
     def parameters(self) -> Sequence[Parameter]:
         """This property provides access to the parameter list of this Function object."""
 
+        assert self._json.get('parameters', None) is not None
         return tuple(Parameter(self._db, parameter) for parameter in self._json['parameters'])
 
     @property
     def default_partition(self) -> Partition:
         """"""
 
+        assert self._json.get('partitions', None) is not None
+        assert self._json['partitions'].get('default', None) is not None
         return Partition(self._db, self, self._json['partitions']['default'])
 
     @property
     def return_type(self) -> Type:
         """This property provides the Type object of the return of this Function."""
 
+        assert self._json.get('return', None) is not None
         return self._db.type_by_abstract_type[self._json['return']]
 
     @property  # type: ignore
@@ -77,6 +84,7 @@ class Function:
     def needs_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of needed Function objects."""
 
+        assert self._json.get('needs_any', None) is not None
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_any'])
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
@@ -86,6 +94,7 @@ class Function:
     def needs_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of needed Function objects."""
 
+        assert self._json.get('needs_all', None) is not None
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_all'])
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
@@ -95,6 +104,7 @@ class Function:
     def leads_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of lead Function objects."""
 
+        assert self._json.get('leads_any', None) is not None
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_any'])
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
@@ -104,6 +114,7 @@ class Function:
     def leads_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
+        assert self._json.get('leads_all', None) is not None
         subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_all'])
 
         return set(self._db.functions_by_name[func_name] for func_name in subset)
@@ -118,12 +129,13 @@ class Function:
 class FunctionSample:
     """"""
 
-    def __init__(self, function: Function) -> None:
+    def __init__(self, function: Function, partition: Partition) -> None:
         self._function: Function = function
         self._return_variable: Variable = Variable(function.return_type)
 
         self._arguments: Optional[Sequence[Variable]] = None
         self._evaluator: Optional[Callable[[], bool]] = None
+        self._partition: Partition = partition
 
     @property
     def function(self) -> Function:
@@ -167,6 +179,30 @@ class FunctionSample:
         assert evaluator is not None
         self._evaluator = evaluator
 
+    @property
+    def partition(self) -> Partition:
+        """"""
+
+        return self._partition
+
+    def generate_check(self) -> ConditionStatement:
+        """"""
+
+        # invert operand
+        if self._partition.return_operand == 'equal':
+            op = '!='
+        else:
+            raise NotImplementedError('Other return operands not implemented. operand is "' +
+                                      str(self._partition.return_operand) + '" for function ' +
+                                      self._function.name)
+
+        statement = ConditionStatement(' '.join([self._return_variable.name, 
+                                                op,
+                                                self._partition.return_symbol]))
+        statement.add_at_start(ExitStatement(self._return_variable.name))
+
+        return statement
+
     def generate_statement(self, source: Source) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
@@ -175,6 +211,7 @@ class FunctionSample:
         self._return_variable.name = 'return_' + self._function.name
 
         if self._return_variable.name in source.variables:
+            # todo rename output return name, we have control over this above
             raise NotImplementedError('Test if the variable already exists.')
 
         statement = ''
@@ -186,6 +223,7 @@ class FunctionSample:
         logging.debug('arguments %s', str(self._arguments))
         logging.debug('parameters %s', str(self.function.parameters))
 
+        # fill arguments
         if self._arguments is not None:
             pairs = zip(self._arguments, self.function.parameters)  # type: ignore
             for idx, (argument, parameter) in enumerate(pairs):

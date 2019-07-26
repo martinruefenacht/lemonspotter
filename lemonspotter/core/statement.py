@@ -199,9 +199,6 @@ class ConditionStatement(BlockStatement):
         #    statement = ConditionStatement(self._name + ' != MPI_SUCCESS')
         #    statement.add_at_start(ExitStatement(self._name))
         #
-        #    return statement
-
-        #  raise NotImplementedError
 
         return None
 
