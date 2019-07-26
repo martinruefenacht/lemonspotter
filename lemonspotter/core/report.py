@@ -1,4 +1,4 @@
-import os, datetime, logging
+import os, datetime, logging, sys
 
 from core.test import Test, TestStage
 
@@ -42,6 +42,10 @@ class TestReport():
         """
         Prints results for single test
         """
+        RED   = "\033[1;31m"
+        GREEN = "\033[0;32m"
+        RESET = "\033[0;0m"
+
         if test not in self.tests:
             self.tests.append(test)
 
@@ -65,6 +69,14 @@ class TestReport():
         log_msg += test.name
         if msg:
             log_msg += '\n\t ' + msg
+
+        if 'FAIL' in log_msg:
+            sys.stdout.write(RED)
+        else:
+            sys.stdout.write(GREEN)
+
+        print(log_msg)
+        sys.stdout.write(RESET)
 
         logging.log(0, log_msg)
 
