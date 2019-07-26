@@ -6,7 +6,6 @@ from typing import Iterable
 
 from core.database import Database
 from core.function import Function, FunctionSample
-from core.source import Source
 
 
 class Instantiator(ABC):

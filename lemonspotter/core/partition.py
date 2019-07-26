@@ -1,21 +1,21 @@
 """
 """
 
-from typing import TYPE_CHECKING, Mapping, Any, Sequence
+from typing import TYPE_CHECKING, Mapping, Any
 import logging
 
 from core.database import Database
-from core.variable import Variable   
-
+from core.variable import Variable
 if TYPE_CHECKING:
     from core.function import Function
+
 
 class Partition:
     """
     """
 
     def __init__(self, database: Database, function: 'Function', json: Mapping[str, Any]) -> None:
-        self._database = database
+        self._db = database
         self._function = function
         self._json = json
         self._return = json['_return']
@@ -33,8 +33,10 @@ class Partition:
     def validate(self, variable: Variable) -> bool:
         """"""
 
+        logging.debug('validating %s to partition.', variable.name)
+
         if self._return['type'] == 'constant':
-            return self._database.constants_by_name[self._return['constant']].value == variable.value
+            return self._db.constants_by_name[self._return['constant']].value == variable.value
 
         else:
             raise NotImplementedError

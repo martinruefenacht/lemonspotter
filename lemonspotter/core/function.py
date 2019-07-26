@@ -2,7 +2,7 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import Mapping, Any, AbstractSet, Sequence, Callable, NamedTuple, Optional
+from typing import Mapping, Any, AbstractSet, Sequence, Callable, Optional
 from functools import lru_cache
 import logging
 
@@ -134,13 +134,13 @@ class FunctionSample:
     @property
     def return_variable(self) -> Variable:
         """"""
-        
+
         return self._return_variable
 
     @property
     def arguments(self) -> Sequence[Variable]:
         """"""
-        
+
         if self._arguments is None:
             return []
 
@@ -172,7 +172,7 @@ class FunctionSample:
         Generates a compilable expression of the function with the given arguments.
         """
 
-        self._return_variable.name = 'return_' + self._function.name 
+        self._return_variable.name = 'return_' + self._function.name
 
         if self._return_variable.name in source.variables:
             raise NotImplementedError('Test if the variable already exists.')
@@ -187,7 +187,8 @@ class FunctionSample:
         logging.debug('parameters %s', str(self.function.parameters))
 
         if self._arguments is not None:
-            for idx, (argument, parameter) in enumerate(zip(self._arguments, self.function.parameters)):  # type: ignore
+            pairs = zip(self._arguments, self.function.parameters)  # type: ignore
+            for idx, (argument, parameter) in enumerate(pairs):
                 mod = ''
 
                 pointer_diff = argument.pointer_level - parameter.pointer_level

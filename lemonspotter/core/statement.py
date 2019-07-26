@@ -215,8 +215,8 @@ class MainDefinitionStatement(BlockStatement):
         argc = Variable(database.type_by_abstract_type['INT'],
                         'argument_count')
         argv = Variable(database.type_by_abstract_type['CHAR'],
-                        'argument_list',
-                        pointer_level=2)
+                        'argument_list')
+        argv.pointer_level = 2
 
         self._variables[argc.name] = argc
         self._variables[argv.name] = argv

@@ -13,7 +13,7 @@ class Variable:
     This class represents any C variable for source code generation.
     """
 
-    def __init__(self, kind: Type, name: str = None, value: str = None, pointer_level: int = 0) -> None:
+    def __init__(self, kind: Type, name: str = None, value: str = None) -> None:
         """
         This method constructs the Variable from a type, name and pointer level.
         """
@@ -21,7 +21,7 @@ class Variable:
         self._type: Type = kind
         self._name: Optional[str] = name
         self._value: Optional[str] = value
-        self._pointer_level: int = pointer_level
+        self._pointer_level: int = 0
 
     def __str__(self) -> str:
         assert self._name is not None
@@ -54,7 +54,7 @@ class Variable:
     @name.setter
     def name(self, name: str) -> None:
         """"""
-        
+
         assert name is not None
         self._name = name
 

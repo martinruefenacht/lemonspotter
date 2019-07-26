@@ -3,14 +3,12 @@ This module contains the definition of the DefaultInstantiator.
 """
 
 import logging
-from typing import Set, Tuple, Iterable, MutableSequence
+from typing import Iterable
 
 from core.instantiator import Instantiator
 from core.database import Database
 from core.variable import Variable
-from core.parameter import Parameter
 from core.function import Function, FunctionSample
-from core.source import Source
 
 
 class DefaultInstantiator(Instantiator):
@@ -29,6 +27,8 @@ class DefaultInstantiator(Instantiator):
         """
         """
 
+        logging.debug('DefaultInstantiator used for %s.', function.name)
+
         sample = FunctionSample(function)
 
         def evaluator() -> bool:
@@ -42,10 +42,13 @@ class DefaultInstantiator(Instantiator):
 
                 for parameter in function.parameters:  # type: ignore
                     if parameter.name not in partition:
-                        raise RuntimeError('Found parameter which is not part of the default_partition.')
+                        raise RuntimeError('Found parameter which is not part of ' +
+                                           'the default_partition.')
 
                     if partition[parameter.name]['type'] == 'literal':
-                        arguments.append(Variable(parameter.type, parameter.name, partition[parameter.name]['literal']))
+                        arguments.append(Variable(parameter.type,
+                                         parameter.name,
+                                         partition[parameter.name]['literal']))
 
                     else:
                         raise NotImplementedError('Partition argument type is not literal.')
@@ -55,6 +58,8 @@ class DefaultInstantiator(Instantiator):
             else:
                 raise NotImplementedError('no default partition, but parameters exist.')
 
-                # arguments.append(Variable(parameter.type, parameter.name, parameter.type.default))
+                # arguments.append(Variable(parameter.type,
+                #                  parameter.name,
+                #                  parameter.type.default))
 
         return set([sample])

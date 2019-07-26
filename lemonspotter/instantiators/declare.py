@@ -3,14 +3,12 @@ This module contains the definition of the DefaultInstantiator.
 """
 
 import logging
-from typing import Set, Tuple, Iterable, MutableSequence
+from typing import Iterable
 
 from core.instantiator import Instantiator
 from core.database import Database
 from core.variable import Variable
-from core.parameter import Parameter
 from core.function import Function, FunctionSample
-from core.source import Source
 
 
 class DeclarationInstantiator(Instantiator):
@@ -29,13 +27,16 @@ class DeclarationInstantiator(Instantiator):
         """
         """
 
+        logging.debug('DeclarationInstantiator used for %s', function.name)
+
         sample = FunctionSample(function)
 
         def evaluator() -> bool:
-            raise NotImplementedError('DeclarationInstantiator only generates compilable code, not runnable.')
+            raise NotImplementedError('DeclarationInstantiator only generates compilable ' +
+                                      'code, not runnable.')
 
         sample.evaluator = evaluator
-        
+
         # generate valid but empty arguments
         arguments = []
 

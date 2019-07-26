@@ -10,8 +10,7 @@ from typing import Set
 
 from core.database import Database
 from core.test import Test, TestType
-from core.function import Function, FunctionSample
-from core.variable import Variable
+from core.function import Function
 from core.testgenerator import TestGenerator
 from core.statement import DeclarationStatement
 from instantiators.declare import DeclarationInstantiator

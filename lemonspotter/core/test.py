@@ -153,7 +153,7 @@ class Test:
     @source.setter
     def source(self, source: Source) -> None:
         """"""
-        
+
         self._source = source
 
     @property

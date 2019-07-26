@@ -3,10 +3,9 @@ This module defines the initiation point to finalization point generator.
 """
 
 import logging
-from typing import Iterable, MutableSet, MutableMapping, Optional
+from typing import Iterable, MutableSet, MutableMapping
 
 from core.test import Test, TestType, TestOutcome
-from core.variable import Variable
 from core.database import Database
 from core.function import Function, FunctionSample
 from core.testgenerator import TestGenerator
@@ -99,7 +98,7 @@ class StartEndGenerator(TestGenerator):
         for variable in start.arguments:
             if variable.name not in source.variables:
                 source.add_at_start(DeclarationAssignmentStatement(variable))
-    
+
         source.add_at_start(start.generate_statement(source))
         source.add_at_start(FunctionStatement.generate_print(start.return_variable))
         source.add_at_start(ConditionStatement.generate_check(start.return_variable))
@@ -118,10 +117,9 @@ class StartEndGenerator(TestGenerator):
         logging.debug('test %s source:\n' + repr(test.source).replace('%', '%%'), test.name)
 
         def run_success():
-            
             if start.evaluator() and end.evaluator():
                 test.run_outcome = TestOutcome.SUCCESS
-            
+
             else:
                 test.run_outcome = TestOutcome.FAILED
 
