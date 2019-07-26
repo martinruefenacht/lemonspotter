@@ -10,7 +10,6 @@ from typing import Optional
 
 from core.database import Database
 
-# TODO rethink these?
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
 

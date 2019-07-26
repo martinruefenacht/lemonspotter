@@ -93,7 +93,6 @@ class MPIExecutor:
             logging.debug('success building %s', test.name)
 
         else:
-            # TODO evalulate build output, is there ERROR?
             test.build_fail_function() 
 
             logging.warning('building failed of test %s', test.name)
@@ -102,9 +101,9 @@ class MPIExecutor:
         """
         """
 
-        # TODO test should define how many processes it needs
-        # TODO check it is <= available with current run
-        # TODO testgenerators should not generate any tests with more
+        # todo test should define how many processes it needs
+        # todo check it is <= available with current run
+        # todo testgenerators should not generate any tests with more
         arguments = ['-n', '1']
 
         # check if valid test

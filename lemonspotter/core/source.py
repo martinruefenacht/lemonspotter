@@ -33,7 +33,7 @@ class Source:
             return self.variables[name]
 
         # search sub-blocks for variables
-        # TODO end statements as well?
+        # todo end statements as well?
         for statement in self._front_statements:
             if issubclass(type(statement), BlockStatement):
                 if name in statement.variables:
@@ -49,7 +49,7 @@ class Source:
         if not statement:
             return
 
-        # TODO currently only able to add to nested block
+        # todo currently only able to add to nested block
         if self._front_statements and issubclass(type(self._front_statements[-1]),
                                                  BlockStatement):
             self._front_statements[-1].add_at_start(statement)
@@ -57,7 +57,7 @@ class Source:
         else:
             self._front_statements.append(statement)
 
-            # TODO how to handle this internally?
+            # todo how to handle this internally?
             # how do statements have access to whole global variables?
             if not issubclass(type(statement), BlockStatement):
                 self._variables.update(statement.variables)
@@ -69,7 +69,7 @@ class Source:
 
         self._back_statements.append(statement)
 
-        # TODO we need back variables and front variables? this is ordering
+        # todo we need back variables and front variables? this is ordering
         self._variables.update(statement.variables)
 
     def __repr__(self) -> str:
