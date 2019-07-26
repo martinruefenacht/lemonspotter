@@ -33,6 +33,7 @@ class DefaultInstantiator(Instantiator):
 
         def evaluator() -> bool:
             return function.default_partition.validate(sample.return_variable)
+
         sample.evaluator = evaluator
 
         if function.has_parameters:

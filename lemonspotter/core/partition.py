@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 class Partition:
     """
+    This class represents the concept of a partition.
     """
 
     def __init__(self, database: Database, function: 'Function', json: Mapping[str, Any]) -> None:

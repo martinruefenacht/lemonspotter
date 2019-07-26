@@ -179,12 +179,6 @@ class FunctionSample:
         assert evaluator is not None
         self._evaluator = evaluator
 
-    @property
-    def partition(self) -> Partition:
-        """"""
-
-        return self._partition
-
     def generate_check(self) -> ConditionStatement:
         """"""
 
