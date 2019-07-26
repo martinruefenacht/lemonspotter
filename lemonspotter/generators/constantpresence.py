@@ -115,8 +115,6 @@ class ConstantPresenceGenerator(TestGenerator):
                 else:
                     test.run_outcome = TestOutcome.FAILED
 
-            logging.info('test %s successful', test.name)
-
         test.run_success_function = run_success
 
         return test

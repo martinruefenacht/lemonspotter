@@ -68,7 +68,7 @@ class MPIExecutor:
         executable_filename = self.test_directory / test.name
         command = [self._mpicc, str(test_filename)] + arguments + ["-o", str(executable_filename)]
 
-        logging.info('executing: %s', ' '.join(command))
+        logging.debug('executing: %s', ' '.join(command))
 
         # execute command
         try:
@@ -88,10 +88,9 @@ class MPIExecutor:
             # set executable on test
             test.executable = Path(executable_filename)
 
-            if test.build_success_function is not None:
-                test.build_success_function()
+            test.build_success_function()
 
-            logging.info('building successful of test %s', test.name)
+            logging.debug('success building %s', test.name)
 
         else:
             # TODO evalulate build output, is there ERROR?
@@ -116,13 +115,13 @@ class MPIExecutor:
             return
 
         else:
-            logging.info('preparing test %s.', test.name)
+            logging.debug('preparing test %s.', test.name)
 
             # create command
             command = [self._mpiexec] + arguments + [str(test.executable)]
 
             # run test executable
-            logging.info('executing "%s"', ' '.join(command))
+            logging.debug('executing "%s"', ' '.join(command))
             try:
                 process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
                 stdout, stderr = process.communicate()
@@ -137,8 +136,6 @@ class MPIExecutor:
 
             # test run check
             if not stderr and process.returncode == 0:
-                logging.info('test %s successfully run.', test.name)
-
                 # filter for captures
                 logging.debug('test capturing: %s', str(test.captures))
                 for line in stdout.split('\n'):
@@ -153,13 +150,13 @@ class MPIExecutor:
                             logging.debug('captured %s = %s', variable.name, tokens[1])
 
                 # call success function
-                if test.run_success_function is not None:
-                    test.run_success_function()
+                test.run_success_function()
+                logging.info('running test %s successful', test.name)
 
                 return
 
             elif process.returncode > 0:
-                logging.critical('test crashed')
+                logging.critical('test crashed with errorcode %i', process.returncode)
 
             else:
                 logging.warning('test %s failed with internal error.', test.name)

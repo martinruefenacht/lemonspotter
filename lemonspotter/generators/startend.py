@@ -43,10 +43,10 @@ class StartEndGenerator(TestGenerator):
         tests: MutableSet[Test] = set()
 
         for start in starts:
-            logging.info('using start %s', str(start))
+            logging.debug('using start %s', str(start))
 
             for end in ends:
-                logging.info('using start %s', str(start))
+                logging.debug('using start %s', str(start))
 
                 # generate individual test
                 logging.debug('generating tests for %s-%s with %s', start, end, instantiator)
@@ -121,12 +121,9 @@ class StartEndGenerator(TestGenerator):
             
             if start.evaluator() and end.evaluator():
                 test.run_outcome = TestOutcome.SUCCESS
-                logging.info('test %s succeded.', test.name)
             
             else:
                 test.run_outcome = TestOutcome.FAILED
-
-                logging.info('test %s failed.', test.name)
 
         # register return_start return_end
         test.register_capture(start.return_variable)
