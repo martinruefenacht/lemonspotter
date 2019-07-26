@@ -186,8 +186,8 @@ class FunctionSample:
         logging.debug('arguments %s', str(self._arguments))
         logging.debug('parameters %s', str(self.function.parameters))
 
-        if self.function.has_parameters:
-            for idx, (argument, parameter) in enumerate(zip(self._arguments, self.function.parameters)):
+        if self._arguments is not None:
+            for idx, (argument, parameter) in enumerate(zip(self._arguments, self.function.parameters)):  # type: ignore
                 mod = ''
 
                 pointer_diff = argument.pointer_level - parameter.pointer_level
@@ -201,6 +201,7 @@ class FunctionSample:
 
                 statement += (mod + argument.name)
 
+                # if not last argument then add comma
                 if (idx + 1) != len(self._arguments):
                     statement += ', '
 

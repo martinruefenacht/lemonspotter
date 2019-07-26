@@ -60,13 +60,12 @@ class FunctionPresenceGenerator(TestGenerator):
 
         # generate declaration of arguments
         instantiator = DeclarationInstantiator(self._database)
-        sample = instantiator.generate_samples(function)[0]
+        for sample in instantiator.generate_samples(function):
+            for variable in sample.arguments:
+                if variable.name not in test.source.variables:
+                    test.source.add_at_start(DeclarationStatement(variable))
 
-        for variable in sample.arguments:
-            if variable.name not in test.source.variables:
-                test.source.add_at_start(DeclarationStatement(variable))
-
-        test.source.add_at_start(sample.generate_statement(test.source))
+            test.source.add_at_start(sample.generate_statement(test.source))
 
         # add evaluation closures
         def build_fail():

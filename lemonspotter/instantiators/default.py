@@ -40,7 +40,7 @@ class DefaultInstantiator(Instantiator):
                 partition = function.default_partition
                 arguments = []
 
-                for parameter in function.parameters:
+                for parameter in function.parameters:  # type: ignore
                     if parameter.name not in partition:
                         raise RuntimeError('Found parameter which is not part of the default_partition.')
 
