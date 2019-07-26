@@ -45,9 +45,22 @@ class DefaultInstantiator(Instantiator):
                                        'the default_partition.')
 
                 if partition[parameter.name]['type'] == 'literal':
+                    # create variable with value literal
                     arguments.append(Variable(parameter.type,
                                      parameter.name,
                                      partition[parameter.name]['literal']))
+
+                elif partition[parameter.name]['type'] == 'constant':
+                    # create variable with value of constant
+                    constant = self._database.constants_by_name[partition[parameter.name]['constant']]
+                    arguments.append(constant.generate_variable('constant_' + constant.name))
+
+                elif partition[parameter.name]['type'] == 'declare':
+                    # create variable without assignment, used for out arguments
+                    arguments.append(Variable(parameter.type, 'out_' + parameter.name))
+
+                elif partition[parameter.name]['type'] == 'optional':
+                    raise NotImplementedError('Partition variable is marked optional. Old descriptor.')
 
                 else:
                     raise NotImplementedError('Partition argument type is not literal.')

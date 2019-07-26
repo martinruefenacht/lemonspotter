@@ -10,7 +10,7 @@ from core.database import Database
 from core.function import Function, FunctionSample
 from core.testgenerator import TestGenerator
 from core.instantiator import Instantiator
-from core.statement import FunctionStatement, ConditionStatement, DeclarationAssignmentStatement
+from core.statement import FunctionStatement, ConditionStatement, DeclarationAssignmentStatement, DeclarationStatement
 
 
 class StartEndGenerator(TestGenerator):
@@ -29,24 +29,20 @@ class StartEndGenerator(TestGenerator):
         """
 
         # determine all start functions
-        starts = filter(lambda f: (not (f.needs_all or f.needs_any) and
-                        (f.leads_any or f.leads_all)) and f.present,
-                        self._database.functions)
+        starts = list(filter(lambda f: (not (f.needs_all or f.needs_any) and
+                            (f.leads_any or f.leads_all)) and f.present,
+                            self._database.functions))
 
         # determine all end points
-        ends = filter(lambda f: (not (f.leads_all or f.leads_any) and
-                      (f.needs_any or f.needs_all)) and f.present,
-                      self._database.functions)
+        ends = list(filter(lambda f: (not (f.leads_all or f.leads_any) and
+                           (f.needs_any or f.needs_all)) and f.present,
+                           self._database.functions))
 
         # for all combinations
         tests: MutableSet[Test] = set()
 
         for start in starts:
-            logging.debug('using start %s', str(start))
-
             for end in ends:
-                logging.debug('using start %s', str(start))
-
                 # generate individual test
                 logging.debug('generating tests for %s-%s with %s', start, end, instantiator)
                 for test in self._gen_tests(start, end, instantiator):
@@ -97,7 +93,11 @@ class StartEndGenerator(TestGenerator):
         # generate start
         for variable in start.arguments:
             if variable.name not in source.variables:
-                source.add_at_start(DeclarationAssignmentStatement(variable))
+                if variable.value:
+                    source.add_at_start(DeclarationAssignmentStatement(variable))
+                
+                else:
+                    source.add_at_start(DeclarationStatement(variable))
 
         source.add_at_start(start.generate_statement(source))
         source.add_at_start(FunctionStatement.generate_print(start.return_variable))
@@ -106,7 +106,11 @@ class StartEndGenerator(TestGenerator):
         # generate end
         for variable in end.arguments:
             if variable.name not in source.variables:
-                source.add_at_start(DeclarationAssignmentStatement(variable))
+                if variable.value:
+                    source.add_at_start(DeclarationAssignmentStatement(variable))
+
+                else:
+                    source.add_at_start(DeclarationStatement(variable))
 
         source.add_at_start(end.generate_statement(source))
         source.add_at_start(FunctionStatement.generate_print(end.return_variable))

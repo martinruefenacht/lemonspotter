@@ -7,6 +7,7 @@ import logging
 
 from core.database import Database
 from core.type import Type
+from core.variable import Variable
 
 
 class Constant:
@@ -87,3 +88,10 @@ class Constant:
         """"""
 
         return self.properties['value']
+
+    def generate_variable(self, variable_name: str) -> Variable:
+        """
+        This generates a Variable object of this constant with a given variable name.
+        """
+
+        return Variable(self.type, variable_name, self.name)
