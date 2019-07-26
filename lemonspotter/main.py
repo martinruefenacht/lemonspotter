@@ -173,7 +173,6 @@ def main():
 
     # Log presence report to file
     runtime._reporter.write_presence_report()
-    runtime._reporter.print_presence_report()
 
     #runtime.generate_tests()
     #runtime.build_tests()
