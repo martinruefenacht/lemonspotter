@@ -91,4 +91,10 @@ class FunctionPresenceGenerator(TestGenerator):
             test.build_outcome = TestOutcome.SUCCESS
         test.build_success_function = build_success
 
+        def run_fail():
+            # todo do we need to do anything here?
+            test.run_outcome = TestOutcome.FAILED
+        test.run_fail_function = run_fail
+
+
         return test
