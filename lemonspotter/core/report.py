@@ -1,5 +1,6 @@
 import os, datetime, logging, sys
 
+from typing import Dict, List, Optional
 from core.test import Test, TestType, TestOutcome
 
 class TestReport():
@@ -8,10 +9,10 @@ class TestReport():
     """
     def __init__(self, database):
         self._now = datetime.datetime.now()
-        self._report_id = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
+        self._report_id: str = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
         self._database = database
 
-        self._presence_report = None
+        self._presence_report: str = None
         self._tests = []
 
         # Ensures that report directory exists
@@ -20,44 +21,43 @@ class TestReport():
             os.mkdir(report_dir)
 
         # Creates path to report file
-        self._report_file_name = self._report_id + '.log'
-        self._report_file_dir = os.path.join(report_dir, self._report_file_name)
-        self._report_file_dir = os.path.abspath(self._report_file_dir)
-
+        self._report_file_name: str = self._report_id + '.log'
+        self._report_file_dir: str = os.path.join(report_dir, self._report_file_name)
+        self._report_file_dir: str = os.path.abspath(self._report_file_dir)
 
     @property
-    def report_id(self):
+    def report_id(self) -> str:
         return self._report_id
 
     @report_id.setter
-    def report_id(self, report_id):
+    def report_id(self, report_id) -> None:
         self._report_id = report_id
 
 
     @property
-    def report_file_dir(self):
+    def report_file_dir(self) -> str:
         return self._report_file_dir
 
     @report_file_dir.setter
-    def report_file_dir(self, report_file_dir):
+    def report_file_dir(self, report_file_dir) -> None:
         self._report_file_dir = report_file_dir
 
 
     @property
-    def presence_report(self):
+    def presence_report(self) -> str:
         return self._presence_report
 
     @presence_report.setter
-    def presence_report(self, presence_report):
+    def presence_report(self, presence_report) -> None:
         self._presence_report = presence_report
 
 
     @property
-    def tests(self):
+    def tests(self) -> List[Test]:
         return self._tests
 
     @tests.setter
-    def tests(self, tests):
+    def tests(self, tests) -> None:
         self._tests = tests
 
 
@@ -101,7 +101,7 @@ class TestReport():
         logging.log(0, log_msg)
 
 
-    def generate_presence_report(self):
+    def generate_presence_report(self) -> None:
         """
         Generates presence_report to report file
         """
@@ -120,7 +120,7 @@ class TestReport():
 
 
     @property
-    def write_presence_report(self):
+    def write_presence_report(self) -> None:
         """
         Writes presence_report to report file
         """
