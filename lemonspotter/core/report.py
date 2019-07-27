@@ -1,7 +1,13 @@
-import os, datetime, logging, sys
+import os
+import datetime
+import logging
+import sys
 
-from typing import Dict, List, Optional
-from core.test import Test, TestType, TestOutcome
+from typing import List
+from core.test import Test
+from core.test import TestType
+from core.test import TestOutcome
+
 
 class TestReport():
     """
@@ -16,7 +22,8 @@ class TestReport():
         self._tests = []
 
         # Ensures that report directory exists
-        report_dir = os.path.abspath(os.path.join(__file__, '../../../reports'))
+        report_dir = os.path.abspath(os.path.join(__file__,
+                                                  '../../../reports'))
         if not os.path.exists(report_dir):
             os.mkdir(report_dir)
 

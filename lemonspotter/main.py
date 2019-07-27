@@ -5,6 +5,7 @@ Lemonspotter Runtime
 import sys
 import argparse
 import logging
+from subprocess import Popen, PIPE
 from pathlib import Path
 from typing import Optional
 
@@ -13,11 +14,12 @@ from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
 from core.database import Database
 
-#from generators.startend import StartEndGenerator
+# from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 
 from core.report import TestReport
+
 
 class LemonSpotter:
     """
@@ -136,8 +138,21 @@ def parse_arguments():
                         type=str,
                         help='Comma separated list of generators.')
 
+    parser.add_argument('--flake8',
+                        action='store_true',
+                        dest='flake',
+                        default=False,
+                        help='Runs flake8 test on Lemonspotter project')
+
+    parser.add_argument('--test',
+                        action='store_true',
+                        dest='test',
+                        default=False,
+                        help='Runs Lemonspotter Unit Tests')
+
     # database arguments
     parser.add_argument('database',
+                        nargs='?',
                         type=str,
                         help='Path to database to use.')
 
@@ -171,17 +186,28 @@ def main():
     arguments = parse_arguments()
     set_logging_level(arguments.log)
 
-    # initialize and load the database
-    runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
-
     # perform presence testing
-    runtime.presence_testing()
-    runtime._reporter.print_presence_report
-    runtime._reporter.write_presence_report
 
-    #runtime.generate_tests()
-    #runtime.build_tests()
-    #runtime.run_tests()
+    if arguments.test:
+        raise NotImplementedError
+    elif arguments.flake:
+        process = Popen('flake8', stdout=PIPE, stderr=PIPE, cwd='../')
+        stdout, stderr = process.communicate()
+        print(stdout.decode('utf-8'))
+    elif not arguments.database:
+        logging.error("Database path not defined")
+    else:
+        # initialize and load the database
+        runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
+
+        # perform presence testing
+        runtime.presence_testing()
+        runtime._reporter.print_presence_report
+        runtime._reporter.write_presence_report
+
+    # runtime.generate_tests()
+    # runtime.build_tests()
+    # runtime.run_tests()
 
 if __name__ == '__main__':
     main()

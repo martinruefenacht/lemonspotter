@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 100
+exclude =
+    .git,
+    .gitignore,
+    __pycache__,
+    reports,
+    lemonspotter/tests/,
+    RELEASE_NOTES,
+    README.md,
+    Makefile,
+    AUTHORS,
+    CHANGELOG,
+    LICENSE
