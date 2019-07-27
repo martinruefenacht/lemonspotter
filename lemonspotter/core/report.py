@@ -1,7 +1,5 @@
 import os
 import datetime
-import logging
-import sys
 
 from typing import List
 from core.test import Test
@@ -92,7 +90,6 @@ class TestReport():
 
         print(log_msg)
 
-
     def generate_presence_report(self) -> None:
         """
         Generates presence_report to report file
@@ -110,18 +107,16 @@ class TestReport():
         else:
             self.presence_report = None
 
-
     @property
     def write_presence_report(self) -> None:
         """
         Writes presence_report to report file
         """
-        if self.presence_report == None:
+        if self.presence_report is None:
             self.generate_presence_report()
 
         with open(self.report_file_dir, 'a+') as report_file:
             report_file.write(str(self.presence_report))
-
 
     @property
     def print_presence_report(self) -> str:
@@ -132,12 +127,3 @@ class TestReport():
             self.generate_presence_report()
 
         print(self.presence_report)
-
-
-
-
-    def write(self):
-        """
-        Write output of test to file for permanent storage
-        """
-        raise NotImplementedError
