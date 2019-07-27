@@ -75,21 +75,21 @@ class TestReport():
         log_msg = ''
 
         if test.stage == TestStage.BUILD:
-            log_msg += '[ BUILD      ] \n'
+            log_msg += '[ BUILD|'
             if test.build_outcome:
-                log_msg += '[       PASS ] '
+                log_msg += 'PASS|'
             else:
-                log_msg += '[       FAIL ] '
+                log_msg += 'FAIL|'
         elif test.stage == TestStage.RUN:
-            log_msg += '[ RUN        ] \n'
+            log_msg += '[ RUN|'
             if test.run_outcome:
-                log_msg += '[       PASS ] '
+                log_msg += '|PASS|'
             else:
-                log_msg += '[       FAIL ] '
+                log_msg += '|FAIL|'
         else:
             log_msg += '[STAGE NOT SET]'
 
-        log_msg += test.name
+        log_msg += test.name + ']'
         if msg:
             log_msg += '\n\t ' + msg
 
