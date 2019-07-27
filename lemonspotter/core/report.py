@@ -75,13 +75,13 @@ class TestReport():
         log_msg = ''
 
         if test.stage == TestStage.BUILD:
-            log_msg += '[ BUILD|'
+            log_msg += '[BUILD|'
             if test.build_outcome:
                 log_msg += 'PASS|'
             else:
                 log_msg += 'FAIL|'
         elif test.stage == TestStage.RUN:
-            log_msg += '[ RUN|'
+            log_msg += '[RUN|'
             if test.run_outcome:
                 log_msg += '|PASS|'
             else:
@@ -98,7 +98,7 @@ class TestReport():
         else:
             sys.stdout.write(GREEN)
 
-        print(log_msg + '\n')
+        print(log_msg)
         sys.stdout.write(RESET)
 
         logging.log(0, log_msg)
