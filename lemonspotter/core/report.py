@@ -40,7 +40,6 @@ class TestReport():
     def report_id(self, report_id) -> None:
         self._report_id = report_id
 
-
     @property
     def report_file_dir(self) -> str:
         return self._report_file_dir
@@ -48,7 +47,6 @@ class TestReport():
     @report_file_dir.setter
     def report_file_dir(self, report_file_dir) -> None:
         self._report_file_dir = report_file_dir
-
 
     @property
     def presence_report(self) -> str:
@@ -58,7 +56,6 @@ class TestReport():
     def presence_report(self, presence_report) -> None:
         self._presence_report = presence_report
 
-
     @property
     def tests(self) -> List[Test]:
         return self._tests
@@ -67,14 +64,10 @@ class TestReport():
     def tests(self, tests) -> None:
         self._tests = tests
 
-
     def log_test_result(self, test, msg=None) -> None:
         """
         Prints results for single test
         """
-        RED   = "\033[1;31m"
-        GREEN = "\033[0;32m"
-        RESET = "\033[0;0m"
 
         if test not in self.tests:
             self.tests.append(test)
@@ -97,15 +90,7 @@ class TestReport():
         if msg:
             log_msg += '\n\t ' + msg
 
-        if 'FAIL' in log_msg:
-            sys.stdout.write(RED)
-        else:
-            sys.stdout.write(GREEN)
-
         print(log_msg)
-        sys.stdout.write(RESET)
-
-        logging.log(0, log_msg)
 
 
     def generate_presence_report(self) -> None:

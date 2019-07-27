@@ -91,10 +91,11 @@ class LemonSpotter:
 #                source.write()
 
     def build_tests(self):
-        results = self._executor.build(tests=self.tests)
+        self._executor.build(tests=self.tests)
 
     def run_tests(self):
-        results = self._executor.run(tests=self.tests)
+        self._executor.run(tests=self.tests)
+
 
 def parse_arguments():
     """
@@ -165,6 +166,7 @@ def parse_arguments():
 
     return arguments
 
+
 def set_logging_level(log_level: str):
     """
     Set the logging level to the one specified on the command line.
@@ -176,6 +178,7 @@ def set_logging_level(log_level: str):
         raise ValueError('Invalid log level: %s' % log_level)
 
     logging.basicConfig(level=numeric_level)
+
 
 def main():
     """
@@ -208,6 +211,7 @@ def main():
     # runtime.generate_tests()
     # runtime.build_tests()
     # runtime.run_tests()
+
 
 if __name__ == '__main__':
     main()
