@@ -136,12 +136,12 @@ class Test:
     def executable(self, path: Path):
         """This allows setting the executable Path."""
         self._executable = path
-        
+
     @property
     def stage(self) -> Optional[TestStage]:
         """This property returns the current stage of testing"""
         return self._stage
-        
+
     @stage.setter
     def stage(self, stage: TestStage):
         """This allows setting the build stage"""
