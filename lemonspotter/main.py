@@ -26,7 +26,7 @@ class LemonSpotter:
 
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
         """
-        Construct the LemonSpotter runtime.
+        Construct the LemonSpotter runtime
         """
 
         self._database: Optional[Database] = None
@@ -62,6 +62,12 @@ class LemonSpotter:
 
         self._executor.execute(constant_tests)
         self._executor.execute(function_tests)
+
+        for test in constant_tests:
+            self._reporter.log_test_result(test)
+
+        for test in function_tests:
+            self._reporter.log_test_result(test)
 
     def generate_tests(self):
         pass
