@@ -4,7 +4,7 @@ from core.test import Test, TestStage
 
 class TestReport():
     """
-    Singleton for generating logging statements for tests
+    Class for generating logging statements for tests
     """
     def __init__(self, database):
         self._now = datetime.datetime.now()
@@ -14,6 +14,17 @@ class TestReport():
         self._presence_report = None
         self._tests = []
 
+        # Ensures that report directory exists
+        report_dir = os.path.abspath(os.path.join(__file__, '../../../reports'))
+        if not os.path.exists(report_dir):
+            os.mkdir(report_dir)
+
+        # Creates path to report file
+        self._report_file_name = self._report_id + '.log'
+        self._report_file_dir = os.path.join(report_dir, self._report_file_name)
+        self._report_file_dir = os.path.abspath(self._report_file_dir)
+
+
     @property
     def report_id(self):
         return self._report_id
@@ -22,9 +33,24 @@ class TestReport():
     def report_id(self, report_id):
         self._report_id = report_id
 
+
+    @property
+    def report_file_dir(self):
+        return self._report_file_dir
+
+    @report_file_dir.setter
+    def report_file_dir(self, report_file_dir):
+        self._report_file_dir = report_file_dir
+
+
     @property
     def presence_report(self):
         return self._presence_report
+
+    @presence_report.setter
+    def presence_report(self, presence_report):
+        self._presence_report = presence_report
+
 
     @property
     def tests(self):
@@ -34,9 +60,6 @@ class TestReport():
     def tests(self, tests):
         self._tests = tests
 
-    @presence_report.setter
-    def presence_report(self, presence_report):
-        self._presence_report = presence_report
 
     def log_test_result(self, test, msg=None) -> None:
         """
@@ -99,6 +122,7 @@ class TestReport():
             self.presence_report = None
 
 
+    @property
     def write_presence_report(self):
         """
         Writes presence_report to report file
@@ -106,19 +130,15 @@ class TestReport():
         if self.presence_report == None:
             self.generate_presence_report()
 
-        if not os.path.exists('../reports/'):
-            os.mkdir('../reports')
-
-        report_file_name = self._report_id + '.log'
-        with open('../reports/' + report_file_name, 'a+') as report_file:
+        with open(self.report_file_dir, 'a+') as report_file:
             report_file.write(str(self.presence_report))
 
 
+    @property
     def print_presence_report(self) -> str:
         """
         Prints Presence Report to Console
         """
-
         if not self.presence_report:
             self.generate_presence_report()
 
