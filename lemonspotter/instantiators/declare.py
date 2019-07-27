@@ -8,7 +8,8 @@ from typing import Iterable
 from core.instantiator import Instantiator
 from core.database import Database
 from core.variable import Variable
-from core.function import Function, FunctionSample
+from core.function import Function
+from core.sample import FunctionSample
 
 
 class DeclarationInstantiator(Instantiator):

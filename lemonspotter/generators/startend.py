@@ -7,7 +7,8 @@ from typing import Iterable, MutableSet, MutableMapping
 
 from core.test import Test, TestType, TestOutcome
 from core.database import Database
-from core.function import Function, FunctionSample
+from core.function import Function
+from core.sample import FunctionSample
 from core.testgenerator import TestGenerator
 from core.instantiator import Instantiator
 from core.statement import FunctionStatement, ConditionStatement, DeclarationAssignmentStatement, DeclarationStatement
@@ -90,18 +91,8 @@ class StartEndGenerator(TestGenerator):
 
         source = self._gen_main()
 
-        # generate start
-        for variable in start.arguments:
-            if variable.name not in source.variables:
-                if variable.value:
-                    source.add_at_start(DeclarationAssignmentStatement(variable))
-                
-                else:
-                    source.add_at_start(DeclarationStatement(variable))
-
-        source.add_at_start(start.generate_statement(source))
-        source.add_at_start(FunctionStatement.generate_print(start.return_variable))
-        source.add_at_start(start.generate_check())
+        start.generate_code(source)
+        
 
         # generate end
         for variable in end.arguments:
