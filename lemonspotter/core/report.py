@@ -1,6 +1,6 @@
 import os, datetime, logging, sys
 
-from core.test import Test, TestOutcome, TestStage
+from core.test import Test, TestType, TestOutcome
 
 class TestReport():
     """
@@ -73,20 +73,18 @@ class TestReport():
             self.tests.append(test)
 
         log_msg = ''
-        if test.stage == TestStage.BUILD:
-            log_msg += '[BUILD|'
+        if test.type == TestType.BUILD_ONLY:
+            log_msg += '[BUILD ONLY|'
             if test.build_outcome == TestOutcome.SUCCESS:
                 log_msg += 'PASS|'
             else:
                 log_msg += 'FAIL|'
-        elif test.stage == TestStage.RUN:
+        elif test.type == TestType.BUILD_AND_RUN:
             log_msg += '[RUN|'
             if test.run_outcome == TestOutcome.SUCCESS:
-                log_msg += '|PASS|'
+                log_msg += 'PASS|'
             else:
-                log_msg += '|FAIL|'
-        else:
-            log_msg += '[STAGE NOT SET]'
+                log_msg += 'FAIL|'
 
         log_msg += test.name + ']'
         if msg:

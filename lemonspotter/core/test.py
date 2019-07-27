@@ -14,11 +14,6 @@ class TestType(Enum):
     BUILD_AND_RUN = 0
     BUILD_ONLY = 1
 
-class TestStage(Enum):
-    """This Enumeration stores the stages of testing."""
-
-    BUILD = 0
-    RUN = 1
 
 class TestOutcome(Enum):
     """This Enumeration stores the type of test outcomes."""
@@ -35,7 +30,6 @@ class Test:
     def __init__(self, name: str, source: Source, test_type: TestType) -> None:
         self._name: str = name
         self._type: TestType = test_type
-        self._stage: Optional[TestStage] = None
 
         self._source: Source = source
         self._executable: Optional[Path] = None
@@ -136,16 +130,6 @@ class Test:
     def executable(self, path: Path):
         """This allows setting the executable Path."""
         self._executable = path
-
-    @property
-    def stage(self) -> Optional[TestStage]:
-        """This property returns the current stage of testing"""
-        return self._stage
-
-    @stage.setter
-    def stage(self, stage: TestStage):
-        """This allows setting the build stage"""
-        self._stage = stage
 
     @property
     def build_outcome(self) -> Optional[TestOutcome]:

@@ -5,7 +5,7 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Set, List
 
-from core.test import Test, TestOutcome, TestType, TestStage
+from core.test import Test, TestOutcome, TestType
 from core.report import TestReport
 
 class MPIExecutor:
@@ -39,7 +39,6 @@ class MPIExecutor:
         if tests:
             try:
                 for test in tests:
-                    test.stage = TestStage.BUILD
                     self.build_test(test)
 
             except FileNotFoundError as error:
@@ -49,7 +48,6 @@ class MPIExecutor:
 
             try:
                 for test in tests:
-                    test.stage = TestStage.RUN
                     self.run_test(test)
 
             except FileNotFoundError as error:
@@ -107,7 +105,6 @@ class MPIExecutor:
     def run_test(self, test: Test, arguments: List[str]=[]) -> None:
         """
         """
-
         # TODO test should define how many processes it needs
         arguments = ['-n', '1']
 
@@ -130,7 +127,6 @@ class MPIExecutor:
             try:
                 process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
                 stdout, stderr = process.communicate()
-
             except FileNotFoundError as error:
                 logging.error(error)
                 logging.error('skip running test %s', test.name)
