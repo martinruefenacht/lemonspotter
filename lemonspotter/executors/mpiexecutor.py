@@ -9,7 +9,7 @@ from core.test import Test, TestOutcome, TestType, TestStage
 from core.report import TestReport
 
 class MPIExecutor:
-    def __init__(self, mpicc: str, mpiexec: str, reporter:TestReport, test_directory: Path=Path('tests/')):
+    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
         """
         Initializes a test executor for MPI Libraries
         """
@@ -18,8 +18,7 @@ class MPIExecutor:
 
         self._mpicc = mpicc
         self._mpiexec = mpiexec
-        
-        self._reporter = reporter
+
 
     @property
     def test_directory(self):
@@ -28,19 +27,6 @@ class MPIExecutor:
         """
         return self._test_directory
 
-    @property
-    def reporter(self):
-        """
-        Gets reporter object
-        """
-        return self._reporter
-
-    @reporter.setter
-    def reporter(self, reporter):
-        """
-        Sets reporter object
-        """
-        self._reporter = reporter
 
     def execute(self, tests: Set[Test]):
         """
@@ -55,7 +41,6 @@ class MPIExecutor:
                 for test in tests:
                     test.stage = TestStage.BUILD
                     self.build_test(test)
-                    self.reporter.log_test_result(test)
 
             except FileNotFoundError as error:
                 logging.error(error)
@@ -66,7 +51,6 @@ class MPIExecutor:
                 for test in tests:
                     test.stage = TestStage.RUN
                     self.run_test(test)
-                    self.reporter.log_test_result(test)
 
             except FileNotFoundError as error:
                 logging.error(error)
@@ -97,7 +81,7 @@ class MPIExecutor:
 
         except FileNotFoundError as error:
             logging.error('Test %s failed to build, due to missing mpicc.', test.name)
-            
+
             raise error
 
         # evaluate build result
