@@ -90,7 +90,7 @@ class MPIExecutor:
 
             test.build_success_function()
 
-            logging.debug('success building %s', test.name)
+            logging.debug('building test %s successful\n%s\n', test.name, '-' * 80)
 
         else:
             test.build_fail_function() 
@@ -151,7 +151,7 @@ class MPIExecutor:
 
                 # call success function
                 test.run_success_function()
-                logging.info('running test %s successful', test.name)
+                logging.info('running test %s successful\n%s\n', test.name, '#'*80)
 
                 return
 
