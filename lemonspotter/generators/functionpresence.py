@@ -64,7 +64,7 @@ class FunctionPresenceGenerator(TestGenerator):
                 if variable.name not in test.source.variables:
                     test.source.add_at_start(DeclarationStatement(variable))
 
-            test.source.add_at_start(sample.generate_statement(test.source))
+            test.source.add_at_start(sample._generate_statement(test.source))
 
         # add evaluation closures
         def build_fail():

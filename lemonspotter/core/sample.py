@@ -20,6 +20,8 @@ class FunctionSample:
 
         self._arguments: Optional[Sequence[Variable]] = None
         self._evaluator: Optional[Callable[[], bool]] = None
+
+        # TODO this has to be removed!
         self._partition: Partition = partition
 
     @property
@@ -68,7 +70,7 @@ class FunctionSample:
         """"""
 
         # add variable to source
-        for variable in self._arguments:
+        for variable in self.arguments:
             # TODO this is where main(argc, argv) comes in
             if variable.name not in source.variables:
                 if variable.value:
@@ -86,8 +88,11 @@ class FunctionSample:
         # add check statements to call
         source.add_at_start(self._generate_return_check())
         
-        for statement in self._generate_argument_checks():
-            source.add_at_start(statement)
+        # TODO inout/out argument checks
+        # may not be possible... provided is a set of 4 not a single one
+        # for MPI_Init_thread
+        #for statement in self._generate_argument_checks():
+        #    source.add_at_start(statement)
 
         return source
 
@@ -109,7 +114,8 @@ class FunctionSample:
 
         return statement
 
-    def _generate_argument_checks(self) -> Iterable[ConditionStatement]
+    #def _generate_argument_checks(self) -> Iterable[ConditionStatement]:
+    # check is out arguments are in specification valid
 
     def _generate_statement(self, source: Source) -> FunctionStatement:
         """

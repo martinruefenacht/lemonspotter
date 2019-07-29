@@ -91,21 +91,8 @@ class StartEndGenerator(TestGenerator):
 
         source = self._gen_main()
 
-        start.generate_code(source)
-        
-
-        # generate end
-        for variable in end.arguments:
-            if variable.name not in source.variables:
-                if variable.value:
-                    source.add_at_start(DeclarationAssignmentStatement(variable))
-
-                else:
-                    source.add_at_start(DeclarationStatement(variable))
-
-        source.add_at_start(end.generate_statement(source))
-        source.add_at_start(FunctionStatement.generate_print(end.return_variable))
-        source.add_at_start(end.generate_check())
+        start.generate_source(source)
+        end.generate_source(source)
 
         # create test
         test = Test(test_name, TestType.BUILD_AND_RUN, source)
