@@ -6,6 +6,7 @@ import logging
 
 from core.function import Function
 from core.partition import Partition
+from core.parameter import Parameter, Direction
 from core.variable import Variable
 from core.source import Source
 from core.statement import ConditionStatement, FunctionStatement, ExitStatement, DeclarationAssignmentStatement, DeclarationStatement
@@ -21,7 +22,6 @@ class FunctionSample:
         self._arguments: Optional[Sequence[Variable]] = None
         self._evaluator: Optional[Callable[[], bool]] = None
 
-        # TODO this has to be removed!
         self._partition: Partition = partition
 
     @property
@@ -69,10 +69,13 @@ class FunctionSample:
     def generate_source(self, source: Source) -> Source:
         """"""
 
+        # replace pre-existing variables in arguments
+        self.arguments = [variable if source.get_variable(variable.name) is None else source.get_variable(variable.name) for variable in self.arguments]
+
         # add variable to source
         for variable in self.arguments:
-            # TODO this is where main(argc, argv) comes in
-            if variable.name not in source.variables:
+            existing = source.get_variable(variable.name)
+            if not existing:
                 if variable.value:
                     source.add_at_start(DeclarationAssignmentStatement(variable))
                 
@@ -82,64 +85,65 @@ class FunctionSample:
         # add function call to source
         source.add_at_start(self._generate_statement(source))
 
-        # add print statement to call
+        # add outputs
         source.add_at_start(FunctionStatement.generate_print(self._return_variable))
+
+        for parameter, argument in zip(self.function.parameters, self.arguments):
+            if parameter.direction is Direction.OUT or parameter.direction is Direction.INOUT:
+                source.add_at_start(FunctionStatement.generate_print(argument))
 
         # add check statements to call
         source.add_at_start(self._generate_return_check())
         
         # TODO inout/out argument checks
-        # may not be possible... provided is a set of 4 not a single one
-        # for MPI_Init_thread
-        #for statement in self._generate_argument_checks():
-        #    source.add_at_start(statement)
+        # this is for in C checks
+        #for parameter, variable in zip(self._function.parameters, self.arguments):
+        #    if Direction(parameter.direction) is Direction.OUT:
+        #        pass
+
+        #    elif Direction(parameter.direction) is Direction.INOUT:
+        #        pass
+
+        #    else:
+        #        # ignore 'in' parameters
+        #        pass
 
         return source
 
     def _generate_return_check(self) -> ConditionStatement:
         """"""
 
-        # invert operand
-        if self._partition.return_operand == 'equal':
-            op = '!='
-        else:
-            raise NotImplementedError('Other return operands not implemented. operand is "' +
-                                      str(self._partition.return_operand) + '" for function ' +
-                                      self._function.name)
+        statement = self._partition.generate_statement(self.return_variable.name)
+        if statement is None:
+            return statement
 
-        statement = ConditionStatement(' '.join([self._return_variable.name, 
-                                                op,
-                                                self._partition.return_symbol]))
-        statement.add_at_start(ExitStatement(self._return_variable.name))
+        statement.add_at_start(ExitStatement(self.return_variable.name))
 
         return statement
-
-    #def _generate_argument_checks(self) -> Iterable[ConditionStatement]:
-    # check is out arguments are in specification valid
 
     def _generate_statement(self, source: Source) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
 
-        self._return_variable.name = 'return_' + self._function.name
+        self.return_variable.name = 'return_' + self.function.name
 
-        if self._return_variable.name in source.variables:
+        if source.get_variable(self.return_variable.name) is not None:
             # todo rename output return name, we have control over this above
             raise NotImplementedError('Test if the variable already exists.')
 
         statement = ''
-        statement += self.function.return_type.language_type + ' ' + self._return_variable.name
+        statement += self.function.return_type.language_type + ' ' + self.return_variable.name
         statement += ' = '
         statement += self.function.name + '('
 
         # add arguments
-        logging.debug('arguments %s', str(self._arguments))
+        logging.debug('arguments %s', str(self.arguments))
         logging.debug('parameters %s', str(self.function.parameters))
 
         # fill arguments
-        if self._arguments is not None:
-            pairs = zip(self._arguments, self.function.parameters)  # type: ignore
+        if self.arguments is not None:
+            pairs = zip(self.arguments, self.function.parameters)  # type: ignore
             for idx, (argument, parameter) in enumerate(pairs):
                 mod = ''
 
@@ -160,4 +164,4 @@ class FunctionSample:
 
         statement += ');'
 
-        return FunctionStatement(statement, {self._return_variable.name: self._return_variable})
+        return FunctionStatement(statement, {self.return_variable.name: self.return_variable})

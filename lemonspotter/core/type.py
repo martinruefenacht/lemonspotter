@@ -66,3 +66,12 @@ class Type:
 
         logging.debug('performing recursive lookup of print specifier.')
         return self._database.type_by_abstract_type[self._json['language_type']].print_specifier
+
+    def validate(self, value: str) -> bool:
+        """"""
+
+        valid = any(partition.validate(value) for partition in self._partitions)
+        logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
+
+        return valid
+

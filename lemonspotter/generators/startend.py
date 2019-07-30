@@ -104,10 +104,7 @@ class StartEndGenerator(TestGenerator):
 
             else:
                 test.run_outcome = TestOutcome.FAILED
-
-        # register return_start return_end
-        test.register_capture(start.return_variable)
-        test.register_capture(end.return_variable)
+                logging.warning('%s test failed.', test.name)
 
         test.run_success_function = run_success
 

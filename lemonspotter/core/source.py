@@ -22,8 +22,6 @@ class Source:
 
     @property
     def variables(self) -> Dict[str, Variable]:
-        """This property provides access to the Variable objects of this Source."""
-
         return self._variables
 
     def get_variable(self, name: str) -> Optional[Variable]:
@@ -46,7 +44,7 @@ class Source:
         Adds a generated string to the front of the source code.
         """
 
-        if not statement:
+        if statement is None:
             return
 
         # todo currently only able to add to nested block

@@ -2,7 +2,7 @@
 This modules defines the Test class.
 """
 
-from typing import Callable, Optional, MutableMapping
+from typing import Callable, Optional
 from enum import Enum
 from pathlib import Path
 
@@ -36,8 +36,6 @@ class Test:
 
         self._source: Optional[Source] = source
         self._executable: Optional[Path] = None
-
-        self._captures: MutableMapping[str, Variable] = {}
 
         self._build_success_func: Optional[Callable[[], None]] = None
         self._build_fail_func: Optional[Callable[[], None]] = None
@@ -119,17 +117,6 @@ class Test:
         """This provides setting the run fail callback."""
 
         self._run_fail_func = func
-
-    def register_capture(self, variable: Variable) -> None:
-        """This method allows registering a capture from the stdout."""
-
-        self._captures[variable.name] = variable
-
-    @property
-    def captures(self) -> MutableMapping[str, Variable]:
-        """"""
-
-        return self._captures
 
     @property
     def name(self) -> str:

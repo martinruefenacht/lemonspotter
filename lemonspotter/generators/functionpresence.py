@@ -38,7 +38,7 @@ class FunctionPresenceGenerator(TestGenerator):
         for func in functions:
             test = self.generate_test(func)
 
-            logging.debug(('function test generated for %s:\n' + repr(test.source)), func.name)
+            logging.debug('function test generated for %s:\n%s', func.name, str(test.source))
 
             tests.add(test)
 
@@ -50,7 +50,7 @@ class FunctionPresenceGenerator(TestGenerator):
         check or print statements.
         """
 
-        logging.info('generating test for %s', function.name)
+        logging.info('function presence generating test for %s', function.name)
 
         # create Test and assign build success/fail closures
         test = Test('function_presence_' + function.name, test_type=TestType.BUILD_ONLY)
@@ -60,11 +60,7 @@ class FunctionPresenceGenerator(TestGenerator):
         # generate declaration of arguments
         instantiator = DeclarationInstantiator(self._database)
         for sample in instantiator.generate_samples(function):
-            for variable in sample.arguments:
-                if variable.name not in test.source.variables:
-                    test.source.add_at_start(DeclarationStatement(variable))
-
-            test.source.add_at_start(sample._generate_statement(test.source))
+            sample.generate_source(test.source)
 
         # add evaluation closures
         def build_fail():

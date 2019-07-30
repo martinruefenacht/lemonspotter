@@ -47,4 +47,4 @@ class DeclarationInstantiator(Instantiator):
 
         sample.arguments = arguments
 
-        return [sample]
+        return set([sample])

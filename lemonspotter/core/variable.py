@@ -4,6 +4,7 @@ Source classes.
 """
 
 from typing import Optional
+import logging
 
 from core.type import Type
 
@@ -83,3 +84,17 @@ class Variable:
 
         assert value is not None
         self._value = value
+
+    def validate(self) -> bool:
+        """
+        Test whether the value of this variable is a valid value according to the
+        variable type.
+        """
+
+        if self.value is None:
+            raise RuntimeError('Attempting to validate variable %s against specification with None value.', self.name)
+
+        logging.debug('validating variable %s', self.name)
+
+        # validate against type spec
+        return self.type.validate(self.value)

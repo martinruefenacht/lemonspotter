@@ -55,7 +55,7 @@ class DeclarationStatement(Statement):
     """This class represents any variable declaration."""
 
     def __init__(self, variable: Variable) -> None:
-        super().__init__()
+        super().__init__({variable.name: variable})
 
         self._statement = variable.type.language_type + ' ' + variable.name + ';'
 
@@ -70,7 +70,7 @@ class AssignmentStatement(Statement):
     """This class represents any variable assignment."""
 
     def __init__(self, variable: Variable) -> None:
-        super().__init__()
+        super().__init__({variable.name: variable})
 
         if variable.value:
             self._statement = variable.name + ' = ' + variable.value + ';'
@@ -83,7 +83,7 @@ class DeclarationAssignmentStatement(Statement):
     """This class represents any declaration and assignment in a single statement."""
 
     def __init__(self, variable: Variable) -> None:
-        super().__init__()
+        super().__init__({variable.name: variable})
 
         if variable.value:
             line = [variable.type.language_type, variable.name, '=', variable.value, ';']
@@ -117,8 +117,17 @@ class FunctionStatement(Statement):
             logging.warning('%s is not printable', variable.name)
             return None
 
+        # TODO temporarily avoid printing pointers
+        if variable.pointer_level > 0:
+            logging.debug('skipping print of %s, because pointer level.', variable.name)
+            return None
+
         statement = ['printf("', variable.name, '%' + variable.type.print_specifier,
                      '\\n",', variable.name, ');']
+
+        logging.debug(statement)
+        logging.debug(str(variable.pointer_level))
+
         return FunctionStatement(' '.join(statement))
 
 
@@ -144,6 +153,7 @@ class BlockStatement(Statement):
         """This method adds the statement at the start of the block."""
 
         self._front_statements.append(statement)
+        self.variables.update(statement.variables)
 
     def add_at_end(self, statement: Statement):
         """This method adds the statement to the end of the block."""

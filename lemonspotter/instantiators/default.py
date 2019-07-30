@@ -32,14 +32,12 @@ class DefaultInstantiator(Instantiator):
 
         sample = FunctionSample(function, function.default_partition)
 
-        def evaluator() -> bool:
-            return function.default_partition.validate(sample.return_variable)
-
-        sample.evaluator = evaluator
 
         if function.has_parameters:
             partition = function.default_partition
             arguments = []
+
+            variables_check = []
 
             for parameter in function.parameters:  # type: ignore
                 if parameter.name not in partition:
@@ -59,7 +57,10 @@ class DefaultInstantiator(Instantiator):
 
                 elif partition[parameter.name]['type'] == 'declare':
                     # create variable without assignment, used for out arguments
-                    arguments.append(Variable(parameter.type, 'out_' + parameter.name))
+                    var = Variable(parameter.type, 'out_' + parameter.name)
+
+                    arguments.append(var)
+                    variables_check.append(var)
 
                 elif partition[parameter.name]['type'] == 'optional':
                     raise NotImplementedError('Partition variable is marked optional. Old descriptor.')
@@ -69,9 +70,21 @@ class DefaultInstantiator(Instantiator):
 
             sample.arguments = arguments
 
+            def evaluator() -> bool:
+                # validate [in]out arguments
+                if not all(variable.validate() for variable in variables_check):
+                    logging.debug('[in]out argument validation failed.')
+                    return False
 
-            # arguments.append(Variable(parameter.type,
-            #                  parameter.name,
-            #                  parameter.type.default))
+                return_valid = function.default_partition.validate(sample.return_variable)
+                return return_valid
+
+            sample.evaluator = evaluator
+
+        else:
+            def evaluator() -> bool:
+                return function.default_partition.validate(sample.return_variable)
+
+            sample.evaluator = evaluator
 
         return set([sample])

@@ -70,8 +70,6 @@ class ConstantPresenceGenerator(TestGenerator):
                         TestType.BUILD_AND_RUN,
                         source)
 
-            test.register_capture(variable)
-
         else:
             test = Test('constant_presence_' + constant.name,
                         TestType.BUILD_ONLY,

@@ -3,12 +3,55 @@
 
 from typing import TYPE_CHECKING, Mapping, Any, Optional
 import logging
+from enum import Enum
 
 from core.database import Database
 from core.variable import Variable
 from core.statement import ConditionStatement
 if TYPE_CHECKING:
     from core.function import Function
+
+class Operand(Enum):
+    EQUAL = 'equal'
+    UNEQUAL = 'unequal'
+
+    GREATER_THAN = 'greater_than'
+    LESS_THAN = 'less_than'
+
+    GREATER_THAN_OR_EQUAL = 'greater_than_or_equal'
+    LESS_THAN_OR_EQUAL = 'less_than_or_equal'
+    
+    @classmethod
+    def inverse(cls, operand: 'Operand') -> 'Operand':
+        """"""
+        
+        inverses = {
+                    cls.EQUAL:                 cls.UNEQUAL,
+                    cls.UNEQUAL:               cls.EQUAL,
+
+                    cls.GREATER_THAN:          cls.LESS_THAN_OR_EQUAL,
+                    cls.LESS_THAN:             cls.GREATER_THAN_OR_EQUAL,
+
+                    cls.GREATER_THAN_OR_EQUAL: cls.LESS_THAN,
+                    cls.LESS_THAN_OR_EQUAL:    cls.GREATER_THAN
+                   }
+
+        return inverses[operand]
+
+    @classmethod
+    def symbol(cls, operand: 'Operand') -> str:
+        """"""
+
+        symbols = {
+                    cls.EQUAL:                  '==',
+                    cls.UNEQUAL:                '!=',
+                    cls.GREATER_THAN:           '>',
+                    cls.LESS_THAN:              '<',
+                    cls.GREATER_THAN_OR_EQUAL:  '<=',
+                    cls.LESS_THAN_OR_EQUAL:     '>='
+                  }
+
+        return symbols[operand]
 
 
 class Partition:
@@ -37,16 +80,21 @@ class Partition:
         """"""
 
         if self._return['type'] == 'constant':
+            assert 'constant' in self._return
             return self._return['constant']
 
         else:
             raise NotImplementedError('Partition return values other than constants not implemented.')
 
     @property
-    def return_operand(self) -> Optional[str]:
+    def return_operand(self) -> Operand:
         """"""
 
-        return self._return.get('operand', None)
+        operand = self._return.get('operand', None)
+        assert operand is not None
+        
+        logging.debug('converted from "%s" to %s', operand, Operand(operand))
+        return Operand(operand)
 
     def validate(self, variable: Variable) -> bool:
         """"""
@@ -54,7 +102,7 @@ class Partition:
         logging.debug('validating %s to partition.', variable.name)
 
         if self._return['type'] == 'constant':
-            if self._return['operand'] == 'equal':
+            if Operand(self.return_operand) == Operand.EQUAL:
                 return self._db.constants_by_name[self._return['constant']].value == variable.value
 
             else:
@@ -62,3 +110,14 @@ class Partition:
 
         else:
             raise NotImplementedError('Types of _return other than Constant are not implemented.')
+
+    def generate_statement(self, return_name: str) -> Optional[ConditionStatement]:
+        """"""
+
+        if self._json['_return']['type'] == 'free':
+            return None
+
+        # generate condition statement
+        return ConditionStatement(' '.join([return_name,
+                                            Operand.symbol(Operand.inverse(self.return_operand)),
+                                            self.return_symbol]))

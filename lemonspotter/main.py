@@ -65,12 +65,12 @@ class LemonSpotter:
 
         if self._database:
             for constant in self._database.constants:
-                report += constant.name + '\t\t ' + str(constant.properties) + '\n'
+                report += '{:30}\t\t{}\n'.format(constant.name, str(constant.properties))
 
             report += '\n' + '#' * 80 + '\n\n'
 
             for function in self._database.functions:
-                report += function.name + '\t\t ' + str(function.properties) + '\n'
+                report += '{:30}\t\t{}\n'.format(function.name, str(function.properties))
 
             return report
 
