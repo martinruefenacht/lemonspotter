@@ -39,7 +39,7 @@ class IncludeStatement(Statement):
     def __init__(self, header: str) -> None:
         super().__init__()
 
-        self._statement = '#include <' + header + '>'
+        self._statement = f'#include <{header}>'
 
 
 class ReturnStatement(Statement):
@@ -48,7 +48,7 @@ class ReturnStatement(Statement):
     def __init__(self, expression: str) -> None:
         super().__init__()
 
-        self._statement = 'return ' + expression + ';'
+        self._statement = f'return {expression};'
 
 
 class DeclarationStatement(Statement):
@@ -57,7 +57,7 @@ class DeclarationStatement(Statement):
     def __init__(self, variable: Variable) -> None:
         super().__init__({variable.name: variable})
 
-        self._statement = variable.type.language_type + ' ' + variable.name + ';'
+        self._statement = f'{variable.type.language_type} {variable.name};'
 
     @classmethod
     def generate_declaration(cls, variable: Variable) -> 'DeclarationStatement':
@@ -73,7 +73,7 @@ class AssignmentStatement(Statement):
         super().__init__({variable.name: variable})
 
         if variable.value:
-            self._statement = variable.name + ' = ' + variable.value + ';'
+            self._statement = f'{variable.name} = {variable.value};'
 
         else:
             raise RuntimeError('AssignmentStatement needs Variable.value to be non-none.')
@@ -135,7 +135,7 @@ class ExitStatement(Statement):
     def __init__(self, errorcode) -> None:
         super().__init__()
 
-        self._statement: str = 'exit(' + errorcode + ');'
+        self._statement = f'exit({errorcode});'
 
 
 class BlockStatement(Statement):
@@ -162,10 +162,10 @@ class BlockStatement(Statement):
         code = '{\n'
 
         for statement in self._front_statements:
-            code += statement.express() + '\n'
+            code += f'{statement.express()}\n'
 
         for statement in self._back_statements:
-            code += statement.express() + '\n'
+            code += f'{statement.express()}\n'
 
         code += '}'
 
@@ -181,13 +181,13 @@ class ConditionStatement(BlockStatement):
         self._condition = condition
 
     def express(self) -> str:
-        code = 'if(' + self._condition + ')\n{\n'
+        code = f'if({self._condition})\n{{\n'
 
         for statement in self._front_statements:
-            code += statement.express() + '\n'
+            code += f'{statement.express()}\n'
 
         for statement in self._back_statements:
-            code += statement.express() + '\n'
+            code += f'{statement.express()}\n'
 
         code += '}'
 
@@ -209,9 +209,9 @@ class MainDefinitionStatement(BlockStatement):
         self._variables[argc.name] = argc
         self._variables[argv.name] = argv
 
-        self._statement: str = 'int main(int argument_count, char **argument_list)'
+        self._statement: str = f'int main(int {argc.name}, char **{argv.name})'
 
     def express(self) -> str:
         """"""
 
-        return self._statement + '\n' + super().express()
+        return f'{self._statement}\n{super().express()}'

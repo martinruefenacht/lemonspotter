@@ -41,8 +41,7 @@ class DefaultSampler(Sampler):
 
             for parameter in function.parameters:  # type: ignore
                 if parameter.name not in partition:
-                    raise RuntimeError('Found parameter which is not part of ' +
-                                       'the default_partition.')
+                    raise RuntimeError('Found parameter which is not part of the default_partition.')
 
                 if partition[parameter.name]['type'] == 'literal':
                     # create variable with value literal
@@ -53,11 +52,13 @@ class DefaultSampler(Sampler):
                 elif partition[parameter.name]['type'] == 'constant':
                     # create variable with value of constant
                     constant = self._database.constants_by_name[partition[parameter.name]['constant']]
-                    arguments.append(constant.generate_variable('constant_' + constant.name))
+                    variable = constant.generate_variable('constant_{constant.name}')
+
+                    arguments.append(variable)
 
                 elif partition[parameter.name]['type'] == 'declare':
                     # create variable without assignment, used for out arguments
-                    var = Variable(parameter.type, 'out_' + parameter.name)
+                    var = Variable(parameter.type, f'out_{parameter.name}')
 
                     arguments.append(var)
                     variables_check.append(var)

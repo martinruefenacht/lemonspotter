@@ -53,7 +53,7 @@ class FunctionPresenceGenerator(TestGenerator):
         logging.info('function presence generating test for %s', function.name)
 
         # create Test and assign build success/fail closures
-        test = Test('function_presence_' + function.name, test_type=TestType.BUILD_ONLY)
+        test = Test(f'function_presence_{function.name}', test_type=TestType.BUILD_ONLY)
 
         test.source = self._gen_main()
 

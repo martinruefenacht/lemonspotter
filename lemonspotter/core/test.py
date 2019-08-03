@@ -189,4 +189,4 @@ class Test:
             return self._run_outcome
 
     def __str__(self) -> str:
-        return 'Test: ' + self.name + ' : ' + str(self.type)
+        return f'Test: {self.name} {self.type}'

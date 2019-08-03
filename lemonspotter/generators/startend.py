@@ -77,7 +77,7 @@ class StartEndGenerator(TestGenerator):
                 test_specifier = eidx + len(samples[start]) * sidx
 
                 logging.info('generating test of %s and %s', str(start_sample), str(end_sample))
-                test = self._gen_test(test_base_name + '_' + str(test_specifier),
+                test = self._gen_test(f'test_base_name_{test_specifier}',
                                       start_sample, end_sample)
 
                 tests.add(test)
@@ -96,7 +96,6 @@ class StartEndGenerator(TestGenerator):
 
         # create test
         test = Test(test_name, TestType.BUILD_AND_RUN, source)
-        logging.debug('test %s source:\n' + repr(test.source).replace('%', '%%'), test.name)
 
         def run_success():
             if start.evaluator() and end.evaluator():

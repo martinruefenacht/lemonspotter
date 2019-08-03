@@ -126,16 +126,13 @@ class FunctionSample:
         Generates a compilable expression of the function with the given arguments.
         """
 
-        self.return_variable.name = 'return_' + self.function.name
+        self.return_variable.name = f'return_{self.function.name}'
 
         if source.get_variable(self.return_variable.name) is not None:
             # todo rename output return name, we have control over this above
             raise NotImplementedError('Test if the variable already exists.')
 
-        statement = ''
-        statement += self.function.return_type.language_type + ' ' + self.return_variable.name
-        statement += ' = '
-        statement += self.function.name + '('
+        statement = f'{self.function.return_type.language_type} {self.return_variable.name} = {self.function.name}('
 
         # add arguments
         logging.debug('arguments %s', str(self.arguments))
