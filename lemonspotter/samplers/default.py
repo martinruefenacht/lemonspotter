@@ -1,20 +1,20 @@
 """
-This module contains the definition of the DefaultInstantiator.
+This module contains the definition of the DefaultSampler.
 """
 
 import logging
 from typing import Iterable
 
-from core.instantiator import Instantiator
+from core.sampler import Sampler
 from core.database import Database
 from core.variable import Variable
 from core.function import Function
 from core.sample import FunctionSample
 
 
-class DefaultInstantiator(Instantiator):
+class DefaultSampler(Sampler):
     """
-    This class implements the DefaultInstantiator behaviour. It uses the default values from the
+    This class implements the DefaultSampler behaviour. It uses the default values from the
     specification types to create a single Variable.
     """
 
@@ -28,7 +28,7 @@ class DefaultInstantiator(Instantiator):
         """
         """
 
-        logging.debug('DefaultInstantiator used for %s.', function.name)
+        logging.debug('DefaultSampler used for %s.', function.name)
 
         sample = FunctionSample(function, function.default_partition)
 

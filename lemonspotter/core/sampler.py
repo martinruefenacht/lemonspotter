@@ -9,7 +9,7 @@ from core.function import Function
 from core.sample import FunctionSample
 
 
-class Instantiator(ABC):
+class Sampler(ABC):
     """
     """
 

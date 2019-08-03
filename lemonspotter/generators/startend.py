@@ -10,7 +10,7 @@ from core.database import Database
 from core.function import Function
 from core.sample import FunctionSample
 from core.testgenerator import TestGenerator
-from core.instantiator import Instantiator
+from core.sampler import Sampler
 from core.statement import FunctionStatement, ConditionStatement, DeclarationAssignmentStatement, DeclarationStatement
 
 
@@ -24,7 +24,7 @@ class StartEndGenerator(TestGenerator):
 
         self.elements_generated = 0
 
-    def generate(self, instantiator: Instantiator) -> Iterable[Test]:
+    def generate(self, sampler: Sampler) -> Iterable[Test]:
         """
         Generate all possible C programs for all initiators and finalizers.
         """
@@ -45,16 +45,16 @@ class StartEndGenerator(TestGenerator):
         for start in starts:
             for end in ends:
                 # generate individual test
-                logging.debug('generating tests for %s-%s with %s', start, end, instantiator)
-                for test in self._gen_tests(start, end, instantiator):
+                logging.debug('generating tests for %s-%s with %s', start, end, sampler)
+                for test in self._gen_tests(start, end, sampler):
                     tests.add(test)
 
         return tests
 
-    def _gen_tests(self, start: Function, end: Function, sampler: Instantiator) -> Iterable[Test]:
+    def _gen_tests(self, start: Function, end: Function, sampler: Sampler) -> Iterable[Test]:
         """
-        Using the functions selected and the given instantiator generate a test
-        for each argument set extracted from instantiator.
+        Using the functions selected and the given sampler generate a test
+        for each argument set extracted from sampler.
         """
 
         tests: MutableSet[Test] = set()

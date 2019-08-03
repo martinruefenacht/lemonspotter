@@ -13,7 +13,7 @@ from core.test import Test, TestType
 from core.function import Function
 from core.testgenerator import TestGenerator
 from core.statement import DeclarationStatement
-from instantiators.declare import DeclarationInstantiator
+from samplers.declare import DeclarationSampler
 
 
 class FunctionPresenceGenerator(TestGenerator):
@@ -58,8 +58,8 @@ class FunctionPresenceGenerator(TestGenerator):
         test.source = self._gen_main()
 
         # generate declaration of arguments
-        instantiator = DeclarationInstantiator(self._database)
-        for sample in instantiator.generate_samples(function):
+        sampler = DeclarationSampler(self._database)
+        for sample in sampler.generate_samples(function):
             sample.generate_source(test.source)
 
         # add evaluation closures
