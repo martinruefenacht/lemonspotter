@@ -1,12 +1,12 @@
 """
 """
 
-from typing import Optional, Sequence, Callable, Iterable 
+from typing import Optional, Sequence, Callable
 import logging
 
 from core.function import Function
 from core.partition import Partition
-from core.parameter import Parameter, Direction
+from core.parameter import Direction
 from core.variable import Variable
 from core.source import Source
 from core.statement import ConditionStatement, FunctionStatement, ExitStatement, DeclarationAssignmentStatement, DeclarationStatement
@@ -78,7 +78,7 @@ class FunctionSample:
             if not existing:
                 if variable.value:
                     source.add_at_start(DeclarationAssignmentStatement(variable))
-                
+
                 else:
                     source.add_at_start(DeclarationStatement(variable))
 
@@ -94,10 +94,10 @@ class FunctionSample:
 
         # add check statements to call
         source.add_at_start(self._generate_return_check())
-        
+
         # TODO inout/out argument checks
         # this is for in C checks
-        #for parameter, variable in zip(self._function.parameters, self.arguments):
+        # for parameter, variable in zip(self._function.parameters, self.arguments):
         #    if Direction(parameter.direction) is Direction.OUT:
         #        pass
 

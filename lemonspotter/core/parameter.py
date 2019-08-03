@@ -8,6 +8,7 @@ from enum import Enum
 from core.database import Database
 from core.type import Type
 
+
 class Direction(Enum):
     IN = 'in'
     OUT = 'out'
@@ -47,6 +48,6 @@ class Parameter:
     @property
     def direction(self) -> Direction:
         """This property provides the direction of the Parameter."""
-        
+
         assert 'direction' in self._json
         return Direction(self._json['direction'])

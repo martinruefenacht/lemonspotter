@@ -2,16 +2,13 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import Mapping, Any, AbstractSet, Sequence, Callable, Optional
+from typing import Mapping, Any, AbstractSet, Sequence
 from functools import lru_cache
 import logging
 
-from core.variable import Variable
 from core.database import Database
-from core.statement import FunctionStatement, ConditionStatement, ExitStatement
 from core.type import Type
 from core.parameter import Parameter
-from core.source import Source
 from core.partition import Partition
 
 
@@ -53,7 +50,7 @@ class Function:
     @property
     def has_parameters(self) -> bool:
         """"""
-        
+
         return self._json.get('parameters', False)
 
     @property  # type: ignore
@@ -67,6 +64,8 @@ class Function:
     @property
     def default_partition(self) -> Partition:
         """"""
+
+        logging.warning('usage of default_partition.')
 
         assert self._json.get('partitions', None) is not None
         assert self._json['partitions'].get('default', None) is not None

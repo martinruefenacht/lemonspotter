@@ -7,7 +7,6 @@ from enum import Enum
 from pathlib import Path
 
 from core.source import Source
-from core.variable import Variable
 
 
 class TestType(Enum):

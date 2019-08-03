@@ -93,7 +93,7 @@ class MPIExecutor:
             logging.debug('building test %s successful\n%s\n', test.name, '-' * 80)
 
         else:
-            test.build_fail_function() 
+            test.build_fail_function()
 
             logging.warning('building failed of test %s', test.name)
 

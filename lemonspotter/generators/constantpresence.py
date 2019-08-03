@@ -48,6 +48,8 @@ class ConstantPresenceGenerator(TestGenerator):
         the given constant.
         """
 
+        logging.info('generating constant presence test for %s', constant.name)
+
         source = self._gen_main()
 
         variable = Variable(constant.type, f'variable_{constant.name}')

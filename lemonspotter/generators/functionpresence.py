@@ -12,7 +12,6 @@ from core.database import Database
 from core.test import Test, TestType
 from core.function import Function
 from core.testgenerator import TestGenerator
-from core.statement import DeclarationStatement
 from samplers.declare import DeclarationSampler
 
 

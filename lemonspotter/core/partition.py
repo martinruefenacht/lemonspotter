@@ -11,6 +11,7 @@ from core.statement import ConditionStatement
 if TYPE_CHECKING:
     from core.function import Function
 
+
 class Operand(Enum):
     EQUAL = 'equal'
     UNEQUAL = 'unequal'
@@ -20,11 +21,11 @@ class Operand(Enum):
 
     GREATER_THAN_OR_EQUAL = 'greater_than_or_equal'
     LESS_THAN_OR_EQUAL = 'less_than_or_equal'
-    
+
     @classmethod
     def inverse(cls, operand: 'Operand') -> 'Operand':
         """"""
-        
+
         inverses = {
                     cls.EQUAL:                 cls.UNEQUAL,
                     cls.UNEQUAL:               cls.EQUAL,
@@ -92,7 +93,7 @@ class Partition:
 
         operand = self._return.get('operand', None)
         assert operand is not None
-        
+
         logging.debug('converted from "%s" to %s', operand, Operand(operand))
         return Operand(operand)
 

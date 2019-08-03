@@ -74,4 +74,3 @@ class Type:
         logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
 
         return valid
-

@@ -11,7 +11,6 @@ from core.function import Function
 from core.sample import FunctionSample
 from core.testgenerator import TestGenerator
 from core.sampler import Sampler
-from core.statement import FunctionStatement, ConditionStatement, DeclarationAssignmentStatement, DeclarationStatement
 
 
 class StartEndGenerator(TestGenerator):
@@ -31,8 +30,8 @@ class StartEndGenerator(TestGenerator):
 
         # determine all start functions
         starts = list(filter(lambda f: (not (f.needs_all or f.needs_any) and
-                            (f.leads_any or f.leads_all)) and f.present,
-                            self._database.functions))
+                             (f.leads_any or f.leads_all)) and f.present,
+                             self._database.functions))
 
         # determine all end points
         ends = list(filter(lambda f: (not (f.leads_all or f.leads_any) and
@@ -77,7 +76,7 @@ class StartEndGenerator(TestGenerator):
                 test_specifier = eidx + len(samples[start]) * sidx
 
                 logging.info('generating test of %s and %s', str(start_sample), str(end_sample))
-                test = self._gen_test(f'test_base_name_{test_specifier}',
+                test = self._gen_test(f'{test_base_name}_{test_specifier}',
                                       start_sample, end_sample)
 
                 tests.add(test)

@@ -32,7 +32,6 @@ class DefaultSampler(Sampler):
 
         sample = FunctionSample(function, function.default_partition)
 
-
         if function.has_parameters:
             partition = function.default_partition
             arguments = []
