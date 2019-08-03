@@ -2,7 +2,7 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Dict, Any, List
+from typing import Mapping, Any, AbstractSet
 import logging
 
 from core.database import Database
@@ -13,11 +13,11 @@ class Type:
     This class represents the type abstraction from the specification.
     """
 
-    def __init__(self, database: Database, json: Dict[str, Any]) -> None:
+    def __init__(self, database: Database, json: Mapping[str, Any]) -> None:
         self._json = json
         self._database: Database = database
 
-        self._partitions: List[Dict] = []
+        self._partitions: AbstractSet[Partition] = None
 
     @property
     def default(self) -> str:
@@ -69,6 +69,8 @@ class Type:
 
     def validate(self, value: str) -> bool:
         """"""
+
+        assert self._partition is not None
 
         valid = any(partition.validate(value) for partition in self._partitions)
         logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))

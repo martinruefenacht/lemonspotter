@@ -110,14 +110,14 @@ class FunctionSample:
 
         return source
 
-    def _generate_return_check(self) -> ConditionStatement:
+    def _generate_return_check(self) -> Optional[ConditionStatement]:
         """"""
 
         statement = self._partition.generate_statement(self.return_variable.name)
-        if statement is None:
-            return statement
 
-        statement.add_at_start(ExitStatement(self.return_variable.name))
+        if statement is not None:
+            # add to sub block
+            statement.add_at_start(ExitStatement(self.return_variable.name))
 
         return statement
 
