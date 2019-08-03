@@ -15,14 +15,16 @@ from core.statement import ConditionStatement, FunctionStatement, ExitStatement,
 class FunctionSample:
     """"""
 
-    def __init__(self, function: Function, partition: Partition) -> None:
+    def __init__(self, function: Function, valid: bool) -> None:
         self._function: Function = function
         self._return_variable: Variable = Variable(function.return_type)
 
         self._arguments: Optional[Sequence[Variable]] = None
         self._evaluator: Optional[Callable[[], bool]] = None
 
-        self._partition: Partition = partition
+        self._valid = valid
+        # TODO expected error on invalid
+        #self._partition: Partition = partition
 
     @property
     def function(self) -> Function:
@@ -120,6 +122,8 @@ class FunctionSample:
             statement.add_at_start(ExitStatement(self.return_variable.name))
 
         return statement
+        # TODO expected error, valid: MPI_SUCCESS
+        return None
 
     def _generate_statement(self, source: Source) -> FunctionStatement:
         """

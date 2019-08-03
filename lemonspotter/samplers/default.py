@@ -30,15 +30,20 @@ class DefaultSampler(Sampler):
 
         logging.debug('DefaultSampler used for %s.', function.name)
 
+        # TODO no more default_partition
+
         sample = FunctionSample(function, function.default_partition)
 
         if function.has_parameters:
-            partition = function.default_partition
+            #partition = function.default_partition
+
             arguments = []
 
             variables_check = []
 
             for parameter in function.parameters:  # type: ignore
+                # TODO the parameter type has partitions
+
                 if parameter.name not in partition:
                     raise RuntimeError('Found parameter which is not part of the default_partition.')
 

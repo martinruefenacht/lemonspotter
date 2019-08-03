@@ -61,15 +61,13 @@ class Function:
         assert self._json.get('parameters', None) is not None
         return tuple(Parameter(self._db, parameter) for parameter in self._json['parameters'])
 
-    @property
-    def default_partition(self) -> Partition:
-        """"""
-
-        logging.warning('usage of default_partition.')
-
-        assert self._json.get('partitions', None) is not None
-        assert self._json['partitions'].get('default', None) is not None
-        return Partition(self._db, self, self._json['partitions']['default'])
+#    @property
+#    def default_partition(self) -> Partition:
+#        """"""
+#
+#        assert self._json.get('partitions', None) is not None
+#        assert self._json['partitions'].get('default', None) is not None
+#        return Partition(self._db, self, self._json['partitions']['default'])
 
     @property
     def return_type(self) -> Type:

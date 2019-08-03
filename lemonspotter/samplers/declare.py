@@ -30,7 +30,7 @@ class DeclarationSampler(Sampler):
 
         logging.debug('DeclarationSampler used for %s', function.name)
 
-        sample = FunctionSample(function, function.default_partition)
+        sample = FunctionSample(function, True)
 
         def evaluator() -> bool:
             raise NotImplementedError('DeclarationSampler only generates compilable ' +
@@ -42,7 +42,9 @@ class DeclarationSampler(Sampler):
         arguments = []
 
         for parameter in function.parameters:  # type: ignore
-            variable = Variable(parameter.type, parameter.name)
+            variable = Variable(parameter.type, 'arg_' + parameter.name)
+
+            logging.debug('declaring variable argument: %s', variable.name)
             arguments.append(variable)
 
         sample.arguments = arguments
