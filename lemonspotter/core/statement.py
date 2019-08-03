@@ -122,13 +122,12 @@ class FunctionStatement(Statement):
             logging.debug('skipping print of %s, because pointer level.', variable.name)
             return None
 
-        statement = ['printf("', variable.name, '%' + variable.type.print_specifier,
-                     '\\n",', variable.name, ');']
+        statement = f'printf("{variable.name} %{variable.type.print_specifier}\\n", {variable.name});'
 
         logging.debug(statement)
         logging.debug(str(variable.pointer_level))
 
-        return FunctionStatement(' '.join(statement))
+        return FunctionStatement(statement)
 
 
 class ExitStatement(Statement):
