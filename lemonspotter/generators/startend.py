@@ -58,7 +58,7 @@ class StartEndGenerator(TestGenerator):
         """
 
         tests: MutableSet[Test] = set()
-        test_base_name = '_'.join([func.name for func in [start, end]])
+        test_base_name = f'{start.name}_{end.name}'
 
         # generate function samples
         samples: MutableMapping[Function, MutableSet[FunctionSample]] = {}

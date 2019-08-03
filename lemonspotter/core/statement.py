@@ -86,8 +86,7 @@ class DeclarationAssignmentStatement(Statement):
         super().__init__({variable.name: variable})
 
         if variable.value:
-            line = [variable.type.language_type, variable.name, '=', variable.value, ';']
-            self._statement = ' '.join(line)
+            self._statement = f'{variable.type.language_type} {variable.name} = {variable.value};'
 
         else:
             raise RuntimeError('Variable.value required to be not be None.')

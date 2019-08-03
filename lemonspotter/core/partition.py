@@ -118,6 +118,5 @@ class Partition:
             return None
 
         # generate condition statement
-        return ConditionStatement(' '.join([return_name,
-                                            Operand.symbol(Operand.inverse(self.return_operand)),
-                                            self.return_symbol]))
+        statement = f'{return_name} {Operand.symbol(Operand.inverse(self.return_operand))} {self.return_symbol}'
+        return ConditionStatement(statement)
