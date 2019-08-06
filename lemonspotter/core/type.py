@@ -52,7 +52,7 @@ class Type:
         """This property provides whether this is a C printable type."""
 
         if self._json['base_type']:
-            return self._json['printable']
+            return self._json.get('print_specifier', False)
 
         logging.debug('performing recursive lookup of printable.')
         return self._database.type_by_abstract_type[self._json['language_type']].printable
