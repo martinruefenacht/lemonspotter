@@ -87,21 +87,12 @@ class MPIParser:
         types_filename = path / 'types.json'
         if types_filename.is_file():
             with types_filename.open() as types_file:
-                type_array = json.load(types_file)
-
-                for mpi_type in type_array:
-                    database.add_type(Type(database, mpi_type))
+                for type_definition in json.load(types_file):
+                    database.add_type(Type(database, type_definition))
 
         # load directory definitions
         types_directory = path / 'types/'
         if types_directory.is_dir():
-            files = types_directory.glob('**/*.json')
-
-            for path in files:
-                mpi_type = self.parse_single_type(path)
-
-                database.add_type(Type(database, mpi_type))
-
-    def parse_single_type(self, path: Path) -> Dict[str, Any]:
-        with path.open() as typefile:
-            return json.load(typefile)
+            for path in types_directory.glob('**/*.json'):
+                with path.open() as typefile:
+                    database.add_type(Type(database, json.load(typefile)))
