@@ -5,6 +5,7 @@ Lemonspotter Runtime
 import sys
 import argparse
 import logging
+import json
 from subprocess import Popen, PIPE
 from pathlib import Path
 from typing import Optional
@@ -151,8 +152,14 @@ def parse_arguments():
                         default=False,
                         help='Runs Lemonspotter Unit Tests')
 
+    parser.add_argument('--report',
+                        action = 'store_true',
+                        dest = 'report',
+                        default = False,
+                        help = 'Prints report file specified')
+
     # database arguments
-    parser.add_argument('database',
+    parser.add_argument('path',
                         nargs='?',
                         type=str,
                         help='Path to database to use.')
@@ -197,11 +204,16 @@ def main():
         process = Popen('flake8', stdout=PIPE, stderr=PIPE, cwd='../')
         stdout, stderr = process.communicate()
         print(stdout.decode('utf-8'))
-    elif not arguments.database:
+    elif arguments.report:
+        with open(arguments.path) as report_file:
+            report = json.load(report_file)
+        print(json.dumps(report, indent=2))
+
+    elif not arguments.path:
         logging.error("Database path not defined")
     else:
         # initialize and load the database
-        runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
+        runtime = LemonSpotter(Path(arguments.path), arguments.mpicc, arguments.mpiexec)
 
         # perform presence testing
         runtime.presence_testing()
