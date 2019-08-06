@@ -1,5 +1,6 @@
 import os
 import datetime
+import json
 
 from typing import List
 from core.test import Test
@@ -16,7 +17,7 @@ class TestReport():
         self._report_id: str = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
         self._database = database
 
-        self._presence_report: str = None
+        self._report = {}
         self._tests = []
 
         # Ensures that report directory exists
@@ -45,14 +46,6 @@ class TestReport():
     @report_file_dir.setter
     def report_file_dir(self, report_file_dir) -> None:
         self._report_file_dir = report_file_dir
-
-    @property
-    def presence_report(self) -> str:
-        return self._presence_report
-
-    @presence_report.setter
-    def presence_report(self, presence_report) -> None:
-        self._presence_report = presence_report
 
     @property
     def tests(self) -> List[Test]:
@@ -90,40 +83,55 @@ class TestReport():
 
         print(log_msg)
 
+    @property
     def generate_presence_report(self) -> None:
         """
         Generates presence_report to report file
         """
-        if self._database:
-            self.presence_report = ''
+        presence_report = {}
 
-            for constant in self._database.constants:
-                self.presence_report += constant.name + '\t\t ' + str(constant.properties) + '\n'
+        constants = {}
+        for constant in self._database.constants:
+            constants[constant.name] = constant.properties
 
-            self.presence_report += '\n' + '#' * 80 + '\n\n'
+        functions = {}
+        for function in self._database.functions:
+            functions[function.name] = function.properties
 
-            for function in self._database.functions:
-                self.presence_report += function.name + '\t\t ' + str(function.properties) + '\n'
-        else:
-            self.presence_report = None
+        presence_report['constants'] = constants
+        presence_report['functions'] = functions
 
-    @property
-    def write_presence_report(self) -> None:
-        """
-        Writes presence_report to report file
-        """
-        if self.presence_report is None:
-            self.generate_presence_report()
+        self._report['presence_report'] = presence_report
 
-        with open(self.report_file_dir, 'a+') as report_file:
-            report_file.write(str(self.presence_report))
 
     @property
-    def print_presence_report(self) -> str:
+    def generate_report(self) -> None:
         """
-        Prints Presence Report to Console
+        Generates the complete report for tests run to this point
         """
-        if not self.presence_report:
-            self.generate_presence_report()
+        self._generate_report()
 
-        print(self.presence_report)
+
+    def _generate_report(self) -> None:
+        self.generate_presence_report
+
+
+    @property
+    def print_report(self):
+        """
+        Pretty prints report
+        """
+        self._generate_report()
+        print(json.dumps(self._report, indent=4))
+
+
+    @property
+    def write_report(self):
+        """
+        Writes generated report to file
+        """
+        self._generate_report()
+        with open(self.report_file_dir, 'a+') as file_buffer:
+            json.dump(self._report, file_buffer)
+
+
