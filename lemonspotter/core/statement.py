@@ -57,8 +57,7 @@ class DeclarationStatement(Statement):
     def __init__(self, variable: Variable) -> None:
         super().__init__({variable.name: variable})
 
-        pointer_postfix = '*' * variable.pointer_level
-        self._statement = f'{variable.type.language_type} {pointer_postfix} {variable.name};'
+        self._statement = f'{variable.type.language_type} {variable.name};'
 
     @classmethod
     def generate_declaration(cls, variable: Variable) -> 'DeclarationStatement':
@@ -87,8 +86,7 @@ class DeclarationAssignmentStatement(Statement):
         super().__init__({variable.name: variable})
 
         if variable.value:
-            pointer_postfix = '*' * variable.pointer_level
-            self._statement = f'{variable.type.language_type} {pointer_postfix} {variable.name} = {variable.value};'
+            self._statement = f'{variable.type.language_type} {variable.name} = {variable.value};'
 
         else:
             raise RuntimeError('Variable.value required to be not be None.')
@@ -119,14 +117,14 @@ class FunctionStatement(Statement):
             return None
 
         # TODO temporarily avoid printing pointers
-        if variable.pointer_level > 0:
-            logging.debug('skipping print of %s, because pointer level.', variable.name)
-            return None
+        #if variable.pointer_level > 0:
+        #    logging.debug('skipping print of %s, because pointer level.', variable.name)
+        #    return None
 
         statement = f'printf("{variable.name} %{variable.type.print_specifier}\\n", {variable.name});'
 
         logging.debug(statement)
-        logging.debug(str(variable.pointer_level))
+        #logging.debug(str(variable.pointer_level))
 
         return FunctionStatement(statement)
 

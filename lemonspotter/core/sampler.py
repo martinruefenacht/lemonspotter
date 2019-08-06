@@ -18,4 +18,4 @@ class Sampler(ABC):
 
     @abstractmethod
     def generate_samples(self, function: Function) -> Iterable[FunctionSample]:
-        pass
+        return []

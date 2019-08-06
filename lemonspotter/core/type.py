@@ -17,7 +17,7 @@ class Type:
         self._json = json
         self._database: Database = database
 
-        self._partitions: AbstractSet[Partition] = None
+        #self._partitions: AbstractSet[Partition] = None
 
     @property
     def default(self) -> str:

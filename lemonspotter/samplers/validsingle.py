@@ -26,4 +26,6 @@ class ValidSingleSampler(Sampler):
         """
         """
 
+        return [] 
+
 

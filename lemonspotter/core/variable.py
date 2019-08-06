@@ -22,7 +22,7 @@ class Variable:
         self._type: Type = kind
         self._name: Optional[str] = name
         self._value: Optional[str] = value
-        self._pointer_level: int = 0
+        #self._pointer_level: int = 0
 
     def __str__(self) -> str:
         assert self._name is not None
@@ -59,18 +59,20 @@ class Variable:
         assert name is not None
         self._name = name
 
-    @property
-    def pointer_level(self) -> int:
-        """This property provides the pointer level of this Variable."""
-
-        return self._pointer_level
-
-    @pointer_level.setter
-    def pointer_level(self, level: int) -> None:
-        """"""
-
-        assert level is not None
-        self._pointer_level = level
+#    @property
+#    def pointer_level(self) -> int:
+#        """This property provides the pointer level of this Variable."""
+#
+#        logging.warning('pointer_level used from variable.')
+#        return self._pointer_level
+#
+#    @pointer_level.setter
+#    def pointer_level(self, level: int) -> None:
+#        """"""
+#
+#        logging.warning('pointer_level used from variable.')
+#        assert level is not None
+#        self._pointer_level = level
 
     @property
     def value(self) -> Optional[str]:
