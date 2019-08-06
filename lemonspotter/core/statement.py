@@ -57,7 +57,8 @@ class DeclarationStatement(Statement):
     def __init__(self, variable: Variable) -> None:
         super().__init__({variable.name: variable})
 
-        self._statement = f'{variable.type.language_type} {variable.name};'
+        pointer_postfix = '*' * variable.pointer_level
+        self._statement = f'{variable.type.language_type} {pointer_postfix} {variable.name};'
 
     @classmethod
     def generate_declaration(cls, variable: Variable) -> 'DeclarationStatement':
@@ -86,7 +87,8 @@ class DeclarationAssignmentStatement(Statement):
         super().__init__({variable.name: variable})
 
         if variable.value:
-            self._statement = f'{variable.type.language_type} {variable.name} = {variable.value};'
+            pointer_postfix = '*' * variable.pointer_level
+            self._statement = f'{variable.type.language_type} {pointer_postfix} {variable.name} = {variable.value};'
 
         else:
             raise RuntimeError('Variable.value required to be not be None.')
