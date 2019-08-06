@@ -83,11 +83,18 @@ class TestReport():
 
         print(log_msg)
 
+
     @property
-    def generate_presence_report(self) -> None:
+    def generate_report(self) -> None:
         """
-        Generates presence_report to report file
+        Generates the complete report for tests run to this point
         """
+        self._generate_report()
+
+
+    def _generate_report(self) -> None:
+
+        # Generates Presence Report #
         presence_report = {}
 
         constants = {}
@@ -105,24 +112,12 @@ class TestReport():
 
 
     @property
-    def generate_report(self) -> None:
-        """
-        Generates the complete report for tests run to this point
-        """
-        self._generate_report()
-
-
-    def _generate_report(self) -> None:
-        self.generate_presence_report
-
-
-    @property
-    def print_report(self):
+    def print_report(self, indent=2):
         """
         Pretty prints report
         """
         self._generate_report()
-        print(json.dumps(self._report, indent=4))
+        print(json.dumps(self._report, indent=indent))
 
 
     @property
