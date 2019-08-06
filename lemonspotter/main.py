@@ -153,10 +153,10 @@ def parse_arguments():
                         help='Runs Lemonspotter Unit Tests')
 
     parser.add_argument('--report',
-                        action = 'store_true',
-                        dest = 'report',
-                        default = False,
-                        help = 'Prints report file specified')
+                        action='store_true',
+                        dest='report',
+                        default=False,
+                        help='Prints report file specified')
 
     # database arguments
     parser.add_argument('path',
