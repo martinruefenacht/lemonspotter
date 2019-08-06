@@ -30,23 +30,27 @@ class DeclarationSampler(Sampler):
 
         logging.debug('DeclarationSampler used for %s', function.name)
 
-        sample = FunctionSample(function, True)
 
         def evaluator() -> bool:
             raise NotImplementedError('DeclarationSampler only generates compilable ' +
                                       'code, not runnable.')
 
-        sample.evaluator = evaluator
-
         # generate valid but empty arguments
         arguments = []
+        variables = set()
 
         for parameter in function.parameters:  # type: ignore
-            variable = Variable(parameter.type, 'arg_' + parameter.name)
+            postfix = '_' + ('p' * parameter.pointer_level) if parameter.pointer_level > 0 else ''
 
+            variable = Variable(parameter.type, f'arg_{parameter.name}{postfix}')
+            variable.pointer_level = parameter.pointer_level
+
+            # add variable to variable set
+            variables.add(variable)
+                
             logging.debug('declaring variable argument: %s', variable.name)
             arguments.append(variable)
 
-        sample.arguments = arguments
+        sample = FunctionSample(function, True, variables, arguments, evaluator)
 
         return set([sample])
