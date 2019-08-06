@@ -112,12 +112,12 @@ class FunctionSample:
                 source.add_at_start(FunctionStatement.generate_print(argument))
 
         # add check statements to call
-        # TODO function sample checks for self._valid, don't assume MPI_SUCCESS
         source.add_at_start(self._generate_return_check())
 
         # TODO inout/out argument checks
-        # TODO should we only do this in the python level?
+        # should we only do this in the python level?
         # this is for in C checks
+        #
         # for parameter, variable in zip(self._function.parameters, self.arguments):
         #    if Direction(parameter.direction) is Direction.OUT:
         #        pass
@@ -136,6 +136,7 @@ class FunctionSample:
 
         # TODO let partition generate condition statement
         # statement = self._partition.generate_statement(self.return_variable.name)
+        # function sample checks for self._valid, don't assume MPI_SUCCESS
 
         if self._valid:
             source = f'{self._return_variable.name} != MPI_SUCCESS'
@@ -173,14 +174,14 @@ class FunctionSample:
             for idx, (argument, parameter) in enumerate(pairs):
                 mod = ''
 
-                pointer_diff = argument.pointer_level - parameter.pointer_level
-                if pointer_diff < 0:
-                    # addressof &
-                    mod += '&'
-
-                elif pointer_diff > 0:
-                    # dereference *
-                    raise NotImplementedError
+#                pointer_diff = argument.pointer_level - parameter.pointer_level
+#                if pointer_diff < 0:
+#                    # addressof &
+#                    mod += '&'
+#
+#                elif pointer_diff > 0:
+#                    # dereference *
+#                    raise NotImplementedError
 
                 statement += (mod + argument.name)
 

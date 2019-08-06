@@ -116,16 +116,9 @@ class FunctionStatement(Statement):
             logging.warning('%s is not printable', variable.name)
             return None
 
-        # TODO temporarily avoid printing pointers
-        #if variable.pointer_level > 0:
-        #    logging.debug('skipping print of %s, because pointer level.', variable.name)
-        #    return None
-
         statement = f'printf("{variable.name} %{variable.type.print_specifier}\\n", {variable.name});'
 
         logging.debug(statement)
-        #logging.debug(str(variable.pointer_level))
-
         return FunctionStatement(statement)
 
 

@@ -40,10 +40,7 @@ class DeclarationSampler(Sampler):
         variables = set()
 
         for parameter in function.parameters:  # type: ignore
-            postfix = '_' + ('p' * parameter.pointer_level) if parameter.pointer_level > 0 else ''
-
-            variable = Variable(parameter.type, f'arg_{parameter.name}{postfix}')
-            variable.pointer_level = parameter.pointer_level
+            variable = Variable(parameter.type, f'arg_{parameter.name}')
 
             # add variable to variable set
             variables.add(variable)

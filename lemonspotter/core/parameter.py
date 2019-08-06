@@ -39,13 +39,6 @@ class Parameter:
         return self._database.type_by_abstract_type[self._json['abstract_type']]
 
     @property
-    def pointer_level(self) -> int:
-        """This property provides the pointer level of the Parameter."""
-
-        assert 'pointer' in self._json
-        return int(self._json['pointer'])
-
-    @property
     def direction(self) -> Direction:
         """This property provides the direction of the Parameter."""
 
