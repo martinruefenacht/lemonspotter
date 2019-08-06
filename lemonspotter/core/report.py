@@ -96,7 +96,6 @@ class TestReport():
 
         # Generates Presence Report #
         presence_report = {}
-
         constants = {}
         for constant in self._database.constants:
             constants[constant.name] = constant.properties
@@ -107,8 +106,17 @@ class TestReport():
 
         presence_report['constants'] = constants
         presence_report['functions'] = functions
-
         self._report['presence_report'] = presence_report
+
+
+        test_report = {}
+        for test in self._tests:
+            test_report[test.name] = {'type': str(test.type),
+                                      'build_outcome': str(test.build_outcome),
+                                      'run_outcome': str(test.run_outcome)}
+
+        self._report['tests'] = test_report
+        print(self._report)
 
 
     @property

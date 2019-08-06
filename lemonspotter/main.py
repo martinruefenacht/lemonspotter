@@ -220,7 +220,6 @@ def main():
 
         # Prints report and writes to file
         runtime._reporter.print_report
-        runtime._reporter.write_report
 
 
 if __name__ == '__main__':
