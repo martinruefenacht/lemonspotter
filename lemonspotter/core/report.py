@@ -17,12 +17,12 @@ class TestReport():
         self._report_id: str = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
         self._database = database
 
-        self._report: dict = {}
+        self._report: Dict = {}
         self._tests: list[Test] = []
 
         # Ensures that report directory exists
         report_dir: str = os.path.abspath(os.path.join(__file__,
-                                                  '../../../reports'))
+                                                       '../../../reports'))
         if not os.path.exists(report_dir):
             os.mkdir(report_dir)
 
@@ -81,16 +81,12 @@ class TestReport():
         if msg:
             log_msg += '\n\t ' + msg
 
-        print(log_msg)
-
-
     @property
     def generate_report(self) -> None:
         """
         Generates the complete report for tests run to this point
         """
         self._generate_report()
-
 
     def _generate_report(self) -> None:
 
@@ -108,7 +104,6 @@ class TestReport():
         presence_report['functions'] = functions
         self._report['presence_report'] = presence_report
 
-
         test_report = {}
         for test in self._tests:
             test_report[test.name] = {'type': str(test.type),
@@ -118,7 +113,6 @@ class TestReport():
         self._report['tests'] = test_report
         print(self._report)
 
-
     @property
     def print_report(self, indent=2):
         """
@@ -126,7 +120,6 @@ class TestReport():
         """
         self._generate_report()
         print(json.dumps(self._report, indent=indent))
-
 
     @property
     def write_report(self):
@@ -136,5 +129,3 @@ class TestReport():
         self._generate_report()
         with open(self.report_file_dir, 'a+') as file_buffer:
             json.dump(self._report, file_buffer)
-
-
