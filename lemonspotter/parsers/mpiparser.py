@@ -88,7 +88,7 @@ class MPIParser:
         types_filename = path / 'types.json'
         if types_filename.is_file():
             with types_filename.open() as types_file:
-                self.parse_type_definitions(json.load(types_file))
+                self.parse_type_definitions(database, json.load(types_file))
 
         else:
             logging.info('Types file does not exist.')
@@ -102,7 +102,7 @@ class MPIParser:
                     type_data = json.load(type_file)
 
                     if isinstance(type_data, list):
-                        self.parse_type_definitions(type_data)
+                        self.parse_type_definitions(database, type_data)
 
                     else:
                         database.add_type(Type(database, type_data))
@@ -110,7 +110,7 @@ class MPIParser:
         else:
             logging.info('Types directory does not exist: %s', str(types_directory))
 
-    def parse_type_definitions(self, type_definitions: Sequence[Any], database: Database) -> None:
+    def parse_type_definitions(self, database: Database, type_definitions: Sequence[Any]) -> None:
         """
         """
 
