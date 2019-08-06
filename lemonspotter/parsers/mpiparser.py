@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
-from typing import Dict, Any
+from typing import Mapping, Any, Sequence
+import logging
 
 from core.database import Database
 from core.function import Function
@@ -78,7 +79,7 @@ class MPIParser:
 
                 database.add_function(func_obj)
 
-    def parse_single_function(self, path: Path) -> Dict[str, Any]:
+    def parse_single_function(self, path: Path) -> Mapping[str, Any]:
         with open(path) as funcfile:
             return json.load(funcfile)
 
@@ -87,12 +88,33 @@ class MPIParser:
         types_filename = path / 'types.json'
         if types_filename.is_file():
             with types_filename.open() as types_file:
-                for type_definition in json.load(types_file):
-                    database.add_type(Type(database, type_definition))
+                self.parse_type_definitions(json.load(types_file))
+
+        else:
+            logging.info('Types file does not exist.')
 
         # load directory definitions
         types_directory = path / 'types/'
+
         if types_directory.is_dir():
             for path in types_directory.glob('**/*.json'):
-                with path.open() as typefile:
-                    database.add_type(Type(database, json.load(typefile)))
+                with path.open() as type_file:
+                    type_data = json.load(type_file)
+
+                    if isinstance(type_data, list):
+                        self.parse_type_definitions(type_data)
+
+                    else:
+                        database.add_type(Type(database, type_data))
+        
+        else:
+            logging.info('Types directory does not exist: %s', str(types_directory))
+
+    def parse_type_definitions(self, type_definitions: Sequence[Any], database: Database) -> None:
+        """
+        """
+
+        for type_definition in type_definitions:
+            database.add_type(Type(database, type_definition))
+
+
