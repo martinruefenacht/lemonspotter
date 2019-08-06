@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Optional, Sequence, Callable
+from typing import Optional, Sequence, Callable, AbstractSet
 import logging
 
 from core.function import Function
@@ -15,14 +15,21 @@ from core.statement import ConditionStatement, FunctionStatement, ExitStatement,
 class FunctionSample:
     """"""
 
-    def __init__(self, function: Function, valid: bool) -> None:
+    def __init__(self,
+                 function: Function,
+                 valid: bool,
+                 variables: AbstractSet[Variable],
+                 arguments: Sequence[Variable],
+                 evaluator: Callable[[], bool]
+                 ) -> None:
         self._function: Function = function
+        self._valid = valid
+        self._variables: AbstractSet[Variable] = variables
+        self._arguments: Sequence[Variable] = arguments
+        self._evaluator: Callable[[], bool] = evaluator
+
         self._return_variable: Variable = Variable(function.return_type)
 
-        self._arguments: Optional[Sequence[Variable]] = None
-        self._evaluator: Optional[Callable[[], bool]] = None
-
-        self._valid = valid
         # TODO expected error on invalid
         #self._partition: Partition = partition
 
@@ -42,9 +49,6 @@ class FunctionSample:
     def arguments(self) -> Sequence[Variable]:
         """"""
 
-        if self._arguments is None:
-            return []
-
         return self._arguments
 
     @arguments.setter
@@ -53,6 +57,19 @@ class FunctionSample:
 
         assert arguments is not None
         self._arguments = arguments
+
+    @property
+    def variables(self) -> AbstractSet[Variable]:
+        """"""
+
+        return self._variables
+
+    @variables.setter
+    def variables(self, variables: AbstractSet[Variable]) -> None:
+        """"""
+
+        assert variables is not None
+        self._variables = variables
 
     @property
     def evaluator(self) -> Callable[[], bool]:
@@ -95,9 +112,11 @@ class FunctionSample:
                 source.add_at_start(FunctionStatement.generate_print(argument))
 
         # add check statements to call
+        # TODO function sample checks for self._valid, don't assume MPI_SUCCESS
         source.add_at_start(self._generate_return_check())
 
         # TODO inout/out argument checks
+        # TODO should we only do this in the python level?
         # this is for in C checks
         # for parameter, variable in zip(self._function.parameters, self.arguments):
         #    if Direction(parameter.direction) is Direction.OUT:
@@ -115,15 +134,21 @@ class FunctionSample:
     def _generate_return_check(self) -> Optional[ConditionStatement]:
         """"""
 
-        statement = self._partition.generate_statement(self.return_variable.name)
+        # TODO let partition generate condition statement
+        # statement = self._partition.generate_statement(self.return_variable.name)
+
+        if self._valid:
+            source = f'{self._return_variable.name} != MPI_SUCCESS'
+        else:
+            source = f'{self._return_variable.name} == MPI_SUCCESS'
+
+        statement = ConditionStatement(source)
 
         if statement is not None:
             # add to sub block
             statement.add_at_start(ExitStatement(self.return_variable.name))
 
         return statement
-        # TODO expected error, valid: MPI_SUCCESS
-        return None
 
     def _generate_statement(self, source: Source) -> FunctionStatement:
         """
