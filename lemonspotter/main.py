@@ -16,7 +16,8 @@ from executors.mpiexecutor import MPIExecutor
 from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
-from samplers.default import DefaultSampler
+#from samplers.default import DefaultSampler
+from samplers.validsingle import ValidSingleSampler
 
 
 class LemonSpotter:
@@ -77,7 +78,8 @@ class LemonSpotter:
         raise RuntimeError('No database to report.')
 
     def start_end_testing(self):
-        sampler = DefaultSampler(self._database)
+        #sampler = DefaultSampler(self._database)
+        sampler = ValidSingleSampler(self._database) 
 
         generator = StartEndGenerator(self._database)
         start_end_tests = generator.generate(sampler)
