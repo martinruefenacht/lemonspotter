@@ -2,7 +2,7 @@ import os
 import datetime
 import json
 
-from typing import List
+from typing import List, Dict
 from core.test import Test
 from core.test import TestType
 from core.test import TestOutcome
@@ -17,11 +17,11 @@ class TestReport():
         self._report_id: str = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
         self._database = database
 
-        self._report = {}
-        self._tests = []
+        self._report: dict = {}
+        self._tests: list[Test] = []
 
         # Ensures that report directory exists
-        report_dir = os.path.abspath(os.path.join(__file__,
+        report_dir: str = os.path.abspath(os.path.join(__file__,
                                                   '../../../reports'))
         if not os.path.exists(report_dir):
             os.mkdir(report_dir)
