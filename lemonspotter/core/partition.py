@@ -3,7 +3,7 @@
 
 from typing import TYPE_CHECKING, Mapping, Any, Optional
 import logging
-from enum import Enum
+from enum import Enum, auto
 
 from core.database import Database
 from core.statement import ConditionStatement
@@ -53,6 +53,15 @@ class Operand(Enum):
         return symbols[operand]
 
 
+class PartitionType(Enum):
+    NUMERIC = 'numeric'
+    LITERAL = 'literal'
+    PREDEFINED = 'predefined'
+    RANGE = 'range'
+    CONSTANT = 'constant'
+    CREATION = 'creation'
+
+
 class Partition:
     """
     This class represents the concept of a partition.
@@ -71,6 +80,18 @@ class Partition:
         """"""
 
         return self._json[name]
+    
+    @property
+    def type(self) -> PartitionType:
+        """"""
+
+        return PartitionType(self._json['type'])
+
+    @property
+    def value(self) -> Optional[str]:
+        """"""
+
+        return self._json.get('value', None)
 
 #    def validate(self, variable: Variable) -> bool:
 #        """"""
@@ -84,24 +105,7 @@ class Partition:
 #
 #        else:
 #            raise NotImplementedError('Types of _return other than Constant are not implemented.')
-
-    def generate_sample(self) -> Variable:
-        """"""
         
-        # if constant
-
-        # if numeric
-
-        # if literal
-
-        # if predefined
-
-        # if function
-
-        # if range
-
-        return None
-
 #    @property
 #    def return_symbol(self) -> str:
 #        """"""
@@ -112,7 +116,7 @@ class Partition:
 #
 #        else:
 #            raise NotImplementedError('Partition return values other than constants not implemented.')
-#
+
 #    @property
 #    def return_operand(self) -> Operand:
 #        """"""

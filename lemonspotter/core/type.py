@@ -19,8 +19,6 @@ class Type:
         self._json = json
         self._database: Database = database
 
-        self._partitions: AbstractSet[Partition] = None
-
     @property
     def default(self) -> str:
         """This property provides the default value of the Type."""
@@ -46,7 +44,6 @@ class Type:
         if self._json['base_type']:
             return self._json['language_type']
 
-        logging.debug('performing recursive lookup of language type.')
         return self._database.type_by_abstract_type[self._json['language_type']].language_type
 
     @property
@@ -56,17 +53,15 @@ class Type:
         if self._json['base_type']:
             return self._json.get('print_specifier', False)
 
-        logging.debug('performing recursive lookup of printable.')
         return self._database.type_by_abstract_type[self._json['language_type']].printable
 
     @property
-    def print_specifier(self):
+    def print_specifier(self) -> str:
         """This property provides the C printf type specifier."""
 
         if self._json['base_type']:
             return self._json['print_specifier']
 
-        logging.debug('performing recursive lookup of print specifier.')
         return self._database.type_by_abstract_type[self._json['language_type']].print_specifier
 
     @property # type: ignore
@@ -82,9 +77,7 @@ class Type:
     def validate(self, value: str) -> bool:
         """"""
 
-        assert self._partition is not None
-
-        valid = any(partition.validate(value) for partition in self._partitions)
+        valid = any(partition.validate(value) for partition in self.partitions) # type: ignore
         logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
 
         return valid

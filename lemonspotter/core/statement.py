@@ -193,11 +193,10 @@ class MainDefinitionStatement(BlockStatement):
     def __init__(self, database: Database) -> None:
         super().__init__()
 
-        argc = Variable(database.type_by_abstract_type['INT'],
+        argc = Variable(database.type_by_abstract_type['INT_1PTR'],
                         'argument_count')
-        argv = Variable(database.type_by_abstract_type['CHAR'],
+        argv = Variable(database.type_by_abstract_type['CHAR_2PTR'],
                         'argument_list')
-        argv.pointer_level = 2
 
         self._variables[argc.name] = argc
         self._variables[argv.name] = argv

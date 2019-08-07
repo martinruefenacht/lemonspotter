@@ -39,7 +39,7 @@ class MPIParser:
             files = constants_directory.glob('**/*.json')
 
             for path in files:
-                constant = self.parse_single_constant(path.absolute())
+                #constant = self.parse_single_constant(path.absolute())
 
                 database.add_constant(Constant(database, constant))
 

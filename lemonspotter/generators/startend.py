@@ -62,7 +62,7 @@ class StartEndGenerator(TestGenerator):
         # generate function samples
         samples: MutableMapping[Function, MutableSet[FunctionSample]] = {}
 
-        for function in [start, end]:
+        for function in (start, end):
             if function not in samples:
                 samples[function] = set()
 
