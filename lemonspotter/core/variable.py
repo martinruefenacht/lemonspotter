@@ -3,10 +3,11 @@ This module defines the Variable class which represents Variables and their valu
 Source classes.
 """
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 import logging
 
-from core.type import Type
+if TYPE_CHECKING:
+    from core.type import Type
 
 
 class Variable:
@@ -14,12 +15,12 @@ class Variable:
     This class represents any C variable for source code generation.
     """
 
-    def __init__(self, kind: Type, name: str = None, value: str = None) -> None:
+    def __init__(self, kind: 'Type', name: str = None, value: str = None) -> None:
         """
         This method constructs the Variable from a type, name and pointer level.
         """
 
-        self._type: Type = kind
+        self._type: 'Type' = kind
         self._name: Optional[str] = name
         self._value: Optional[str] = value
         #self._pointer_level: int = 0
@@ -33,13 +34,13 @@ class Variable:
         return self._name
 
     @property
-    def type(self) -> Type:
+    def type(self) -> 'Type':
         """This property provides the Type object of the Variable."""
 
         return self._type
 
     @type.setter
-    def type(self, kind: Type) -> None:
+    def type(self, kind: 'Type') -> None:
         """"""
 
         assert kind is not None

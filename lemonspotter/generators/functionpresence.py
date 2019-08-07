@@ -36,9 +36,6 @@ class FunctionPresenceGenerator(TestGenerator):
         # for all applicable functions
         for func in functions:
             test = self.generate_test(func)
-
-            logging.debug('function test generated for %s:\n%s', func.name, str(test.source))
-
             tests.add(test)
 
         return tests

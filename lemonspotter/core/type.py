@@ -2,10 +2,12 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Mapping, Any, AbstractSet
+from typing import Mapping, Any, AbstractSet, Iterable
+from functools import lru_cache
 import logging
 
 from core.database import Database
+from core.partition import Partition
 
 
 class Type:
@@ -17,7 +19,7 @@ class Type:
         self._json = json
         self._database: Database = database
 
-        #self._partitions: AbstractSet[Partition] = None
+        self._partitions: AbstractSet[Partition] = None
 
     @property
     def default(self) -> str:
@@ -66,6 +68,16 @@ class Type:
 
         logging.debug('performing recursive lookup of print specifier.')
         return self._database.type_by_abstract_type[self._json['language_type']].print_specifier
+
+    @property # type: ignore
+    @lru_cache()
+    def partitions(self) -> Iterable[Partition]:
+        """"""
+
+        if 'partitions' in self._json:
+            return [Partition(self._database, partition) for partition in self._json['partitions']]
+
+        return []
 
     def validate(self, value: str) -> bool:
         """"""

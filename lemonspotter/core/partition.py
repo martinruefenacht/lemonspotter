@@ -6,10 +6,8 @@ import logging
 from enum import Enum
 
 from core.database import Database
-from core.variable import Variable
 from core.statement import ConditionStatement
-if TYPE_CHECKING:
-    from core.function import Function
+from core.variable import Variable
 
 
 class Operand(Enum):
@@ -60,11 +58,9 @@ class Partition:
     This class represents the concept of a partition.
     """
 
-    def __init__(self, database: Database, function: 'Function', json: Mapping[str, Any]) -> None:
+    def __init__(self, database: Database, json: Mapping[str, Any]) -> None:
         self._db = database
-        self._function = function
         self._json = json
-        self._return = json['_return']
 
     def __contains__(self, name: str) -> bool:
         """"""
@@ -76,48 +72,63 @@ class Partition:
 
         return self._json[name]
 
-    @property
-    def return_symbol(self) -> str:
+#    def validate(self, variable: Variable) -> bool:
+#        """"""
+#
+#        if self._return['type'] == 'constant':
+#            if Operand(self.return_operand) == Operand.EQUAL:
+#                return self._db.constants_by_name[self._return['constant']].value == variable.value
+#
+#            else:
+#                raise NotImplementedError('Operands for _return other than "equal" are not implemented.')
+#
+#        else:
+#            raise NotImplementedError('Types of _return other than Constant are not implemented.')
+
+    def generate_sample(self) -> Variable:
         """"""
+        
+        # if constant
 
-        if self._return['type'] == 'constant':
-            assert 'constant' in self._return
-            return self._return['constant']
+        # if numeric
 
-        else:
-            raise NotImplementedError('Partition return values other than constants not implemented.')
+        # if literal
 
-    @property
-    def return_operand(self) -> Operand:
-        """"""
+        # if predefined
 
-        operand = self._return.get('operand', None)
-        assert operand is not None
+        # if function
 
-        logging.debug('converted from "%s" to %s', operand, Operand(operand))
-        return Operand(operand)
+        # if range
 
-    def validate(self, variable: Variable) -> bool:
-        """"""
+        return None
 
-        logging.debug('validating %s to partition.', variable.name)
+#    @property
+#    def return_symbol(self) -> str:
+#        """"""
+#
+#        if self._return['type'] == 'constant':
+#            assert 'constant' in self._return
+#            return self._return['constant']
+#
+#        else:
+#            raise NotImplementedError('Partition return values other than constants not implemented.')
+#
+#    @property
+#    def return_operand(self) -> Operand:
+#        """"""
+#
+#        operand = self._return.get('operand', None)
+#        assert operand is not None
+#
+#        logging.debug('converted from "%s" to %s', operand, Operand(operand))
+#        return Operand(operand)
 
-        if self._return['type'] == 'constant':
-            if Operand(self.return_operand) == Operand.EQUAL:
-                return self._db.constants_by_name[self._return['constant']].value == variable.value
-
-            else:
-                raise NotImplementedError('Operands for _return other than "equal" are not implemented.')
-
-        else:
-            raise NotImplementedError('Types of _return other than Constant are not implemented.')
-
-    def generate_statement(self, return_name: str) -> Optional[ConditionStatement]:
-        """"""
-
-        if self._json['_return']['type'] == 'free':
-            return None
-
-        # generate condition statement
-        statement = f'{return_name} {Operand.symbol(Operand.inverse(self.return_operand))} {self.return_symbol}'
-        return ConditionStatement(statement)
+#    def generate_statement(self, return_name: str) -> Optional[ConditionStatement]:
+#        """"""
+#
+#        if self._json['_return']['type'] == 'free':
+#            return None
+#
+#        # generate condition statement
+#        statement = f'{return_name} {Operand.symbol(Operand.inverse(self.return_operand))} {self.return_symbol}'
+#        return ConditionStatement(statement)
