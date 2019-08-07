@@ -1,7 +1,7 @@
-import os
 import datetime
 import json
 
+from pathlib import Path, PurePath
 from typing import List, Dict
 from core.test import Test
 from core.test import TestType
@@ -21,15 +21,14 @@ class TestReport():
         self._tests: list[Test] = []
 
         # Ensures that report directory exists
-        report_dir: str = os.path.abspath(os.path.join(__file__,
-                                                       '../../../reports'))
-        if not os.path.exists(report_dir):
-            os.mkdir(report_dir)
+        report_dir = Path.resolve(Path(__file__) / '../../../reports')
+        if not Path.exists(report_dir):
+            Path.mkdir(report_dir)
 
         # Creates path to report file
-        self._report_file_name: str = self._report_id + '.log'
-        self._report_file_dir: str = os.path.join(report_dir, self._report_file_name)
-        self._report_file_dir: str = os.path.abspath(self._report_file_dir)
+        self._report_file_name = self._report_id + '.log'
+        self._report_file_dir = Path(report_dir) / self._report_file_name
+        self._report_file_dir = Path.resolve(self._report_file_dir)
 
     @property
     def report_id(self) -> str:
