@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from pathlib import Path, PurePath
+from pathlib import Path
 from typing import List, Dict
 from core.test import Test
 from core.test import TestType
