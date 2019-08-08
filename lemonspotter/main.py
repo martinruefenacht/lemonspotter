@@ -43,6 +43,11 @@ class LemonSpotter:
     def database(self):
         return self._database
 
+    @property
+    def reporter(self):
+        return self._reporter
+
+
     def parse_database(self, database_path: Path):
         """
         Parse the database pointed to by the command line argument.
@@ -67,10 +72,10 @@ class LemonSpotter:
         self._executor.execute(function_tests)
 
         for test in constant_tests:
-            self._reporter.log_test_result(test)
+            self.reporter.log_test_result(test)
 
         for test in function_tests:
-            self._reporter.log_test_result(test)
+            self.reporter.log_test_result(test)
 
     def generate_tests(self):
         pass
@@ -219,7 +224,7 @@ def main():
         runtime.presence_testing()
 
         # Prints report and writes to file
-        runtime._reporter.print_report
+        runtime.reporter.print_report
 
 
 if __name__ == '__main__':
