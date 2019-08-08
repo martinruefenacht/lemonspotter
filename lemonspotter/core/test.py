@@ -14,6 +14,7 @@ class TestType(Enum):
     BUILD_AND_RUN = 0
     BUILD_ONLY = 1
 
+
 class TestOutcome(Enum):
     """This Enumeration stores the type of test outcomes."""
 
@@ -133,7 +134,6 @@ class Test:
     @property
     def build_outcome(self) -> Optional[TestOutcome]:
         """This property provides the build outcome."""
-
         return self._build_outcome
 
     @build_outcome.setter

@@ -8,7 +8,7 @@ import logging
 from typing import Set
 
 from core.database import Database
-from core.test import Test, TestType
+from core.test import Test, TestType, TestOutcome
 from core.source import Source
 from core.function import Function
 from core.variable import Variable
@@ -55,7 +55,7 @@ class FunctionPresenceGenerator(TestGenerator):
         source = self.generate_main()
 
         # generate default function arguments
-        arguments = [] 
+        arguments = []
         #instantiator = DefaultInstantiator(self._database)
 
         for parameter in function.parameters:
@@ -82,11 +82,14 @@ class FunctionPresenceGenerator(TestGenerator):
         def build_fail():
             function.properties['presence_tested'] = True
             function.properties['present'] = False
+            test.build_outcome = TestOutcome.FAIL
         test.build_fail_function = build_fail
 
         def build_success():
             function.properties['presence_tested'] = True
             function.properties['present'] = True
+            test.build_outcome = TestOutcome.SUCCESS
         test.build_success_function = build_success
+
 
         return test

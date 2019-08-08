@@ -6,6 +6,7 @@ from subprocess import Popen, PIPE
 from typing import Set, List
 
 from core.test import Test, TestOutcome, TestType
+from core.report import TestReport
 
 class MPIExecutor:
     def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
@@ -18,12 +19,14 @@ class MPIExecutor:
         self._mpicc = mpicc
         self._mpiexec = mpiexec
 
+
     @property
     def test_directory(self):
         """
         Gets the directory where tests will be found/executed in
         """
         return self._test_directory
+
 
     def execute(self, tests: Set[Test]):
         """
@@ -49,7 +52,7 @@ class MPIExecutor:
 
             except FileNotFoundError as error:
                 logging.error(error)
-                logging.error('Runnign set of test failed.')
+                logging.error('Running set of test failed.')
                 return
 
     def build_test(self, test: Test, arguments: List[str]=[]) -> None:
@@ -76,7 +79,7 @@ class MPIExecutor:
 
         except FileNotFoundError as error:
             logging.error('Test %s failed to build, due to missing mpicc.', test.name)
-            
+
             raise error
 
         # evaluate build result
@@ -102,7 +105,6 @@ class MPIExecutor:
     def run_test(self, test: Test, arguments: List[str]=[]) -> None:
         """
         """
-
         # TODO test should define how many processes it needs
         arguments = ['-n', '1']
 
@@ -125,7 +127,6 @@ class MPIExecutor:
             try:
                 process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
                 stdout, stderr = process.communicate()
-
             except FileNotFoundError as error:
                 logging.error(error)
                 logging.error('skip running test %s', test.name)

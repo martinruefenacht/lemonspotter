@@ -38,7 +38,8 @@ class ConstantPresenceGenerator(TestGenerator):
         for constant in constants:
             test = self.generate_test(constant)
 
-            logging.debug(('constant test generated for %s:\n' + repr(test.source).replace('%','%%')), constant.name)
+            logging.debug(('constant test generated for %s:\n'
+                            + repr(test.source).replace('%', '%%')), constant.name)
 
             tests.add(test)
 
@@ -53,7 +54,7 @@ class ConstantPresenceGenerator(TestGenerator):
 
         variable = Variable(constant.type, 'variable_' + constant.name)
 
-        declaration = DeclarationStatement(variable) 
+        declaration = DeclarationStatement(variable)
         source.add_at_start(declaration)
 
         variable.value = constant.name
@@ -64,7 +65,7 @@ class ConstantPresenceGenerator(TestGenerator):
             source.add_at_start(FunctionStatement.generate_print(variable))
 
             test = Test('constant_presence_' + constant.name, source, test_type=TestType.BUILD_AND_RUN)
-            
+
             test.register_capture(variable.name)
 
         else:
