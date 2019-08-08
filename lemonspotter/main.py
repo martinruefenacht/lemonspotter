@@ -47,7 +47,6 @@ class LemonSpotter:
     def reporter(self):
         return self._reporter
 
-
     def parse_database(self, database_path: Path):
         """
         Parse the database pointed to by the command line argument.
@@ -164,7 +163,7 @@ def parse_arguments():
                         help='Prints report file specified')
 
     # database arguments
-    parser.add_argument('path',
+    parser.add_argument('specification',
                         nargs='?',
                         type=str,
                         help='Path to database to use.')
@@ -210,15 +209,14 @@ def main():
         stdout, stderr = process.communicate()
         print(stdout.decode('utf-8'))
     elif arguments.report:
-        with open(arguments.path) as report_file:
+        with open(arguments.specification) as report_file:
             report = json.load(report_file)
         print(json.dumps(report, indent=2))
-
-    elif not arguments.path:
+    elif not arguments.specification:
         logging.error("Database path not defined")
     else:
         # initialize and load the database
-        runtime = LemonSpotter(Path(arguments.path), arguments.mpicc, arguments.mpiexec)
+        runtime = LemonSpotter(Path(arguments.specification), arguments.mpicc, arguments.mpiexec)
 
         # perform presence testing
         runtime.presence_testing()
