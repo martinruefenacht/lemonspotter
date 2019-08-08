@@ -117,7 +117,7 @@ class FunctionStatement(Statement):
             return None
 
         statement = (f'printf("{variable.name} %{variable.type.print_specifier}'
-                     '\\n", {variable.name});')
+                     f'\\n", {variable.name});')
 
         logging.debug(statement)
         return FunctionStatement(statement)

@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Optional, Sequence, Callable, AbstractSet
+from typing import Optional, Sequence, Callable, Iterable 
 import logging
 
 from core.function import Function
@@ -17,15 +17,15 @@ class FunctionSample:
     def __init__(self,
                  function: Function,
                  valid: bool,
-                 variables: AbstractSet[Variable],
-                 arguments: Sequence[Variable],
+                 variables: Optional[Iterable[Variable]],
+                 arguments: Optional[Sequence[Variable]],
                  evaluator: Callable[[], bool]
                  ) -> None:
-        self._function: Function = function
+        self._function = function
         self._valid = valid
-        self._variables: AbstractSet[Variable] = variables
-        self._arguments: Sequence[Variable] = arguments
-        self._evaluator: Callable[[], bool] = evaluator
+        self._variables = variables
+        self._arguments = arguments
+        self._evaluator = evaluator
 
         self._return_variable: Variable = Variable(function.return_type)
 
@@ -58,13 +58,13 @@ class FunctionSample:
         self._arguments = arguments
 
     @property
-    def variables(self) -> AbstractSet[Variable]:
+    def variables(self) -> Iterable[Variable]:
         """"""
 
         return self._variables
 
     @variables.setter
-    def variables(self, variables: AbstractSet[Variable]) -> None:
+    def variables(self, variables: Iterable[Variable]) -> None:
         """"""
 
         assert variables is not None

@@ -90,7 +90,10 @@ class StartEndGenerator(TestGenerator):
 
         source = self._gen_main()
 
+        logging.debug(start)
         start.generate_source(source)
+
+        logging.debug(end)
         end.generate_source(source)
 
         # create test

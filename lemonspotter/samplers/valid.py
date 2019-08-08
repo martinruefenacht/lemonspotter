@@ -29,35 +29,67 @@ class ValidSampler(Sampler):
         """
         """
 
+        logging.debug('generating samples of parameters for %s', function.name)
+
+        if not function.parameters:
+            # function without parameters
+            def evaluator():
+                return True
+
+            logging.debug('%s has no arguments.', function.name)
+
+            return {FunctionSample(function, True, {}, [], evaluator)}
+
         argument_lists = []
 
         for parameter in function.parameters:  # type: ignore
             argument_lists.append(self.generate_sample(parameter))
 
         # cartesian product of all arguments
-        combined = itertools.product(*argument_lists)
+        combined = set(itertools.product(*argument_lists))
+        logging.debug('prefiltering argument lists: %s', str(combined))
 
         # respect filters of Function
-        # TODO apply function filter for valid sets
-        filtered = filter(lambda x: True, combined)
+        for argument_list in combined:
+            # check whether argument list is allowed by function filter
+            # TODO how do we do this?
+            pass
 
         # TODO convert values to FunctionSample
+        #logging.debug('generated samples %s', str(filtered))
 
-        return filtered
+        # create function sample for each argument list
+        #FunctionSample(function, True, variables, arguments, evalator) 
+
+        return []
 
     def generate_sample(self, parameter: Parameter) -> Iterable[Variable]:
         """"""
 
         type_samples = []
 
+        # TODO partition should return str for value
+        # it is in charge of interpreting PartitionType, not here
         for partition in parameter.type.partitions:  # type: ignore
-            if partition.type == PartitionType.LITERAL:
+            if partition.type is PartitionType.LITERAL:
+                name = f'{parameter.name}_arg_{partition.value}'
+                var = Variable(parameter.type, name, partition.value)
+
+                type_samples.append(var)
+
+            elif partition.type is PartitionType.NUMERIC:
+                name = f'{parameter.name}_arg_{partition.value}'
+                var = Variable(parameter.type, name, partition.value)
+
+                type_samples.append(var)
+
+            elif partition.type is PartitionType.PREDEFINED:
                 name = f'{parameter.name}_arg_{partition.value}'
                 var = Variable(parameter.type, name, partition.value)
 
                 type_samples.append(var)
 
             else:
-                logging.error('Trying to generate variable from unknown partition type.')
+                logging.error('Trying to generate variable from unknown partition type in ValidSampler.' + str(partition.type))
 
         return type_samples
