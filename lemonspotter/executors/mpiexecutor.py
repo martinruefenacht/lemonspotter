@@ -50,7 +50,7 @@ class MPIExecutor:
 
             except FileNotFoundError as error:
                 logging.error(error)
-                logging.error('Runnign set of test failed.')
+                logging.error('Running set of test failed.')
                 return
 
     def build_test(self, test: Test, arguments: List[str] = []) -> None:
@@ -125,7 +125,6 @@ class MPIExecutor:
             try:
                 process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
                 stdout, stderr = process.communicate()
-
             except FileNotFoundError as error:
                 logging.error(error)
                 logging.error('skip running test %s', test.name)

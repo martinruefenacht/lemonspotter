@@ -42,6 +42,9 @@ class MPIParser:
         #         #constant = self.parse_single_constant(path.absolute())
 
         #         database.add_constant(Constant(database, constant))
+#    def parse_single_constant(self) -> Dict[str, Any]:
+#        with open(path) as constantfile:
+#            return json.loads(constantfile)
 
     def default_function(self, func, defaults):
         # default function level

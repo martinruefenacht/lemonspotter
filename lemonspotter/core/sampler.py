@@ -14,7 +14,7 @@ class Sampler(ABC):
     """
 
     def __init__(self, database: Database):
-        self._database: Database = database
+        self._db: Database = database
 
     @abstractmethod
     def generate_samples(self, function: Function) -> Iterable[FunctionSample]:

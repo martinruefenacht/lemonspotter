@@ -4,7 +4,6 @@ This module defines the function class which respresents functions from the spec
 
 from typing import Mapping, Any, AbstractSet, Sequence
 from functools import lru_cache
-import logging
 
 from core.database import Database
 from core.type import Type

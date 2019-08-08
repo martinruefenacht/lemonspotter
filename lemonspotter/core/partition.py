@@ -2,7 +2,6 @@
 """
 
 from typing import Mapping, Any, Optional
-import logging
 from enum import Enum
 
 from core.database import Database
@@ -78,7 +77,7 @@ class Partition:
         """"""
 
         return self._json[name]
-    
+
     @property
     def type(self) -> PartitionType:
         """"""
@@ -103,7 +102,7 @@ class Partition:
 #
 #        else:
 #            raise NotImplementedError('Types of _return other than Constant are not implemented.')
-        
+
 #    @property
 #    def return_symbol(self) -> str:
 #        """"""

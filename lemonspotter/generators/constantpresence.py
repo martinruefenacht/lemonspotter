@@ -38,6 +38,7 @@ class ConstantPresenceGenerator(TestGenerator):
         # for all applicable functions
         for constant in constants:
             test = self.generate_test(constant)
+
             tests.add(test)
 
         return tests

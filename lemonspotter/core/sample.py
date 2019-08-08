@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Optional, Sequence, Callable, Iterable 
+from typing import Optional, Sequence, Callable, Iterable
 import logging
 
 from core.function import Function
@@ -164,7 +164,8 @@ class FunctionSample:
             # todo rename output return name, we have control over this above
             raise NotImplementedError('Test if the variable already exists.')
 
-        statement = f'{self.function.return_type.language_type} {self.return_variable.name} = {self.function.name}('
+        statement = (f'{self.function.return_type.language_type} {self.return_variable.name}'
+                     f' = {self.function.name}(')
 
         # add arguments
         logging.debug('arguments %s', str(self.arguments))

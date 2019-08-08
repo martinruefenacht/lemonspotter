@@ -156,7 +156,6 @@ class Test:
     @property
     def build_outcome(self) -> Optional[TestOutcome]:
         """This property provides the build outcome."""
-
         return self._build_outcome
 
     @build_outcome.setter

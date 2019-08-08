@@ -12,7 +12,7 @@ from core.variable import Variable
 from core.function import Function
 from core.sample import FunctionSample
 from core.parameter import Parameter
-from core.partition import Partition, PartitionType
+from core.partition import PartitionType
 
 
 class ValidSampler(Sampler):
@@ -56,10 +56,10 @@ class ValidSampler(Sampler):
             pass
 
         # TODO convert values to FunctionSample
-        #logging.debug('generated samples %s', str(filtered))
+        # logging.debug('generated samples %s', str(filtered))
 
         # create function sample for each argument list
-        #FunctionSample(function, True, variables, arguments, evalator) 
+        # FunctionSample(function, True, variables, arguments, evalator)
 
         return []
 
@@ -90,6 +90,7 @@ class ValidSampler(Sampler):
                 type_samples.append(var)
 
             else:
-                logging.error('Trying to generate variable from unknown partition type in ValidSampler.' + str(partition.type))
+                logging.error(('Trying to generate variable from unknown'
+                               ' partition type in ValidSampler.') + str(partition.type))
 
         return type_samples

@@ -9,7 +9,7 @@ import logging
 from typing import Set
 
 from core.database import Database
-from core.test import Test, TestType
+from core.test import Test, TestType, TestOutcome
 from core.function import Function
 from core.testgenerator import TestGenerator
 from samplers.declare import DeclarationSampler
@@ -63,11 +63,15 @@ class FunctionPresenceGenerator(TestGenerator):
             function.properties['presence_tested'] = True
             function.properties['present'] = False
 
+            test.build_outcome = TestOutcome.FAIL
+
         test.build_fail_function = build_fail
 
         def build_success():
             function.properties['presence_tested'] = True
             function.properties['present'] = True
+
+            test.build_outcome = TestOutcome.SUCCESS
 
         test.build_success_function = build_success
 

@@ -1,9 +1,11 @@
 """
+Lemonspotter Runtime
 """
 
 import sys
 import argparse
 import logging
+import json
 from subprocess import Popen, PIPE
 from pathlib import Path
 from typing import Optional
@@ -16,8 +18,10 @@ from executors.mpiexecutor import MPIExecutor
 from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
-# from samplers.default import DefaultSampler
 from samplers.valid import ValidSampler
+
+
+from core.report import TestReport
 
 
 class LemonSpotter:
@@ -27,15 +31,25 @@ class LemonSpotter:
 
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
         """
-        Construct the LemonSpotter runtime.
+        Construct the LemonSpotter runtime
         """
 
         self._database: Optional[Database] = None
+        self.parse_database(database_path)
+
+        self._reporter = TestReport(self._database)
+
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
 
-        self._parse_database(database_path)
+    @property
+    def database(self):
+        return self._database
 
-    def _parse_database(self, database_path: Path):
+    @property
+    def reporter(self):
+        return self._reporter
+
+    def parse_database(self, database_path: Path):
         """
         Parse the database pointed to by the command line argument.
         """
@@ -58,33 +72,22 @@ class LemonSpotter:
         self._executor.execute(constant_tests)
         self._executor.execute(function_tests)
 
-    def report(self) -> str:
-        """
-        """
+        for test in constant_tests:
+            self.reporter.log_test_result(test)
 
-        report = ''
-
-        if self._database:
-            for constant in self._database.constants:
-                report += '{:30}\t\t{}\n'.format(constant.name, str(constant.properties))
-
-            report += '\n' + '#' * 80 + '\n\n'
-
-            for function in self._database.functions:
-                report += '{:30}\t\t{}\n'.format(function.name, str(function.properties))
-
-            return report
-
-        raise RuntimeError('No database to report.')
+        for test in function_tests:
+            self.reporter.log_test_result(test)
 
     def start_end_testing(self):
-        # sampler = DefaultSampler(self._database)
         sampler = ValidSampler(self._database)
 
         generator = StartEndGenerator(self._database)
         start_end_tests = generator.generate(sampler)
 
         self._executor.execute(start_end_tests)
+
+        for test in start_end_tests:
+            self.reporter.log_test_result(test)
 
 
 def parse_arguments():
@@ -147,8 +150,14 @@ def parse_arguments():
                         default=False,
                         help='Runs Lemonspotter Unit Tests')
 
+    parser.add_argument('--report',
+                        action='store_true',
+                        dest='report',
+                        default=False,
+                        help='Prints report file specified')
+
     # database arguments
-    parser.add_argument('database',
+    parser.add_argument('specification',
                         nargs='?',
                         type=str,
                         help='Path to database to use.')
@@ -185,6 +194,8 @@ def main() -> None:
     arguments = parse_arguments()
     set_logging_level(arguments.log)
 
+    # perform presence testing
+
     if arguments.test:
         raise NotImplementedError
 
@@ -212,21 +223,22 @@ def main() -> None:
         if stderr:
             logging.error(stderr)
 
-    elif not arguments.database:
+    elif arguments.report:
+        with open(arguments.specification) as report_file:
+            report = json.load(report_file)
+        print(json.dumps(report, indent=2))
+
+    elif not arguments.specification:
         logging.error("Database path not defined")
 
     else:
         # initialize and load the database
-        runtime = LemonSpotter(Path(arguments.database), arguments.mpicc, arguments.mpiexec)
-
-        # perform presence testing
-        print(runtime.report())
-
+        runtime = LemonSpotter(Path(arguments.specification), arguments.mpicc, arguments.mpiexec)
         runtime.presence_testing()
-        print(runtime.report())
-
         runtime.start_end_testing()
-        print(runtime.report())
+
+        # Prints report and writes to file
+        runtime.reporter.print_report()
 
 
 if __name__ == '__main__':
