@@ -116,7 +116,8 @@ class FunctionStatement(Statement):
             logging.warning('%s is not printable', variable.name)
             return None
 
-        statement = f'printf("{variable.name} %{variable.type.print_specifier}\\n", {variable.name});'
+        statement = (f'printf("{variable.name} %{variable.type.print_specifier}'
+                     '\\n", {variable.name});')
 
         logging.debug(statement)
         return FunctionStatement(statement)

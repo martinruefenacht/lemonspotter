@@ -1,13 +1,11 @@
 """
 """
 
-from typing import TYPE_CHECKING, Mapping, Any, Optional
+from typing import Mapping, Any, Optional
 import logging
-from enum import Enum, auto
+from enum import Enum
 
 from core.database import Database
-from core.statement import ConditionStatement
-from core.variable import Variable
 
 
 class Operand(Enum):

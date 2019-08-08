@@ -3,7 +3,7 @@ This module contains the definition of the DefaultSampler.
 """
 
 import logging
-from typing import Iterable, Sequence
+from typing import Iterable
 import itertools
 
 from core.sampler import Sampler
@@ -31,11 +31,11 @@ class ValidSampler(Sampler):
 
         argument_lists = []
 
-        for parameter in function.parameters: # type: ignore
+        for parameter in function.parameters:  # type: ignore
             argument_lists.append(self.generate_sample(parameter))
 
         # cartesian product of all arguments
-        combined = itertools.product(*argument_lists) 
+        combined = itertools.product(*argument_lists)
 
         # respect filters of Function
         # TODO apply function filter for valid sets
@@ -43,14 +43,14 @@ class ValidSampler(Sampler):
 
         # TODO convert values to FunctionSample
 
-        return filtered 
+        return filtered
 
     def generate_sample(self, parameter: Parameter) -> Iterable[Variable]:
         """"""
 
         type_samples = []
 
-        for partition in parameter.type.partitions: # type: ignore
+        for partition in parameter.type.partitions:  # type: ignore
             if partition.type == PartitionType.LITERAL:
                 name = f'{parameter.name}_arg_{partition.value}'
                 var = Variable(parameter.type, name, partition.value)

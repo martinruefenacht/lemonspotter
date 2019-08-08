@@ -5,7 +5,6 @@ from typing import Optional, Sequence, Callable, AbstractSet
 import logging
 
 from core.function import Function
-from core.partition import Partition
 from core.parameter import Direction
 from core.variable import Variable
 from core.source import Source
@@ -31,7 +30,7 @@ class FunctionSample:
         self._return_variable: Variable = Variable(function.return_type)
 
         # TODO expected error on invalid
-        #self._partition: Partition = partition
+        # self._partition: Partition = partition
 
     @property
     def function(self) -> Function:
@@ -87,6 +86,9 @@ class FunctionSample:
 
     def generate_source(self, source: Source) -> Source:
         """"""
+
+        # self.arguments = filter(lambda arg: source.get_variable(arg.name) is None,
+        #                         self.arguments)
 
         # replace pre-existing variables in arguments
         self.arguments = [variable if source.get_variable(variable.name) is None else source.get_variable(variable.name) for variable in self.arguments]

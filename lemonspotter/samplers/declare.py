@@ -30,7 +30,6 @@ class DeclarationSampler(Sampler):
 
         logging.debug('DeclarationSampler used for %s', function.name)
 
-
         def evaluator() -> bool:
             raise NotImplementedError('DeclarationSampler only generates compilable ' +
                                       'code, not runnable.')
@@ -44,7 +43,7 @@ class DeclarationSampler(Sampler):
 
             # add variable to variable set
             variables.add(variable)
-                
+
             logging.debug('declaring variable argument: %s', variable.name)
             arguments.append(variable)
 

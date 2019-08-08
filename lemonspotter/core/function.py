@@ -9,7 +9,6 @@ import logging
 from core.database import Database
 from core.type import Type
 from core.parameter import Parameter
-from core.partition import Partition
 
 
 class Function:

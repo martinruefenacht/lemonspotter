@@ -34,14 +34,14 @@ class MPIParser:
                     database.add_constant(Constant(database, constant))
 
         # parse subdirectory of constants
-        constants_directory = path / 'constants/'
-        if constants_directory.is_dir():
-            files = constants_directory.glob('**/*.json')
+        # constants_directory = path / 'constants/'
+        # if constants_directory.is_dir():
+        #     files = constants_directory.glob('**/*.json')
 
-            for path in files:
-                #constant = self.parse_single_constant(path.absolute())
+        #     for path in files:
+        #         #constant = self.parse_single_constant(path.absolute())
 
-                database.add_constant(Constant(database, constant))
+        #         database.add_constant(Constant(database, constant))
 
     def default_function(self, func, defaults):
         # default function level
@@ -106,7 +106,7 @@ class MPIParser:
 
                     else:
                         database.add_type(Type(database, type_data))
-        
+
         else:
             logging.info('Types directory does not exist: %s', str(types_directory))
 
@@ -116,5 +116,3 @@ class MPIParser:
 
         for type_definition in type_definitions:
             database.add_type(Type(database, type_definition))
-
-

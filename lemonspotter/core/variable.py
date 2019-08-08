@@ -79,7 +79,8 @@ class Variable:
         """
 
         if self.value is None:
-            raise RuntimeError('Attempting to validate variable %s against specification with None value.', self.name)
+            raise RuntimeError(('Attempting to validate variable %s against specification'
+                                ' with None value.', self.name))
 
         logging.debug('validating variable %s', self.name)
 

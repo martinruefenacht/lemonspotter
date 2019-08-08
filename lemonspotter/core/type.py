@@ -2,7 +2,7 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Mapping, Any, AbstractSet, Iterable
+from typing import Mapping, Any, Iterable
 from functools import lru_cache
 import logging
 
@@ -64,7 +64,7 @@ class Type:
 
         return self._database.type_by_abstract_type[self._json['language_type']].print_specifier
 
-    @property # type: ignore
+    @property  # type: ignore
     @lru_cache()
     def partitions(self) -> Iterable[Partition]:
         """"""
@@ -77,7 +77,7 @@ class Type:
     def validate(self, value: str) -> bool:
         """"""
 
-        valid = any(partition.validate(value) for partition in self.partitions) # type: ignore
+        valid = any(partition.validate(value) for partition in self.partitions)  # type: ignore
         logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
 
         return valid
