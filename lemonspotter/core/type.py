@@ -72,8 +72,6 @@ class Type:
         if 'partitions' in self._json:
             return [Partition(self._database, partition) for partition in self._json['partitions']]
 
-        # TODO language type / base type partitions
-
         return []
 
     def validate(self, value: str) -> bool:

@@ -134,20 +134,8 @@ class FunctionSample:
         # add check statements to call
         source.add_at_start(self._generate_return_check())
 
-        # TODO inout/out argument checks
-        # should we only do this in the python level?
-        # this is for in C checks
-        #
-        # for parameter, variable in zip(self._function.parameters, self.arguments):
-        #    if Direction(parameter.direction) is Direction.OUT:
-        #        pass
-
-        #    elif Direction(parameter.direction) is Direction.INOUT:
-        #        pass
-
-        #    else:
-        #        # ignore 'in' parameters
-        #        pass
+        # note, we check out argument validity in LemonSpotter level
+        # note, should we even do a return check?
 
         return source
 

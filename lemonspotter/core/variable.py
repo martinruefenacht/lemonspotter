@@ -41,15 +41,6 @@ class Variable:
 
         return self._type
 
-    @type.setter
-    def type(self, kind: 'Type') -> None:
-        """"""
-        # TODO should this be removed?
-        # type should not be changable
-
-        assert kind is not None
-        self._type = kind
-
     @property
     def name(self) -> str:
         """This property provides the name of the Variable."""
