@@ -17,9 +17,9 @@ class FunctionSample:
     def __init__(self,
                  function: Function,
                  valid: bool,
-                 variables: Optional[Iterable[Variable]],
-                 arguments: Optional[Sequence[Variable]],
-                 evaluator: Callable[[], bool]
+                 variables: Optional[Iterable[Variable]] = None,
+                 arguments: Optional[Sequence[Variable]] = None,
+                 evaluator: Optional[Callable[[], bool]] = None,
                  ) -> None:
         self._function = function
         self._valid = valid
@@ -28,9 +28,6 @@ class FunctionSample:
         self._evaluator = evaluator
 
         self._return_variable: Variable = Variable(function.return_type)
-
-        # TODO expected error on invalid
-        # self._partition: Partition = partition
 
     @property
     def function(self) -> Function:
@@ -87,13 +84,34 @@ class FunctionSample:
     def generate_source(self, source: Source) -> Source:
         """"""
 
-        # self.arguments = filter(lambda arg: source.get_variable(arg.name) is None,
-        #                         self.arguments)
+        # assign predefined arguments and check for collisions
+        def check_argument(arg):
+                if arg.predefined:
+                    predef = source.get_variable(arg.value)
 
-        # replace pre-existing variables in arguments
-        self.arguments = [variable if source.get_variable(variable.name) is None else source.get_variable(variable.name) for variable in self.arguments]
+                    if predef is None:
+                        raise RuntimeError('Predefined variable not present in source.')
 
-        # add variable to source
+                    if predef.type is arg.type:
+                        return predef
+
+                    else:
+                        # try referencing
+                        if predef.type.referencable:
+                            # create variable
+                            var = Variable(predef.type.reference(), predef.name + '_ref', '&'+predef.name)
+
+                            return var
+
+                elif source.get_variable(arg.name) is not None:
+                    raise RuntimeError('Name collision found between argument and variable.')
+
+                else:
+                    return arg
+
+        self.arguments = [check_argument(argument) for argument in self.arguments]
+
+        # add arguments to source
         for variable in self.arguments:
             existing = source.get_variable(variable.name)
             if not existing:

@@ -194,7 +194,7 @@ class MainDefinitionStatement(BlockStatement):
     def __init__(self, database: Database) -> None:
         super().__init__()
 
-        argc = Variable(database.type_by_abstract_type['INT_1PTR'],
+        argc = Variable(database.type_by_abstract_type['INT'],
                         'argument_count')
         argv = Variable(database.type_by_abstract_type['CHAR_2PTR'],
                         'argument_list')

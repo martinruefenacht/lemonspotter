@@ -2,7 +2,7 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import Mapping, Any, AbstractSet, Sequence
+from typing import Mapping, Any, AbstractSet, Sequence, Iterable
 from functools import lru_cache
 
 from core.database import Database
@@ -119,3 +119,9 @@ class Function:
         """"""
 
         return self.properties.get('present', False)
+
+    @property
+    def filters(self) -> Iterable[Mapping[str, Any]]:
+        """"""
+
+        return self._json['filters'] if 'filters' in self._json else []

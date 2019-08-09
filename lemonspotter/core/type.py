@@ -2,7 +2,7 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Mapping, Any, Iterable
+from typing import Mapping, Any, Iterable, Optional
 from functools import lru_cache
 import logging
 
@@ -72,6 +72,8 @@ class Type:
         if 'partitions' in self._json:
             return [Partition(self._database, partition) for partition in self._json['partitions']]
 
+        # TODO language type / base type partitions
+
         return []
 
     def validate(self, value: str) -> bool:
@@ -81,3 +83,29 @@ class Type:
         logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
 
         return valid
+
+    @property
+    def referencable(self) -> bool:
+        """"""
+
+        return 'reference' in self._json
+
+    def reference(self) -> 'Type':
+        """"""
+
+        assert 'reference' in self._json
+
+        return self._database.type_by_abstract_type[self._json['reference']]
+
+    @property
+    def dereferencable(self) -> bool:
+        """"""
+
+        return 'dereference' in self._json
+
+    def dereference(self) -> 'Type':
+        """"""
+
+        assert 'dereference' in self._json
+
+        return self._database.type_by_abstract_type[self._json['dereference']]

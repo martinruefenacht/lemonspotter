@@ -31,12 +31,12 @@ class ValidSampler(Sampler):
 
         logging.debug('generating samples of parameters for %s', function.name)
 
+
         if not function.parameters:
-            # function without parameters
+            logging.debug('%s has no arguments.', function.name)
+
             def evaluator():
                 return True
-
-            logging.debug('%s has no arguments.', function.name)
 
             return {FunctionSample(function, True, {}, [], evaluator)}
 
@@ -49,19 +49,43 @@ class ValidSampler(Sampler):
         combined = set(itertools.product(*argument_lists))
         logging.debug('prefiltering argument lists: %s', str(combined))
 
+
         # respect filters of Function
-        for argument_list in combined:
-            # check whether argument list is allowed by function filter
-            # TODO how do we do this?
-            pass
+        def argument_filter(argument_list: Iterable) -> bool:
+            valid = False
 
-        # TODO convert values to FunctionSample
-        # logging.debug('generated samples %s', str(filtered))
+            for sieve in function.filters:  # any sieve needs to be True
+                # go through parameters/argument mapping
+                for parameter, argument in zip(function.parameters, argument_list):  # all requirements from sieve
+                    if sieve[parameter.name]['value'] != argument.value:
+                        break
+                else:
+                    # sieve applies
+                    return True
 
-        # create function sample for each argument list
-        # FunctionSample(function, True, variables, arguments, evalator)
+            else:
+                return False
 
-        return []
+        filtered = filter(argument_filter, combined)
+
+        # convert to FunctionSample
+        samples = set()
+
+        for argument_list in filtered:
+            sample = FunctionSample(function, True, set(argument_list), argument_list)
+
+            # function without parameters
+            def evaluator():
+                # TODO this needs the return to check!?
+                #sample.return_variable
+
+                return True
+
+            sample.evaluator = evaluator
+
+            samples.add(sample)
+
+        return samples
 
     def generate_sample(self, parameter: Parameter) -> Iterable[Variable]:
         """"""
@@ -73,6 +97,7 @@ class ValidSampler(Sampler):
         for partition in parameter.type.partitions:  # type: ignore
             if partition.type is PartitionType.LITERAL:
                 name = f'{parameter.name}_arg_{partition.value}'
+                # TODO existing variables?
                 var = Variable(parameter.type, name, partition.value)
 
                 type_samples.append(var)
@@ -85,9 +110,14 @@ class ValidSampler(Sampler):
 
             elif partition.type is PartitionType.PREDEFINED:
                 name = f'{parameter.name}_arg_{partition.value}'
-                var = Variable(parameter.type, name, partition.value)
+                var = Variable(parameter.type, name, partition.value, predefined=True)
 
                 type_samples.append(var)
+
+            elif partition.type is PartitionType.CONSTANT:
+                # TODO look up constant of parameter type
+                # use all of those
+                logging.error('Trying to generate variable from CONSTANT.')
 
             else:
                 logging.error(('Trying to generate variable from unknown'
