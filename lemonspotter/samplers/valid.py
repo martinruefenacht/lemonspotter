@@ -34,10 +34,14 @@ class ValidSampler(Sampler):
         if not function.parameters:
             logging.debug('%s has no arguments.', function.name)
 
-            def evaluator():
-                return True
+            sample = FunctionSample(function, True, {}, [])
 
-            return {FunctionSample(function, True, {}, [], evaluator)}
+            def evaluator() -> bool:
+                return sample.return_variable.value == self.database.constants_by_name['MPI_SUCCESS'].value
+
+            sample.evaluator = evaluator
+
+            return {sample}
 
         argument_lists = []
 
@@ -87,7 +91,7 @@ class ValidSampler(Sampler):
             # function without parameters
             def evaluator():
                 # todo use valid error lookup rule
-                return sample.return_variable.value == 'MPI_SUCCESS'
+                return sample.return_variable.value == self.database.constants_by_name['MPI_SUCCESS'].value
 
             sample.evaluator = evaluator
 
