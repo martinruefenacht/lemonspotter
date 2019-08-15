@@ -18,8 +18,8 @@ from core.statement import FunctionStatement, ConditionStatement
 #    Source code generator for initiator and finalizer functions.
 #    """
 #
-#    def __init__(self, database: Database) -> None:
-#        super().__init__(database)
+#    def __init__(self) -> None:
+#        super().__init__()
 #
 #        self.elements_generated = 0
 #
@@ -31,12 +31,12 @@ from core.statement import FunctionStatement, ConditionStatement
 #        # determine all start functions
 #        starts = filter(lambda f: not f.needs_all and not f.needs_any and
 #                        (f.leads_any or f.leads_all),
-#                        self._database.functions)
+#                        Database().functions)
 #
 #        # determine all end points
 #        ends = filter(lambda f: not f.leads_all and not f.leads_any and
 #                      (f.needs_any or f.needs_all),
-#                      self._database.functions)
+#                      Database().functions)
 #
 #        # for all combinations
 #        for start in starts:
@@ -104,8 +104,7 @@ from core.statement import FunctionStatement, ConditionStatement
 #            return_name += str(self.elements_generated)
 #
 #            function_call = function.generate_function_statement(args,
-#                                                                 return_name,
-#                                                                 self._database)
+#                                                                 return_name)
 #            source.add_at_start(function_call)
 #
 #            # add return output

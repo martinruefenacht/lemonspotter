@@ -6,16 +6,16 @@ from typing import List, Dict
 from core.test import Test
 from core.test import TestType
 from core.test import TestOutcome
+from core.database import Database
 
 
 class TestReport():
     """
     Class for generating logging statements for tests
     """
-    def __init__(self, database):
+    def __init__(self):
         self._now = datetime.datetime.now()
         self._report_id: str = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
-        self._database = database
 
         self._report: Dict = {}
         self._tests: list[Test] = []
@@ -92,11 +92,11 @@ class TestReport():
         # Generates Presence Report #
         presence_report = {}
         constants = {}
-        for constant in self._database.constants:
+        for constant in Database().constants:
             constants[constant.name] = constant.properties
 
         functions = {}
-        for function in self._database.functions:
+        for function in Database().functions:
             functions[function.name] = function.properties
 
         presence_report['constants'] = constants

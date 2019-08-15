@@ -32,16 +32,11 @@ class LemonSpotter:
         Construct the LemonSpotter runtime
         """
 
-        self._database: Optional[Database] = None
         self.parse_database(database_path)
 
-        self._reporter = TestReport(self._database)
+        self._reporter = TestReport()
 
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
-
-    @property
-    def database(self):
-        return self._database
 
     @property
     def reporter(self):
@@ -53,7 +48,8 @@ class LemonSpotter:
         """
 
         parser = MPIParser()
-        self._database = parser(database_path)
+        # TODO this needs to change due to singleton behaviour
+        parser(database_path)
 
     def presence_testing(self):
         """
@@ -61,10 +57,10 @@ class LemonSpotter:
         """
 
         # generate all constant presence tests
-        generator = ConstantPresenceGenerator(self.database)
+        generator = ConstantPresenceGenerator()
         constant_tests = generator.generate()
 
-        func_gen = FunctionPresenceGenerator(self.database)
+        func_gen = FunctionPresenceGenerator()
         function_tests = func_gen.generate()
 
         self._executor.execute(constant_tests)
@@ -78,7 +74,7 @@ class LemonSpotter:
 
     def generate_tests(self):
         pass
-#        generator = StartEndGenerator(self.database)
+#        generator = StartEndGenerator()
 #
 #        # TODO instantiator make it a functioning object
 #        instantiator = None

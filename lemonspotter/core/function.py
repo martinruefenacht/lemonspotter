@@ -15,11 +15,10 @@ class Function:
     Defines an function object that can be included in Lemonspotter tests.
     """
 
-    def __init__(self, database: Database, json: Dict[str, Any]) -> None:
+    def __init__(self, json: Dict[str, Any]) -> None:
         """
         """
 
-        self._db: Database = database
         self._json: Dict[str, Any] = json
 
         self.properties: Dict[str, Any] = {}
@@ -88,7 +87,7 @@ class Function:
         """This property provides access to the parameter list of this Function object."""
 
         if self._cached_parameters is None:
-            self._cached_parameters = [Parameter(self._db, parameter)
+            self._cached_parameters = [Parameter(parameter)
                                        for parameter in self._json['parameters']]
 
         return self._cached_parameters
@@ -97,28 +96,28 @@ class Function:
     def return_type(self) -> Type:
         """This property provides the Type object of the return of this Function."""
 
-        return self._db.type_by_abstract_type[self._json['return']]
+        return Database().type_by_abstract_type[self._json['return']]
 
     @property
     def needs_any(self) -> Set['Function']:
         """This property provides access to the any set of needed Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['needs_any'])
+        return set(Database().functions_by_name[func_name] for func_name in self._json['needs_any'])
 
     @property
     def needs_all(self) -> Set['Function']:
         """This property provides access to the all set of needed Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['needs_all'])
+        return set(Database().functions_by_name[func_name] for func_name in self._json['needs_all'])
 
     @property
     def leads_any(self) -> Set['Function']:
         """This property provides access to the any set of lead Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['leads_any'])
+        return set(Database().functions_by_name[func_name] for func_name in self._json['leads_any'])
 
     @property
     def leads_all(self) -> Set['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
-        return set(self._db.functions_by_name[func_name] for func_name in self._json['leads_all'])
+        return set(Database().functions_by_name[func_name] for func_name in self._json['leads_all'])
