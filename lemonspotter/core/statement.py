@@ -2,7 +2,7 @@
 This module defines the base class Statement and all the derived classes.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Iterable
 import logging
 
 from core.variable import Variable
@@ -24,13 +24,14 @@ class Statement:
 
         return self._variables
 
-    def express(self) -> str:
+    def express(self, indent_level: int) -> str:
         """This method converts the Statement to a string."""
 
         if self._statement is None:
             raise RuntimeError('Trying to express Statement with _statement is None.')
 
-        return self._statement
+        indentation = '\t' * indent_level
+        return f'{indentation}{self._statement}'
 
 
 class IncludeStatement(Statement):
@@ -40,6 +41,17 @@ class IncludeStatement(Statement):
         super().__init__()
 
         self._statement = f'#include <{header}>'
+
+
+class IncludeGroupStatement(Statement):
+    """
+    This class represents a group of include statements.
+    """
+
+    def __init__(self, headers: Iterable[str]) -> None:
+        super().__init__()
+
+        self._statement = '\n'.join(f'#include <{header}>' for header in headers)
 
 
 class ReturnStatement(Statement):
@@ -152,16 +164,22 @@ class BlockStatement(Statement):
 
         self._back_statements.append(statement)
 
-    def express(self) -> str:
-        code = '{\n'
+    def express(self, indent_level: int) -> str:
+        """"""
+
+        indentation = '\t' * (indent_level-1)
+
+        code = indentation + '{\n'
 
         for statement in self._front_statements:
-            code += f'{statement.express()}\n'
+            code += f'{statement.express(indent_level)}\n\n'
 
         for statement in self._back_statements:
-            code += f'{statement.express()}\n'
+            code += f'{statement.express(indent_level)}\n\n'
 
-        code += '}'
+        # TODO no new line if last expression
+
+        code += indentation + '}'
 
         return code
 
@@ -174,16 +192,12 @@ class ConditionStatement(BlockStatement):
 
         self._condition = condition
 
-    def express(self) -> str:
-        code = f'if({self._condition})\n{{\n'
+    def express(self, indent_level: int) -> str:
+        """"""
 
-        for statement in self._front_statements:
-            code += f'{statement.express()}\n'
+        indentation = '\t' * indent_level
 
-        for statement in self._back_statements:
-            code += f'{statement.express()}\n'
-
-        code += '}'
+        code = indentation + f'if({self._condition})\n{super().express(indent_level+1)}'
 
         return code
 
@@ -204,7 +218,9 @@ class MainDefinitionStatement(BlockStatement):
 
         self._statement: str = f'int main(int {argc.name}, char **{argv.name})'
 
-    def express(self) -> str:
+    def express(self, indent_level: int) -> str:
         """"""
 
-        return f'{self._statement}\n{super().express()}'
+        indentation = '\t' * indent_level
+
+        return indentation + f'{self._statement}\n{super().express(indent_level+1)}'

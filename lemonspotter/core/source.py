@@ -77,11 +77,13 @@ class Source:
 
         code = ''
 
+        # todo double new lines makes new lines between include statements
+        # do we want that? or do we want all includes to be together?
         for statement in self._front_statements:
-            code += statement.express() + '\n'
+            code += statement.express(0) + '\n\n'
 
         for statement in self._back_statements:
-            code += statement.express() + '\n'
+            code += statement.express(0) + '\n\n'
 
         return code
 
