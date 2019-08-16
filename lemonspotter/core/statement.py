@@ -14,9 +14,10 @@ class Statement:
     This class is the base class for all Statements.
     """
 
-    def __init__(self, variables: Dict[str, Variable] = None) -> None:
+    def __init__(self, variables: Dict[str, Variable] = None, comment: str = None) -> None:
         self._variables: Dict[str, Variable] = variables if variables else {}
         self._statement: Optional[str] = None
+        self._comment: Optional[str] = comment
 
     @property
     def variables(self) -> Dict[str, Variable]:
@@ -31,14 +32,24 @@ class Statement:
             raise RuntimeError('Trying to express Statement with _statement is None.')
 
         indentation = '\t' * indent_level
-        return f'{indentation}{self._statement}'
+
+        if self._comment is not None:
+            # TODO line break for long comments
+            comment = f'{indentation}// {self._comment}\n'
+
+        else:
+            comment = ''
+
+        code = f'{indentation}{self._statement}'
+
+        return comment + code
 
 
 class IncludeStatement(Statement):
     """This class represents any include statements in C."""
 
-    def __init__(self, header: str) -> None:
-        super().__init__()
+    def __init__(self, header: str, comment: str = None) -> None:
+        super().__init__(comment=comment)
 
         self._statement = f'#include <{header}>'
 
@@ -48,8 +59,8 @@ class IncludeGroupStatement(Statement):
     This class represents a group of include statements.
     """
 
-    def __init__(self, headers: Iterable[str]) -> None:
-        super().__init__()
+    def __init__(self, headers: Iterable[str], comment: str = None) -> None:
+        super().__init__(comment=comment)
 
         self._statement = '\n'.join(f'#include <{header}>' for header in headers)
 
@@ -57,8 +68,8 @@ class IncludeGroupStatement(Statement):
 class ReturnStatement(Statement):
     """This class represents any return statements in C."""
 
-    def __init__(self, expression: str) -> None:
-        super().__init__()
+    def __init__(self, expression: str, comment: str = None) -> None:
+        super().__init__(comment=comment)
 
         self._statement = f'return {expression};'
 
@@ -66,23 +77,23 @@ class ReturnStatement(Statement):
 class DeclarationStatement(Statement):
     """This class represents any variable declaration."""
 
-    def __init__(self, variable: Variable) -> None:
-        super().__init__({variable.name: variable})
+    def __init__(self, variable: Variable, comment: str = None) -> None:
+        super().__init__({variable.name: variable}, comment=comment)
 
         self._statement = f'{variable.type.language_type} {variable.name};'
 
     @classmethod
-    def generate_declaration(cls, variable: Variable) -> 'DeclarationStatement':
+    def generate_declaration(cls, variable: Variable, comment: str = None) -> 'DeclarationStatement':
         """This method generates a DeclarationStatement from a Variable."""
 
-        return DeclarationStatement(variable)
+        return DeclarationStatement(variable, comment=comment)
 
 
 class AssignmentStatement(Statement):
     """This class represents any variable assignment."""
 
-    def __init__(self, variable: Variable) -> None:
-        super().__init__({variable.name: variable})
+    def __init__(self, variable: Variable, comment: str = None) -> None:
+        super().__init__({variable.name: variable}, comment=comment)
 
         if variable.value:
             self._statement = f'{variable.name} = {variable.value};'
@@ -94,8 +105,8 @@ class AssignmentStatement(Statement):
 class DeclarationAssignmentStatement(Statement):
     """This class represents any declaration and assignment in a single statement."""
 
-    def __init__(self, variable: Variable) -> None:
-        super().__init__({variable.name: variable})
+    def __init__(self, variable: Variable, comment: str = None) -> None:
+        super().__init__({variable.name: variable}, comment=comment)
 
         if variable.value:
             self._statement = f'{variable.type.language_type} {variable.name} = {variable.value};'
@@ -104,22 +115,22 @@ class DeclarationAssignmentStatement(Statement):
             raise RuntimeError('Variable.value required to be not be None.')
 
     @classmethod
-    def generate_assignment(cls, variable: Variable) -> 'DeclarationAssignmentStatement':
+    def generate_assignment(cls, variable: Variable, comment: str = None) -> 'DeclarationAssignmentStatement':
         """This method generates a DeclarationAssignmentStatement from a variable."""
 
-        return DeclarationAssignmentStatement(variable)
+        return DeclarationAssignmentStatement(variable, comment=comment)
 
 
 class FunctionStatement(Statement):
     """This class represents any Function call statement."""
 
-    def __init__(self, statement: str, variables: Dict[str, Variable] = None) -> None:
-        super().__init__(variables)
+    def __init__(self, statement: str, variables: Dict[str, Variable] = None, comment: str = None) -> None:
+        super().__init__(variables, comment=comment)
 
         self._statement: str = statement
 
     @classmethod
-    def generate_print(cls, variable: Variable) -> Optional['FunctionStatement']:
+    def generate_print(cls, variable: Variable, comment: str = None) -> Optional['FunctionStatement']:
         """
         Generate a FunctionStatement object for a given Variable.
         """
@@ -131,15 +142,14 @@ class FunctionStatement(Statement):
         statement = (f'printf("{variable.name} %{variable.type.print_specifier}'
                      f'\\n", {variable.name});')
 
-        logging.debug(statement)
-        return FunctionStatement(statement)
+        return FunctionStatement(statement, comment=comment)
 
 
 class ExitStatement(Statement):
     """This class represents any exit call."""
 
-    def __init__(self, errorcode) -> None:
-        super().__init__()
+    def __init__(self, errorcode, comment: str = None) -> None:
+        super().__init__(comment=comment)
 
         self._statement = f'exit({errorcode});'
 
@@ -147,8 +157,8 @@ class ExitStatement(Statement):
 class BlockStatement(Statement):
     """This class serves are a base class for block definitions."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, comment: str = None) -> None:
+        super().__init__(comment=comment)
 
         self._front_statements: List[Statement] = []
         self._back_statements: List[Statement] = []
@@ -187,8 +197,8 @@ class BlockStatement(Statement):
 class ConditionStatement(BlockStatement):
     """This class represents if statements."""
 
-    def __init__(self, condition: str) -> None:
-        super().__init__()
+    def __init__(self, condition: str, comment: str = None) -> None:
+        super().__init__(comment = comment)
 
         self._condition = condition
 
@@ -205,8 +215,8 @@ class ConditionStatement(BlockStatement):
 class MainDefinitionStatement(BlockStatement):
     """This class represents the main function definition."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, comment: str = None) -> None:
+        super().__init__(comment=comment)
 
         argc = Variable(Database().type_by_abstract_type['INT'],
                         'argument_count')
