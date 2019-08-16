@@ -10,8 +10,8 @@ from core.constant import Constant
 
 
 class MPIParser:
-    def __call__(self, database_path: Path) -> Database:
-        return self.parse(database_path)
+    def __call__(self, database_path: Path) -> None:
+        self.parse(database_path)
 
     def parse(self, database_path: Path) -> None:
         self.parse_types(database_path)

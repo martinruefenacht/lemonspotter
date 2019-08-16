@@ -3,7 +3,7 @@ This module defines the Database class.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Set, Dict, List
+from typing import TYPE_CHECKING, Set, Dict, List, Mapping
 if TYPE_CHECKING:
     from core.function import Function
     from core.constant import Constant
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class _Singleton(type):
-    _instances = {}
+    _instances: Mapping[_Singleton, _Singleton] = {}
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
@@ -29,7 +29,7 @@ class Database(metaclass=_Singleton):
     def __init__(self) -> None:
         self.functions: Set[Function] = set()
         self.constants: Set[Constant] = set()
-        self.types: Set['Type'] = set()
+        self.types: Set[Type] = set()
 
         self.functions_by_name: Dict[str, Function] = {}
         self.constants_by_abstract_type: Dict[str, List[Constant]] = {}

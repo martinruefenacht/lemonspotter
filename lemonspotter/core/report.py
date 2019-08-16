@@ -2,7 +2,7 @@ import datetime
 import json
 
 from pathlib import Path
-from typing import List, Dict
+from typing import List, MutableMapping, Mapping, Any
 from core.test import Test
 from core.test import TestType
 from core.test import TestOutcome
@@ -13,12 +13,13 @@ class TestReport():
     """
     Class for generating logging statements for tests
     """
+
     def __init__(self):
         self._now = datetime.datetime.now()
         self._report_id: str = "lsout_" + self._now.strftime("%Y-%m-%d_%H:%M")
 
-        self._report: Dict = {}
-        self._tests: list[Test] = []
+        self._report: MutableMapping = {}
+        self._tests: List[Test] = []
 
         # Ensures that report directory exists
         report_dir = Path.resolve(Path(__file__) / '../../../reports')
@@ -69,6 +70,7 @@ class TestReport():
                 log_msg += 'PASS|'
             else:
                 log_msg += 'FAIL|'
+
         elif test.type == TestType.BUILD_AND_RUN:
             log_msg += '[RUN|'
             if test.run_outcome == TestOutcome.SUCCESS:
@@ -84,12 +86,15 @@ class TestReport():
         """
         Generates the complete report for tests run to this point
         """
+
         self._generate_report()
 
     def _generate_report(self) -> None:
+        """"""
 
         # Generates Presence Report #
-        presence_report = {}
+        presence_report: MutableMapping[str, Mapping[str, Any]] = {}
+
         constants = {}
         for constant in Database().constants:
             constants[constant.name] = constant.properties
@@ -100,6 +105,7 @@ class TestReport():
 
         presence_report['constants'] = constants
         presence_report['functions'] = functions
+
         self._report['presence_report'] = presence_report
 
         test_report = {}
@@ -109,12 +115,14 @@ class TestReport():
                                       'run_outcome': str(test.run_outcome)}
 
         self._report['tests'] = test_report
+
         print(self._report)
 
     def print_report(self, indent=2):
         """
         Pretty prints report
         """
+
         self._generate_report()
         print(json.dumps(self._report, indent=indent))
 
@@ -122,6 +130,7 @@ class TestReport():
         """
         Writes generated report to file
         """
+
         self._generate_report()
         with open(self.report_file_dir, 'a+') as file_buffer:
             json.dump(self._report, file_buffer)
