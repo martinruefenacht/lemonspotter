@@ -3,7 +3,7 @@ This module defines the Database class.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Set, Dict, List, Mapping
+from typing import TYPE_CHECKING, Set, Dict, List, Mapping, Iterable
 if TYPE_CHECKING:
     from core.function import Function
     from core.constant import Constant
@@ -51,6 +51,11 @@ class Database(metaclass=_Singleton):
         self._constants_by_abstract_type[constant.type.abstract_type].append(constant)
         self._constants_by_name[constant.name] = constant
 
+    def get_constants(self, abstract_type: str) -> Iterable[Constant]:
+        """"""
+
+        return self._constants_by_abstract_type[abstract_type]
+
     def add_function(self, function: Function) -> None:
         """
         Adds a function to the database and adds it to the lookup by name.
@@ -72,3 +77,8 @@ class Database(metaclass=_Singleton):
 
         # add to dictionary of types
         self._type_by_abstract_type[kind.abstract_type] = kind
+
+    def get_type(self, abstract_type: str) -> Type:
+        """"""
+
+        return self._type_by_abstract_type[abstract_type]
