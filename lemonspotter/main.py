@@ -47,8 +47,10 @@ class LemonSpotter:
         Parse the database pointed to by the command line argument.
         """
 
+        # TODO this is a chicken-egg situation
+        # we don't know the MPIParser is required for the database
+        # but we need to use a parser to open the database
         parser = MPIParser()
-        # TODO this needs to change due to singleton behaviour
         parser(database_path)
 
     def presence_testing(self):
