@@ -154,6 +154,15 @@ class IncludeStatement(Statement):
         self._statement = f'#include <{header}>'
 
 
+class CommentStatement(Statement):
+    """"""
+
+    def __init__(self, comment: str) -> None:
+        super().__init__()
+
+        self._statement = f'// {comment}'
+
+
 class ReturnStatement(Statement):
     """This class represents any return statements in C."""
 

@@ -86,7 +86,7 @@ class FunctionSample:
         assert evaluator is not None
         self._evaluator = evaluator
 
-    def generate_source(self, source: BlockStatement) -> None:
+    def generate_source(self, source: BlockStatement, comment: str = None) -> None:
         """"""
 
         # assign predefined arguments and check for collisions
@@ -129,7 +129,7 @@ class FunctionSample:
                     source.add_at_start(DeclarationStatement(variable))
 
         # add function call to source
-        source.add_at_start(self._generate_statement(source))
+        source.add_at_start(self._generate_statement(source, comment))
 
         # add outputs
         source.add_at_start(FunctionStatement.generate_print(self._return_variable))
@@ -164,7 +164,7 @@ class FunctionSample:
 
         return statement
 
-    def _generate_statement(self, source: Source) -> FunctionStatement:
+    def _generate_statement(self, source: Source, comment: str = None) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
@@ -205,4 +205,4 @@ class FunctionSample:
 
         statement += ');'
 
-        return FunctionStatement(statement, {self.return_variable.name: self.return_variable})
+        return FunctionStatement(statement, {self.return_variable.name: self.return_variable}, comment)

@@ -59,7 +59,7 @@ class FunctionPresenceGenerator(TestGenerator):
         # generate declaration of arguments
         sampler = DeclarationSampler()
         for sample in sampler.generate_samples(function):
-            sample.generate_source(block_main)
+            sample.generate_source(block_main, 'build only test, use variable declaration only')
 
         # todo do we want to suppress the printf and return check in the emitted code?
 
