@@ -191,12 +191,12 @@ class ConditionStatement(BlockStatement):
 class MainDefinitionStatement(BlockStatement):
     """This class represents the main function definition."""
 
-    def __init__(self, database: Database) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
-        argc = Variable(database.type_by_abstract_type['INT'],
+        argc = Variable(Database().type_by_abstract_type['INT'],
                         'argument_count')
-        argv = Variable(database.type_by_abstract_type['CHAR_2PTR'],
+        argv = Variable(Database().type_by_abstract_type['CHAR_2PTR'],
                         'argument_list')
 
         self._variables[argc.name] = argc

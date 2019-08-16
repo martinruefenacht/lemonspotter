@@ -11,16 +11,12 @@ from pathlib import Path
 from typing import Optional
 
 from core.database import Database
-
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
-
 from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
 from samplers.valid import ValidSampler
-
-
 from core.report import TestReport
 
 
@@ -34,16 +30,11 @@ class LemonSpotter:
         Construct the LemonSpotter runtime
         """
 
-        self._database: Optional[Database] = None
         self.parse_database(database_path)
 
-        self._reporter = TestReport(self._database)
+        self._reporter = TestReport()
 
         self._executor = MPIExecutor(mpicc=mpicc, mpiexec=mpiexec)
-
-    @property
-    def database(self):
-        return self._database
 
     @property
     def reporter(self):
@@ -54,8 +45,11 @@ class LemonSpotter:
         Parse the database pointed to by the command line argument.
         """
 
+        # TODO this is a chicken-egg situation
+        # we don't know the MPIParser is required for the database
+        # but we need to use a parser to open the database
         parser = MPIParser()
-        self._database = parser(database_path)
+        parser(database_path)
 
     def presence_testing(self):
         """
@@ -63,10 +57,10 @@ class LemonSpotter:
         """
 
         # generate all constant presence tests
-        generator = ConstantPresenceGenerator(self._database)
+        generator = ConstantPresenceGenerator()
         constant_tests = generator.generate()
 
-        func_gen = FunctionPresenceGenerator(self._database)
+        func_gen = FunctionPresenceGenerator()
         function_tests = func_gen.generate()
 
         self._executor.execute(constant_tests)
@@ -79,16 +73,15 @@ class LemonSpotter:
             self.reporter.log_test_result(test)
 
     def start_end_testing(self):
-        sampler = ValidSampler(self._database)
+        sampler = ValidSampler()
 
-        generator = StartEndGenerator(self._database)
+        generator = StartEndGenerator()
         start_end_tests = generator.generate(sampler)
 
         self._executor.execute(start_end_tests)
 
         for test in start_end_tests:
             self.reporter.log_test_result(test)
-
 
 def parse_arguments():
     """

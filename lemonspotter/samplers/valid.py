@@ -19,9 +19,6 @@ class ValidSampler(Sampler):
     """
     """
 
-    def __init__(self, database: Database) -> None:
-        super().__init__(database)
-
     def __str__(self) -> str:
         return type(self).__name__
 
@@ -37,7 +34,7 @@ class ValidSampler(Sampler):
             sample = FunctionSample(function, True, {}, [])
 
             def evaluator() -> bool:
-                return sample.return_variable.value == self.database.constants_by_name['MPI_SUCCESS'].value
+                return sample.return_variable.value == Database().constants_by_name['MPI_SUCCESS'].value
 
             sample.evaluator = evaluator
 
@@ -91,7 +88,7 @@ class ValidSampler(Sampler):
             # function without parameters
             def evaluator():
                 # todo use valid error lookup rule
-                return sample.return_variable.value == self.database.constants_by_name['MPI_SUCCESS'].value
+                return sample.return_variable.value == Database().constants_by_name['MPI_SUCCESS'].value
 
             sample.evaluator = evaluator
 
@@ -134,7 +131,7 @@ class ValidSampler(Sampler):
                 type_samples.append(var)
 
             elif partition.type is PartitionType.CONSTANT:
-                for constant in self.database.constants_by_abstract_type[parameter.type.abstract_type]:
+                for constant in Database().constants_by_abstract_type[parameter.type.abstract_type]:
                     name = f'{parameter.name}_arg_{constant.name}'
                     type_samples.append(constant.generate_variable(name))
 

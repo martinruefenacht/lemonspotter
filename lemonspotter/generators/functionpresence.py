@@ -19,9 +19,6 @@ class FunctionPresenceGenerator(TestGenerator):
     """
     """
 
-    def __init__(self, database: Database) -> None:
-        super().__init__(database)
-
     def generate(self) -> Set[Test]:
         """
         Generates all presence test objects for all functions in the database.
@@ -31,7 +28,7 @@ class FunctionPresenceGenerator(TestGenerator):
 
         # find all functions which have not been tested
         functions = filter(lambda f: not f.properties.get('presence_tested', False),
-                           self._database.functions)
+                           Database().functions)
 
         # for all applicable functions
         for func in functions:
@@ -54,7 +51,7 @@ class FunctionPresenceGenerator(TestGenerator):
         test.source = self._gen_main()
 
         # generate declaration of arguments
-        sampler = DeclarationSampler(self._database)
+        sampler = DeclarationSampler()
         for sample in sampler.generate_samples(function):
             sample.generate_source(test.source)
 

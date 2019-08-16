@@ -18,9 +18,6 @@ class DeclarationSampler(Sampler):
     specification types to create a single Variable.
     """
 
-    def __init__(self, database: Database) -> None:
-        super().__init__(database)
-
     def __str__(self) -> str:
         return type(self).__name__
 

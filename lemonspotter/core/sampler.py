@@ -13,13 +13,6 @@ class Sampler(ABC):
     """
     """
 
-    def __init__(self, database: Database):
-        self._db: Database = database
-
-    @property
-    def database(self) -> Database:
-        return self._db
-
     @abstractmethod
     def generate_samples(self, function: Function) -> Iterable[FunctionSample]:
         return []

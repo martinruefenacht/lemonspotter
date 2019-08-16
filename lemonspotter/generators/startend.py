@@ -18,8 +18,8 @@ class StartEndGenerator(TestGenerator):
     Source code generator for initiator and finalizer functions.
     """
 
-    def __init__(self, database: Database) -> None:
-        super().__init__(database)
+    def __init__(self) -> None:
+        super().__init__()
 
         self.elements_generated = 0
 
@@ -31,12 +31,12 @@ class StartEndGenerator(TestGenerator):
         # determine all start functions
         starts = list(filter(lambda f: (not (f.needs_all or f.needs_any) and
                              (f.leads_any or f.leads_all)) and f.present,
-                             self._database.functions))
+                             Database().functions))
 
         # determine all end points
         ends = list(filter(lambda f: (not (f.leads_all or f.leads_any) and
                            (f.needs_any or f.needs_all)) and f.present,
-                           self._database.functions))
+                           Database().functions))
 
         # for all combinations
         tests: MutableSet[Test] = set()

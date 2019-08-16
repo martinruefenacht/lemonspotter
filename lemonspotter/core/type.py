@@ -15,9 +15,8 @@ class Type:
     This class represents the type abstraction from the specification.
     """
 
-    def __init__(self, database: Database, json: Mapping[str, Any]) -> None:
+    def __init__(self, json: Mapping[str, Any]) -> None:
         self._json = json
-        self._database: Database = database
 
     @property
     def default(self) -> str:
@@ -44,7 +43,8 @@ class Type:
         if self._json['base_type']:
             return self._json['language_type']
 
-        return self._database.type_by_abstract_type[self._json['language_type']].language_type
+        logging.debug('performing recursive lookup of language type.')
+        return Database().type_by_abstract_type[self._json['language_type']].language_type
 
     @property
     def printable(self) -> bool:
@@ -53,7 +53,8 @@ class Type:
         if self._json['base_type']:
             return self._json.get('print_specifier', False)
 
-        return self._database.type_by_abstract_type[self._json['language_type']].printable
+        logging.debug('performing recursive lookup of printable.')
+        return Database().type_by_abstract_type[self._json['language_type']].printable
 
     @property
     def print_specifier(self) -> str:
@@ -62,7 +63,7 @@ class Type:
         if self._json['base_type']:
             return self._json['print_specifier']
 
-        return self._database.type_by_abstract_type[self._json['language_type']].print_specifier
+        return Database().type_by_abstract_type[self._json['language_type']].print_specifier
 
     @property  # type: ignore
     @lru_cache()
@@ -70,7 +71,7 @@ class Type:
         """"""
 
         if 'partitions' in self._json:
-            return [Partition(self._database, partition) for partition in self._json['partitions']]
+            return [Partition(Database(), partition) for partition in self._json['partitions']]
 
         return []
 
@@ -93,7 +94,7 @@ class Type:
 
         assert 'reference' in self._json
 
-        return self._database.type_by_abstract_type[self._json['reference']]
+        return Database().type_by_abstract_type[self._json['reference']]
 
     @property
     def dereferencable(self) -> bool:
@@ -106,4 +107,4 @@ class Type:
 
         assert 'dereference' in self._json
 
-        return self._database.type_by_abstract_type[self._json['dereference']]
+        return Database().type_by_abstract_type[self._json['dereference']]

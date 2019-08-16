@@ -15,8 +15,7 @@ class Constant:
     This class represents a Constant from the specification.
     """
 
-    def __init__(self, database: Database, json: Dict[str, Any]):
-        self._database: Database = database
+    def __init__(self, json: Dict[str, Any]):
         self._json: Dict[str, Any] = json
         self._value: Optional[str] = None
 
@@ -32,7 +31,7 @@ class Constant:
     def type(self) -> Type:
         """This property provides the Type object from the Constant."""
 
-        return self._database.type_by_abstract_type[self._json['abstract_type']]
+        return Database().type_by_abstract_type[self._json['abstract_type']]
 
     @property
     def properties(self) -> Dict[str, Any]:

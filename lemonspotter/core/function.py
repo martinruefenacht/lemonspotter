@@ -15,13 +15,11 @@ class Function:
     Defines an function object that can be included in Lemonspotter tests.
     """
 
-    def __init__(self, database: Database, json: Mapping[str, Any]) -> None:
+    def __init__(self, json: Mapping[str, Any]) -> None:
         """
         """
 
-        self._db: Database = database
         self._json: Mapping[str, Any] = json
-
         self.properties: Mapping[str, Any] = {}
 
     def __repr__(self) -> str:
@@ -57,7 +55,7 @@ class Function:
         """This property provides access to the parameter list of this Function object."""
 
         assert self._json.get('parameters', None) is not None
-        return tuple(Parameter(self._db, parameter) for parameter in self._json['parameters'])
+        return tuple(Parameter(parameter) for parameter in self._json['parameters'])
 
 #    @property
 #    def default_partition(self) -> Partition:
@@ -65,14 +63,14 @@ class Function:
 #
 #        assert self._json.get('partitions', None) is not None
 #        assert self._json['partitions'].get('default', None) is not None
-#        return Partition(self._db, self, self._json['partitions']['default'])
+#        return Partition(Database(), self, self._json['partitions']['default'])
 
     @property
     def return_type(self) -> Type:
         """This property provides the Type object of the return of this Function."""
 
         assert self._json.get('return', None) is not None
-        return self._db.type_by_abstract_type[self._json['return']]
+        return Database().type_by_abstract_type[self._json['return']]
 
     @property  # type: ignore
     @lru_cache()
@@ -80,9 +78,9 @@ class Function:
         """This property provides access to the any set of needed Function objects."""
 
         assert self._json.get('needs_any', None) is not None
-        subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_any'])
+        subset = filter(lambda name: name in Database().functions_by_name, self._json['needs_any'])
 
-        return set(self._db.functions_by_name[func_name] for func_name in subset)
+        return set(Database().functions_by_name[func_name] for func_name in subset)
 
     @property  # type: ignore
     @lru_cache()
@@ -90,9 +88,9 @@ class Function:
         """This property provides access to the all set of needed Function objects."""
 
         assert self._json.get('needs_all', None) is not None
-        subset = filter(lambda name: name in self._db.functions_by_name, self._json['needs_all'])
+        subset = filter(lambda name: name in Database().functions_by_name, self._json['needs_all'])
 
-        return set(self._db.functions_by_name[func_name] for func_name in subset)
+        return set(Database().functions_by_name[func_name] for func_name in subset)
 
     @property  # type: ignore
     @lru_cache()
@@ -100,9 +98,9 @@ class Function:
         """This property provides access to the any set of lead Function objects."""
 
         assert self._json.get('leads_any', None) is not None
-        subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_any'])
+        subset = filter(lambda name: name in Database().functions_by_name, self._json['leads_any'])
 
-        return set(self._db.functions_by_name[func_name] for func_name in subset)
+        return set(Database().functions_by_name[func_name] for func_name in subset)
 
     @property  # type: ignore
     @lru_cache()
@@ -110,9 +108,9 @@ class Function:
         """This property provides access to the all set of lead the Function objects."""
 
         assert self._json.get('leads_all', None) is not None
-        subset = filter(lambda name: name in self._db.functions_by_name, self._json['leads_all'])
+        subset = filter(lambda name: name in Database().functions_by_name, self._json['leads_all'])
 
-        return set(self._db.functions_by_name[func_name] for func_name in subset)
+        return set(Database().functions_by_name[func_name] for func_name in subset)
 
     @property
     def present(self) -> bool:
