@@ -2,11 +2,11 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
+from functools import lru_cache
+import logging
 from typing import TYPE_CHECKING, Mapping, Any, Iterable
 if TYPE_CHECKING:
     from core.constant import Constant
-from functools import lru_cache
-import logging
 
 from core.database import Database
 from core.partition import Partition
@@ -70,7 +70,7 @@ class Type:
     @property
     def constants(self) -> Iterable['Constant']:
         """"""
-        
+
         return Database().constants_by_abstract_type[self.abstract_type]
 
     @property  # type: ignore
