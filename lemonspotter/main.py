@@ -218,6 +218,7 @@ def main() -> None:
     elif arguments.report:
         with open(arguments.specification) as report_file:
             report = json.load(report_file)
+
         print(json.dumps(report, indent=2))
 
     elif not arguments.specification:

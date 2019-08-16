@@ -131,7 +131,7 @@ class ValidSampler(Sampler):
                 type_samples.append(var)
 
             elif partition.type is PartitionType.CONSTANT:
-                for constant in Database().constants_by_abstract_type[parameter.type.abstract_type]:
+                for constant in parameter.type.constants:
                     name = f'{parameter.name}_arg_{constant.name}'
                     type_samples.append(constant.generate_variable(name))
 

@@ -2,12 +2,15 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Mapping, Any, Iterable
 from functools import lru_cache
 import logging
+from typing import TYPE_CHECKING, Mapping, Any, Iterable
 
 from core.database import Database
 from core.partition import Partition
+
+if TYPE_CHECKING:
+    from core.constant import Constant  # noqa
 
 
 class Type:
@@ -17,6 +20,8 @@ class Type:
 
     def __init__(self, json: Mapping[str, Any]) -> None:
         self._json = json
+
+        self._partitions: Iterable[Mapping] = []
 
     @property
     def default(self) -> str:
@@ -43,7 +48,6 @@ class Type:
         if self._json['base_type']:
             return self._json['language_type']
 
-        logging.debug('performing recursive lookup of language type.')
         return Database().type_by_abstract_type[self._json['language_type']].language_type
 
     @property
@@ -53,7 +57,6 @@ class Type:
         if self._json['base_type']:
             return self._json.get('print_specifier', False)
 
-        logging.debug('performing recursive lookup of printable.')
         return Database().type_by_abstract_type[self._json['language_type']].printable
 
     @property
@@ -64,6 +67,12 @@ class Type:
             return self._json['print_specifier']
 
         return Database().type_by_abstract_type[self._json['language_type']].print_specifier
+
+    @property
+    def constants(self) -> Iterable['Constant']:
+        """"""
+
+        return Database().constants_by_abstract_type[self.abstract_type]
 
     @property  # type: ignore
     @lru_cache()
