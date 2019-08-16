@@ -57,7 +57,7 @@ class ValidSampler(Sampler):
         def argument_filter(argument_list: Iterable) -> bool:
             for sieve in function.filters:  # any sieve needs to be True
                 # go through parameters/argument mapping, needs to match all requirements
-                for parameter, argument in zip(function.parameters, argument_list):
+                for parameter, argument in zip(function.parameters, argument_list):  # type: ignore
                     if parameter.direction is Direction.OUT:
                         # note we don't write out arguments in function filters
                         continue
@@ -85,7 +85,7 @@ class ValidSampler(Sampler):
             sample = FunctionSample(function, True, set(argument_list), argument_list)
 
             # function without parameters
-            def evaluator():
+            def evaluator() -> bool:
                 # todo use valid error lookup rule
                 return (sample.return_variable.value ==
                         Database().constants_by_name['MPI_SUCCESS'].value)

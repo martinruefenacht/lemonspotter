@@ -95,10 +95,12 @@ class Partition:
 #
 #        if self._return['type'] == 'constant':
 #            if Operand(self.return_operand) == Operand.EQUAL:
-#                return self._db.constants_by_name[self._return['constant']].value == variable.value
+#                return (self._db.constants_by_name[self._return['constant']].value ==
+#                        variable.value)
 #
 #            else:
-#                raise NotImplementedError('Operands for _return other than "equal" are not implemented.')
+#                raise NotImplementedError(('Operands for _return other than "equal"
+#                                            are not implemented.'))
 #
 #        else:
 #            raise NotImplementedError('Types of _return other than Constant are not implemented.')
@@ -112,7 +114,8 @@ class Partition:
 #            return self._return['constant']
 #
 #        else:
-#            raise NotImplementedError('Partition return values other than constants not implemented.')
+#            raise NotImplementedError(('Partition return values other than constants
+#                                        not implemented.'))
 
 #    @property
 #    def return_operand(self) -> Operand:
@@ -131,5 +134,6 @@ class Partition:
 #            return None
 #
 #        # generate condition statement
-#        statement = f'{return_name} {Operand.symbol(Operand.inverse(self.return_operand))} {self.return_symbol}'
+#        inverse_op = Operand.symbol(Operand.inverse(self.return_operand))
+#        statement = f'{return_name} {inverse_op} {self.return_symbol}'
 #        return ConditionStatement(statement)

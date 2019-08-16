@@ -21,8 +21,8 @@ class FunctionSample:
     def __init__(self,
                  function: Function,
                  valid: bool,
-                 variables: Optional[Iterable[Variable]] = None,
-                 arguments: Optional[Sequence[Variable]] = None,
+                 variables: Iterable[Variable] = set(),
+                 arguments: Sequence[Variable] = [],
                  evaluator: Optional[Callable[[], bool]] = None,
                  ) -> None:
         self._function = function
@@ -133,7 +133,7 @@ class FunctionSample:
         # add outputs
         source.add_at_start(FunctionStatement.generate_print(self._return_variable))
 
-        for parameter, argument in zip(self.function.parameters, self.arguments):
+        for parameter, argument in zip(self.function.parameters, self.arguments):  # type: ignore
             if parameter.direction is Direction.OUT or parameter.direction is Direction.INOUT:
                 source.add_at_start(FunctionStatement.generate_print(argument))
 
