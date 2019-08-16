@@ -14,9 +14,6 @@ class TestGenerator:
     generation.
     """
 
-    def __init__(self, database: Database) -> None:
-        self._database = database
-
     def generate_main(self) -> Source:
         """This function generates the main function for the test."""
 
@@ -28,7 +25,7 @@ class TestGenerator:
         source.add_at_start(IncludeStatement('mpi.h'))
 
         # add main function
-        block_main = MainDefinitionStatement(self._database)
+        block_main = MainDefinitionStatement()
         source.variables.update(block_main.variables)
 
         block_main.add_at_end(ReturnStatement('0'))

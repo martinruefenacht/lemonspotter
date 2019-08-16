@@ -21,9 +21,6 @@ class ConstantPresenceGenerator(TestGenerator):
     This TestGenerator generates tests which check existance and captures the value of a constant.
     """
 
-    def __init__(self, database: Database) -> None:
-        super().__init__(database)
-
     def generate(self) -> Set[Test]:
         """
         Generates all constant presence test objects for all constants in the database.
@@ -32,7 +29,7 @@ class ConstantPresenceGenerator(TestGenerator):
         tests = set()
 
         # find all functions which have not been tested
-        constants = filter(lambda c: not c.properties.get('presence_tested', False), self._database.constants)
+        constants = filter(lambda c: not c.properties.get('presence_tested', False), Database().constants)
 
         # for all applicable functions
         for constant in constants:

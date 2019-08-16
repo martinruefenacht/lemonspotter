@@ -12,8 +12,7 @@ class Parameter:
     This class represents parameters of Function objects translated from the specification.
     """
 
-    def __init__(self, database: Database, json: Dict[str, Any]):
-        self._database = database
+    def __init__(self, json: Dict[str, Any]):
         self._json = json
 
     @property
@@ -26,7 +25,7 @@ class Parameter:
     def type(self) -> Type:
         """This property provides the Type object of the abstract type of this Parameter."""
 
-        return self._database.type_by_abstract_type[self._json['abstract_type']]
+        return Database().type_by_abstract_type[self._json['abstract_type']]
 
     @property
     def pointer_level(self) -> int:

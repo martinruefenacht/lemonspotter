@@ -12,9 +12,8 @@ class Type:
     This class represents the type abstraction from the specification.
     """
 
-    def __init__(self, database: Database, json: Dict[str, Any]) -> None:
+    def __init__(self, json: Dict[str, Any]) -> None:
         self._json = json
-        self._database: Database = database
 
         self._partitions: List[Dict] = []
 
@@ -44,7 +43,7 @@ class Type:
             return self._json['language_type']
 
         logging.debug('performing recursive lookup of language type.')
-        return self._database.type_by_abstract_type[self._json['language_type']].language_type
+        return Database().type_by_abstract_type[self._json['language_type']].language_type
 
     @property
     def printable(self) -> bool:
@@ -54,7 +53,7 @@ class Type:
             return self._json['printable']
 
         logging.debug('performing recursive lookup of printable.')
-        return self._database.type_by_abstract_type[self._json['language_type']].printable
+        return Database().type_by_abstract_type[self._json['language_type']].printable
 
     @property
     def print_specifier(self):
@@ -64,4 +63,4 @@ class Type:
             return self._json['print_specifier']
 
         logging.debug('performing recursive lookup of print specifier.')
-        return self._database.type_by_abstract_type[self._json['language_type']].print_specifier
+        return Database().type_by_abstract_type[self._json['language_type']].print_specifier
