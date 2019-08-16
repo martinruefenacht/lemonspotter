@@ -2,7 +2,7 @@
 This module contains the Source class.
 """
 
-from typing import Dict, Optional
+from typing import Optional
 from pathlib import Path
 
 from core.statement import Statement, BlockStatement

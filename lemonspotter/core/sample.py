@@ -7,7 +7,6 @@ import logging
 from core.function import Function
 from core.parameter import Direction
 from core.variable import Variable
-from core.source import Source
 from core.statement import (ConditionStatement,
                             FunctionStatement,
                             ExitStatement,
@@ -164,7 +163,9 @@ class FunctionSample:
 
         return statement
 
-    def _generate_statement(self, source: Source, comment: str = None) -> FunctionStatement:
+    def _generate_statement(self,
+                            source: BlockStatement,
+                            comment: str = None) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
@@ -205,4 +206,6 @@ class FunctionSample:
 
         statement += ');'
 
-        return FunctionStatement(statement, {self.return_variable.name: self.return_variable}, comment)
+        return FunctionStatement(statement,
+                                 {self.return_variable.name: self.return_variable},
+                                 comment)

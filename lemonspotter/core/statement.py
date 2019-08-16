@@ -2,7 +2,7 @@
 This module defines the base class Statement and all the derived classes.
 """
 
-from typing import Dict, List, Optional, Iterable
+from typing import Dict, List, Optional
 import logging
 from itertools import tee, chain
 
@@ -24,6 +24,11 @@ class Statement:
         """"""
 
         return self._variables.get(name, None)
+
+    def has_variable(self, name: str) -> bool:
+        """"""
+
+        return name in self._variables
 
     def express(self, indent_level: int) -> str:
         """This method converts the Statement to a string."""
@@ -69,7 +74,7 @@ class BlockStatement(Statement):
     def has_variable(self, name: str) -> bool:
         """"""
 
-        internal = name in self.variables
+        internal = name in self._variables
 
         if internal:
             return internal
@@ -103,13 +108,13 @@ class BlockStatement(Statement):
         if indent_level > 0:
             indentation = '\t' * (indent_level-1)
             code = indentation + '{\n'
-        
+
         else:
             indentation = ''
-            code = '' 
+            code = ''
 
         statements = self._front_statements + self._back_statements
-        
+
         if statements:
             def prepair(iterable):
                 prevs, items = tee(iterable)
@@ -181,7 +186,9 @@ class DeclarationStatement(Statement):
         self._statement = f'{variable.type.language_type} {variable.name};'
 
     @classmethod
-    def generate_declaration(cls, variable: Variable, comment: str = None) -> 'DeclarationStatement':
+    def generate_declaration(cls,
+                             variable: Variable,
+                             comment: str = None) -> 'DeclarationStatement':
         """This method generates a DeclarationStatement from a Variable."""
 
         return DeclarationStatement(variable, comment=comment)
@@ -213,7 +220,9 @@ class DeclarationAssignmentStatement(Statement):
             raise RuntimeError('Variable.value required to be not be None.')
 
     @classmethod
-    def generate_assignment(cls, variable: Variable, comment: str = None) -> 'DeclarationAssignmentStatement':
+    def generate_assignment(cls,
+                            variable: Variable,
+                            comment: str = None) -> 'DeclarationAssignmentStatement':
         """This method generates a DeclarationAssignmentStatement from a variable."""
 
         return DeclarationAssignmentStatement(variable, comment=comment)
@@ -222,13 +231,18 @@ class DeclarationAssignmentStatement(Statement):
 class FunctionStatement(Statement):
     """This class represents any Function call statement."""
 
-    def __init__(self, statement: str, variables: Dict[str, Variable] = None, comment: str = None) -> None:
+    def __init__(self,
+                 statement: str,
+                 variables: Dict[str, Variable] = None,
+                 comment: str = None) -> None:
         super().__init__(variables, comment=comment)
 
         self._statement: str = statement
 
     @classmethod
-    def generate_print(cls, variable: Variable, comment: str = None) -> Optional['FunctionStatement']:
+    def generate_print(cls,
+                       variable: Variable,
+                       comment: str = None) -> Optional['FunctionStatement']:
         """
         Generate a FunctionStatement object for a given Variable.
         """
@@ -256,7 +270,7 @@ class ConditionStatement(BlockStatement):
     """This class represents if statements."""
 
     def __init__(self, condition: str, comment: str = None) -> None:
-        super().__init__(comment = comment)
+        super().__init__(comment=comment)
 
         self._condition = condition
 

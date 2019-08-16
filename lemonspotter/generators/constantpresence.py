@@ -61,12 +61,12 @@ class ConstantPresenceGenerator(TestGenerator):
         variable = Variable(constant.type, f'variable_{constant.name}', constant.name)
 
         declaration = DeclarationAssignmentStatement(variable,
-                                                     'declare variable with constant name as value')
+                                                     'declare variable with constant name')
         block_main.add_at_start(declaration)
 
         if constant.type.printable:
             block_main.add_at_start(FunctionStatement.generate_print(variable,
-                                                                     'extract constant value since it is printable'))
+                                                                     'extract constant value'))
 
             test = Test(f'constant_presence_{constant.name}',
                         TestType.BUILD_AND_RUN,

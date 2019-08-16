@@ -5,7 +5,7 @@ It provides the main function definition.
 """
 
 from core.test import Source
-from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
+from core.statement import IncludeStatement
 
 
 class TestGenerator:
