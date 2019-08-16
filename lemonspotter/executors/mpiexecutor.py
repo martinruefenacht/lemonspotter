@@ -5,11 +5,11 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Set, List
 
-from core.test import Test, TestOutcome, TestType
-from core.report import TestReport
+from core.test import Test, TestType
+
 
 class MPIExecutor:
-    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path=Path('tests/')):
+    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path = Path('tests/')):
         """
         Initializes a test executor for MPI Libraries
         """
@@ -19,14 +19,12 @@ class MPIExecutor:
         self._mpicc = mpicc
         self._mpiexec = mpiexec
 
-
     @property
     def test_directory(self):
         """
         Gets the directory where tests will be found/executed in
         """
         return self._test_directory
-
 
     def execute(self, tests: Set[Test]):
         """
@@ -55,7 +53,7 @@ class MPIExecutor:
                 logging.error('Running set of test failed.')
                 return
 
-    def build_test(self, test: Test, arguments: List[str]=[]) -> None:
+    def build_test(self, test: Test, arguments: List[str] = []) -> None:
         logging.info('building test %s', test.name)
 
         if test.build_outcome:
@@ -70,11 +68,11 @@ class MPIExecutor:
         executable_filename = self.test_directory / test.name
         command = [self._mpicc, str(test_filename)] + arguments + ["-o", str(executable_filename)]
 
-        logging.info('executing: %s', ' '.join(command))
+        logging.debug('executing: %s', ' '.join(command))
 
         # execute command
         try:
-            process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+            process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
             stdout, stderr = process.communicate()
 
         except FileNotFoundError as error:
@@ -90,22 +88,22 @@ class MPIExecutor:
             # set executable on test
             test.executable = Path(executable_filename)
 
-            if test.build_success_function:
-                test.build_success_function()
+            test.build_success_function()
 
-            logging.info('building successful of test %s', test.name)
+            logging.debug('building test %s successful\n%s\n', test.name, '-' * 80)
 
         else:
-            # TODO evalulate build output, is there ERROR?
-            if test.build_fail_function:
-                test.build_fail_function()
+            test.build_fail_function()
 
             logging.warning('building failed of test %s', test.name)
 
-    def run_test(self, test: Test, arguments: List[str]=[]) -> None:
+    def run_test(self, test: Test, arguments: List[str] = []) -> None:
         """
         """
-        # TODO test should define how many processes it needs
+
+        # todo test should define how many processes it needs
+        # todo check it is <= available with current run
+        # todo testgenerators should not generate any tests with more
         arguments = ['-n', '1']
 
         # check if valid test
@@ -117,15 +115,15 @@ class MPIExecutor:
             return
 
         else:
-            logging.info('preparing test %s.', test.name)
+            logging.debug('preparing test %s.', test.name)
 
             # create command
             command = [self._mpiexec] + arguments + [str(test.executable)]
 
             # run test executable
-            logging.info('executing "%s"', ' '.join(command))
+            logging.debug('executing "%s"', ' '.join(command))
             try:
-                process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)
+                process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
                 stdout, stderr = process.communicate()
             except FileNotFoundError as error:
                 logging.error(error)
@@ -135,29 +133,33 @@ class MPIExecutor:
             logging.debug('run stdout:\n%s\n', stdout)
             logging.debug('run stderr:\n%s\n', stderr)
 
+            logging.debug('source variables %s', str(test.source.variables))
+
             # test run check
             if not stderr and process.returncode == 0:
-                logging.info('test %s successfully run.', test.name)
-
                 # filter for captures
-                captured = {}
                 for line in stdout.split('\n'):
                     if line:
                         tokens = line.split()
+                        logging.debug('tokens %s', str(tokens))
 
-                        logging.debug(str(tokens))
-                        logging.debug(test.captures)
+                        variable = test.source.get_variable(tokens[0])
+                        if variable:
+                            # currently only supports key-value captures
+                            variable.value = tokens[1]
+                            logging.debug('captured %s = %s', variable.name, tokens[1])
 
-                        if tokens[0] in test.captures:
-                            # only supports capturing single value
-                            captured[tokens[0]] = tokens[1]
+                        else:
+                            logging.warning('capturing %s, but no variable found.', tokens[0])
 
                 # call success function
-                test.run_success_function(captured)
+                test.run_success_function()
+                logging.info('running test %s successful\n%s\n', test.name, '#'*80)
+
                 return
 
             elif process.returncode > 0:
-                logging.critical('test crashed')
+                logging.critical('test crashed with errorcode %i', process.returncode)
 
             else:
                 logging.warning('test %s failed with internal error.', test.name)

@@ -6,3 +6,4 @@ default:
 clean:
 	rm -rf tests
 	rm -rf logs
+	rm -rf reports

@@ -7,6 +7,8 @@ import logging
 
 from core.database import Database
 from core.type import Type
+from core.variable import Variable
+
 
 class Constant:
     """
@@ -67,3 +69,28 @@ class Constant:
                 raise RuntimeError("unknown operand")
 
         return self._properties.get('valid', False)
+
+    @property
+    def present(self) -> bool:
+        """"""
+
+        return self.properties.get('present', False)
+
+    @property
+    def valid(self) -> bool:
+        """"""
+
+        return self.properties.get('valid', False)
+
+    @property
+    def value(self) -> str:
+        """"""
+
+        return self.properties['value']
+
+    def generate_variable(self, variable_name: str) -> Variable:
+        """
+        This generates a Variable object of this constant with a given variable name.
+        """
+
+        return Variable(self.type, variable_name, self.name)

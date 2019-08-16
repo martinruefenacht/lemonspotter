@@ -5,9 +5,12 @@ Defines a type object of from library that can be included in Lemonspotter tests
 from typing import TYPE_CHECKING, Mapping, Any, Iterable
 if TYPE_CHECKING:
     from core.constant import Constant
+from functools import lru_cache
 import logging
 
 from core.database import Database
+from core.partition import Partition
+
 
 class Type:
     """
@@ -51,7 +54,7 @@ class Type:
         """This property provides whether this is a C printable type."""
 
         if self._json['base_type']:
-            return self._json['printable']
+            return self._json.get('print_specifier', False)
 
         return Database().type_by_abstract_type[self._json['language_type']].printable
 
@@ -69,3 +72,47 @@ class Type:
         """"""
         
         return Database().constants_by_abstract_type[self.abstract_type]
+
+    @property  # type: ignore
+    @lru_cache()
+    def partitions(self) -> Iterable[Partition]:
+        """"""
+
+        if 'partitions' in self._json:
+            return [Partition(Database(), partition) for partition in self._json['partitions']]
+
+        return []
+
+    def validate(self, value: str) -> bool:
+        """"""
+
+        valid = any(partition.validate(value) for partition in self.partitions)  # type: ignore
+        logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
+
+        return valid
+
+    @property
+    def referencable(self) -> bool:
+        """"""
+
+        return 'reference' in self._json
+
+    def reference(self) -> 'Type':
+        """"""
+
+        assert 'reference' in self._json
+
+        return Database().type_by_abstract_type[self._json['reference']]
+
+    @property
+    def dereferencable(self) -> bool:
+        """"""
+
+        return 'dereference' in self._json
+
+    def dereference(self) -> 'Type':
+        """"""
+
+        assert 'dereference' in self._json
+
+        return Database().type_by_abstract_type[self._json['dereference']]

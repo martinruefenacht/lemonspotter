@@ -1,12 +1,13 @@
 from pathlib import Path
 import json
-from typing import Dict, Any
-import os
+from typing import Mapping, Any, Sequence
+import logging
 
 from core.database import Database
 from core.function import Function
-from core.type     import Type
+from core.type import Type
 from core.constant import Constant
+
 
 class MPIParser:
     def __call__(self, database_path: Path) -> Database:
@@ -28,20 +29,15 @@ class MPIParser:
                 for constant in constants_array:
                     Database().add_constant(Constant(constant))
 
-        # TODO parse subdirectory of constants
-#        constants_directory = path + 'constants/'
-#        if os.path.isdir(constants_directory):
-#            files = pathlib.Path(types_directory).glob('**/*.json')
-#
-#            for path in files:
-#                constant = self.parse_single_constant(path)
-#
-#                constant_name = constant['name']
-#                constant_abstract_type = constant['abstract_type']
-#                constant_obj = Constant(constant_abstract_type, constant_name)
-#
-#                Database().constants[constant_name] = constant_obj
-#
+        # parse subdirectory of constants
+        # constants_directory = path / 'constants/'
+        # if constants_directory.is_dir():
+        #     files = constants_directory.glob('**/*.json')
+
+        #     for path in files:
+        #         #constant = self.parse_single_constant(path.absolute())
+
+        #         database.add_constant(Constant(database, constant))
 #    def parse_single_constant(self) -> Dict[str, Any]:
 #        with open(path) as constantfile:
 #            return json.loads(constantfile)
@@ -82,7 +78,7 @@ class MPIParser:
 
                 Database().add_function(func_obj)
 
-    def parse_single_function(self, path: Path) -> Dict[str, Any]:
+    def parse_single_function(self, path: Path) -> Mapping[str, Any]:
         with open(path) as funcfile:
             return json.load(funcfile)
 
@@ -91,37 +87,31 @@ class MPIParser:
         types_filename = path / 'types.json'
         if types_filename.is_file():
             with types_filename.open() as types_file:
-                type_array = json.load(types_file)
+                self.parse_type_definitions(json.load(types_file))
 
-                for mpi_type in type_array:
-                    Database().add_type(Type(mpi_type))
+        else:
+            logging.info('Types file does not exist.')
 
-        # TODO load directory definitions
-#        types_directory = path + 'types/'
-#        if os.path.isdir(types_directory):
-#            files = pathlib.Path(types_directory).glob('**/*.json')
-#
-#            for path in files:
-#                mpi_type = self.parse_single_type(path)
-#
-#                type_name = mpi_type['name']
-#                type_abstract_type = mpi_type['abstract_type']
-#                type_ctype = mpi_type['ctype']
-#
-#                type_source = mpi_type['source']
-#                for source in type_source:
-#                    if source == "range":
-#                        type_lower_range = mpi_type['range'][0]
-#                        type_upper_range = mpi_type['range'][1]
-#
-#                type_obj = Type(type_abstract_type,
-#                                type_source,
-#                                type_ctype,
-#                                [type_lower_range, type_upper_range],
-#                                type_name)
-#
-#                Database().add_type(type_obj)
+        # load directory definitions
+        types_directory = path / 'types/'
 
-    def parse_single_type(self, path: Path)-> Dict[str, Any]:
-        with path.open() as typefile:
-            return json.load(typefile)
+        if types_directory.is_dir():
+            for path in types_directory.glob('**/*.json'):
+                with path.open() as type_file:
+                    type_data = json.load(type_file)
+
+                    if isinstance(type_data, list):
+                        self.parse_type_definitions(type_data)
+
+                    else:
+                        Database().add_type(Type(type_data))
+
+        else:
+            logging.info('Types directory does not exist: %s', str(types_directory))
+
+    def parse_type_definitions(self, type_definitions: Sequence[Any]) -> None:
+        """
+        """
+
+        for type_definition in type_definitions:
+            Database().add_type(Type(type_definition))
