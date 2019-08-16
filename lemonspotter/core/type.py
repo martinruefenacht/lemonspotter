@@ -2,20 +2,21 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Dict, Any, List
+from typing import Mapping, Any, Iterable
+from functools import lru_cache
 import logging
 
 from core.database import Database
+from core.partition import Partition
+
 
 class Type:
     """
     This class represents the type abstraction from the specification.
     """
 
-    def __init__(self, json: Dict[str, Any]) -> None:
+    def __init__(self, json: Mapping[str, Any]) -> None:
         self._json = json
-
-        self._partitions: List[Dict] = []
 
     @property
     def default(self) -> str:
@@ -50,17 +51,60 @@ class Type:
         """This property provides whether this is a C printable type."""
 
         if self._json['base_type']:
-            return self._json['printable']
+            return self._json.get('print_specifier', False)
 
         logging.debug('performing recursive lookup of printable.')
         return Database().type_by_abstract_type[self._json['language_type']].printable
 
     @property
-    def print_specifier(self):
+    def print_specifier(self) -> str:
         """This property provides the C printf type specifier."""
 
         if self._json['base_type']:
             return self._json['print_specifier']
 
-        logging.debug('performing recursive lookup of print specifier.')
         return Database().type_by_abstract_type[self._json['language_type']].print_specifier
+
+    @property  # type: ignore
+    @lru_cache()
+    def partitions(self) -> Iterable[Partition]:
+        """"""
+
+        if 'partitions' in self._json:
+            return [Partition(Database(), partition) for partition in self._json['partitions']]
+
+        return []
+
+    def validate(self, value: str) -> bool:
+        """"""
+
+        valid = any(partition.validate(value) for partition in self.partitions)  # type: ignore
+        logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
+
+        return valid
+
+    @property
+    def referencable(self) -> bool:
+        """"""
+
+        return 'reference' in self._json
+
+    def reference(self) -> 'Type':
+        """"""
+
+        assert 'reference' in self._json
+
+        return Database().type_by_abstract_type[self._json['reference']]
+
+    @property
+    def dereferencable(self) -> bool:
+        """"""
+
+        return 'dereference' in self._json
+
+    def dereference(self) -> 'Type':
+        """"""
+
+        assert 'dereference' in self._json
+
+        return Database().type_by_abstract_type[self._json['dereference']]

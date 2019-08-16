@@ -8,23 +8,19 @@ import logging
 import json
 from subprocess import Popen, PIPE
 from pathlib import Path
-from typing import Optional
 
-# TODO rethink these?
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
-from core.database import Database
-
-# from generators.startend import StartEndGenerator
+from generators.startend import StartEndGenerator
 from generators.constantpresence import ConstantPresenceGenerator
 from generators.functionpresence import FunctionPresenceGenerator
-
+from samplers.valid import ValidSampler
 from core.report import TestReport
 
 
 class LemonSpotter:
     """
-    Lemonspotter Runtime Object
+    This class is the main run time of Lemonspotter.
     """
 
     def __init__(self, database_path: Path, mpicc: str, mpiexec: str):
@@ -74,30 +70,16 @@ class LemonSpotter:
         for test in function_tests:
             self.reporter.log_test_result(test)
 
-    def generate_tests(self):
-        pass
-#        generator = StartEndGenerator()
-#
-#        # TODO instantiator make it a functioning object
-#        instantiator = None
-#        self.tests = []
-#        self.tests.extend(list(generator.generate(instantiator)))
-#
-#        logging.debug('generated tests:')
-#        for test in self.tests:
-#            if not test:
-#                logging.warning('test is none')
-#                continue
-#
-#            for source in test.sources:
-#                logging.debug(source.get_source())
-#                source.write()
+    def start_end_testing(self):
+        sampler = ValidSampler()
 
-    def build_tests(self):
-        self._executor.build(tests=self.tests)
+        generator = StartEndGenerator()
+        start_end_tests = generator.generate(sampler)
 
-    def run_tests(self):
-        self._executor.run(tests=self.tests)
+        self._executor.execute(start_end_tests)
+
+        for test in start_end_tests:
+            self.reporter.log_test_result(test)
 
 
 def parse_arguments():
@@ -148,6 +130,12 @@ def parse_arguments():
                         default=False,
                         help='Runs flake8 test on Lemonspotter project')
 
+    parser.add_argument('--mypy',
+                        action='store_true',
+                        dest='mypy',
+                        default=False,
+                        help='Runs the mypy type checker on LemonSpotter.')
+
     parser.add_argument('--test',
                         action='store_true',
                         dest='test',
@@ -189,7 +177,7 @@ def set_logging_level(log_level: str):
     logging.basicConfig(level=numeric_level)
 
 
-def main():
+def main() -> None:
     """
     This function is the workflow of LemonSpotter.
     """
@@ -202,25 +190,47 @@ def main():
 
     if arguments.test:
         raise NotImplementedError
+
     elif arguments.flake:
-        process = Popen('flake8', stdout=PIPE, stderr=PIPE, cwd='../')
+        command = [sys.executable, '-m', 'flake8']
+
+        logging.info('executing flake8 with %s', ' '.join(command))
+        process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
+
         stdout, stderr = process.communicate()
-        print(stdout.decode('utf-8'))
+        print(stdout)
+
+        if stderr:
+            logging.error(stderr)
+
+    elif arguments.mypy:
+        command = [sys.executable, '-m', 'mypy', __file__]
+
+        logging.info('executing mypy with %s', ' '.join(command))
+        process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
+
+        stdout, stderr = process.communicate()
+        print(stdout)
+
+        if stderr:
+            logging.error(stderr)
+
     elif arguments.report:
         with open(arguments.specification) as report_file:
             report = json.load(report_file)
         print(json.dumps(report, indent=2))
+
     elif not arguments.specification:
         logging.error("Database path not defined")
+
     else:
         # initialize and load the database
         runtime = LemonSpotter(Path(arguments.specification), arguments.mpicc, arguments.mpiexec)
-
-        # perform presence testing
         runtime.presence_testing()
+        runtime.start_end_testing()
 
         # Prints report and writes to file
-        runtime.reporter.print_report
+        runtime.reporter.print_report()
 
 
 if __name__ == '__main__':

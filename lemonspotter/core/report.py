@@ -80,7 +80,6 @@ class TestReport():
         if msg:
             log_msg += '\n\t ' + msg
 
-    @property
     def generate_report(self) -> None:
         """
         Generates the complete report for tests run to this point
@@ -112,7 +111,6 @@ class TestReport():
         self._report['tests'] = test_report
         print(self._report)
 
-    @property
     def print_report(self, indent=2):
         """
         Pretty prints report
@@ -120,7 +118,6 @@ class TestReport():
         self._generate_report()
         print(json.dumps(self._report, indent=indent))
 
-    @property
     def write_report(self):
         """
         Writes generated report to file

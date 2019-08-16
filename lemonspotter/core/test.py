@@ -2,11 +2,12 @@
 This modules defines the Test class.
 """
 
-from typing import Callable, Set, Optional
+from typing import Callable, Optional
 from enum import Enum
 from pathlib import Path
 
 from core.source import Source
+
 
 class TestType(Enum):
     """This Enumeration stores the type of tests available."""
@@ -21,17 +22,18 @@ class TestOutcome(Enum):
     FAILED = 0
     SUCCESS = 1
 
+
 class Test:
     """
     This class represents a single Test case. Metadata is stored in the Test while Source stores
     source code level information.
     """
 
-    def __init__(self, name: str, source: Source, test_type: TestType) -> None:
+    def __init__(self, name: str, test_type: TestType, source: Optional[Source] = None) -> None:
         self._name: str = name
         self._type: TestType = test_type
 
-        self._source: Source = source
+        self._source: Optional[Source] = source
         self._executable: Optional[Path] = None
 
         self._build_success_func: Optional[Callable[[], None]] = None
@@ -40,14 +42,18 @@ class Test:
         self._run_success_func: Optional[Callable[[], None]] = None
         self._run_fail_func: Optional[Callable[[], None]] = None
 
-        self._captures: Set[str] = set()
-
         self._build_outcome: Optional[TestOutcome] = None
         self._run_outcome: Optional[TestOutcome] = None
 
     @property
-    def build_success_function(self) -> Optional[Callable[[], None]]:
+    def build_success_function(self) -> Callable[[], None]:
         """This property provides access to the build success callback."""
+
+        if self._build_success_func is None:
+            def set_build_outcome_success():
+                self._build_outcome = TestOutcome.SUCCESS
+
+            return set_build_outcome_success
 
         return self._build_success_func
 
@@ -58,8 +64,14 @@ class Test:
         self._build_success_func = func
 
     @property
-    def build_fail_function(self) -> Optional[Callable[[], None]]:
+    def build_fail_function(self) -> Callable[[], None]:
         """This property provides access of the build failure function."""
+
+        if self._build_fail_func is None:
+            def set_build_outcome_failed():
+                self._build_outcome = TestOutcome.FAILED
+
+            return set_build_outcome_failed
 
         return self._build_fail_func
 
@@ -70,8 +82,14 @@ class Test:
         self._build_fail_func = func
 
     @property
-    def run_success_function(self):
+    def run_success_function(self) -> Callable[[], None]:
         """This property provides access to the run success callback."""
+
+        if self._run_success_func is None:
+            def set_run_outcome_success():
+                self._run_outcome = TestOutcome.SUCCESS
+
+            return set_run_outcome_success
 
         return self._run_success_func
 
@@ -82,25 +100,22 @@ class Test:
         self._run_success_func = func
 
     @property
-    def run_fail_function(self):
+    def run_fail_function(self) -> Callable[[], None]:
         """This property provides access to the run fail callback."""
+
+        if self._run_fail_func is None:
+            def set_run_outcome_failed():
+                self._run_outcome = TestOutcome.FAILED
+
+            return set_run_outcome_failed
+
         return self._run_fail_func
 
     @run_fail_function.setter
     def run_fail_function(self, func) -> None:
         """This provides setting the run fail callback."""
+
         self._run_fail_func = func
-
-    @property
-    def captures(self) -> Set[str]:
-        """This property provides access to the defined captures of the test."""
-
-        return self._captures
-
-    def register_capture(self, token: str) -> None:
-        """This method allows registering a capture from the stdout."""
-
-        self._captures.add(token)
 
     @property
     def name(self) -> str:
@@ -118,7 +133,14 @@ class Test:
     def source(self) -> Source:
         """This property provides the Source of the Test."""
 
+        assert self._source is not None
         return self._source
+
+    @source.setter
+    def source(self, source: Source) -> None:
+        """"""
+
+        self._source = source
 
     @property
     def executable(self) -> Optional[Path]:
@@ -127,7 +149,7 @@ class Test:
         return self._executable
 
     @executable.setter
-    def executable(self, path: Path):
+    def executable(self, path: Path) -> None:
         """This allows setting the executable Path."""
         self._executable = path
 
@@ -154,5 +176,15 @@ class Test:
 
         self._run_outcome = outcome
 
+    @property
+    def outcome(self) -> Optional[TestOutcome]:
+        """"""
+
+        if self._build_outcome is None or self._build_outcome is TestOutcome.FAILED:
+            return self._build_outcome
+
+        else:
+            return self._run_outcome
+
     def __str__(self) -> str:
-        return 'Test: ' + self.name + ' : ' + str(self.type)
+        return f'Test: {self.name} {self.type}'

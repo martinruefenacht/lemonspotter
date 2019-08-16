@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from core.constant import Constant
     from core.type import Type
 
+
 class _Singleton(type):
     _instances = {}
 
@@ -18,10 +19,11 @@ class _Singleton(type):
 
         return cls._instances[cls]
 
+
 class Database(metaclass=_Singleton):
     """
     This class stores all functions, types, and constants read in from
-     the JSON database.
+    the JSON database.
     """
 
     def __init__(self) -> None:
@@ -31,6 +33,7 @@ class Database(metaclass=_Singleton):
 
         self.functions_by_name: Dict[str, Function] = {}
         self.constants_by_abstract_type: Dict[str, List[Constant]] = {}
+        self.constants_by_name: Dict[str, Constant] = {}
         self.type_by_abstract_type: Dict[str, Type] = {}
 
     def add_constant(self, constant: Constant) -> None:
@@ -41,11 +44,12 @@ class Database(metaclass=_Singleton):
         # add to set of constants
         self.constants.add(constant)
 
-        # add to lookup
+        # add to lookups
         if constant.type.abstract_type not in self.constants_by_abstract_type:
             self.constants_by_abstract_type[constant.type.abstract_type] = []
 
         self.constants_by_abstract_type[constant.type.abstract_type].append(constant)
+        self.constants_by_name[constant.name] = constant
 
     def add_function(self, function: Function) -> None:
         """
