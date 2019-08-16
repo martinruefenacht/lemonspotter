@@ -55,6 +55,8 @@ class FunctionPresenceGenerator(TestGenerator):
         for sample in sampler.generate_samples(function):
             sample.generate_source(test.source)
 
+        # todo do we want to suppress the printf and return check in the emitted code?
+
         # add evaluation closures
         def build_fail():
             function.properties['presence_tested'] = True
