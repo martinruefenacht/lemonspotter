@@ -2,7 +2,9 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Dict, Any, List
+from typing import TYPE_CHECKING, Mapping, Any, Iterable
+if TYPE_CHECKING:
+    from core.constant import Constant
 import logging
 
 from core.database import Database
@@ -12,10 +14,10 @@ class Type:
     This class represents the type abstraction from the specification.
     """
 
-    def __init__(self, json: Dict[str, Any]) -> None:
+    def __init__(self, json: Mapping[str, Any]) -> None:
         self._json = json
 
-        self._partitions: List[Dict] = []
+        self._partitions: Iterable[Mapping] = []
 
     @property
     def default(self) -> str:
@@ -42,7 +44,6 @@ class Type:
         if self._json['base_type']:
             return self._json['language_type']
 
-        logging.debug('performing recursive lookup of language type.')
         return Database().type_by_abstract_type[self._json['language_type']].language_type
 
     @property
@@ -52,15 +53,19 @@ class Type:
         if self._json['base_type']:
             return self._json['printable']
 
-        logging.debug('performing recursive lookup of printable.')
         return Database().type_by_abstract_type[self._json['language_type']].printable
 
     @property
-    def print_specifier(self):
+    def print_specifier(self) -> str:
         """This property provides the C printf type specifier."""
 
         if self._json['base_type']:
             return self._json['print_specifier']
 
-        logging.debug('performing recursive lookup of print specifier.')
         return Database().type_by_abstract_type[self._json['language_type']].print_specifier
+
+    @property
+    def constants(self) -> Iterable['Constant']:
+        """"""
+        
+        return Database().constants_by_abstract_type[self.abstract_type]

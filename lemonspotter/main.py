@@ -202,16 +202,21 @@ def main():
 
     if arguments.test:
         raise NotImplementedError
+
     elif arguments.flake:
         process = Popen('flake8', stdout=PIPE, stderr=PIPE, cwd='../')
         stdout, stderr = process.communicate()
         print(stdout.decode('utf-8'))
+
     elif arguments.report:
         with open(arguments.specification) as report_file:
             report = json.load(report_file)
+
         print(json.dumps(report, indent=2))
+
     elif not arguments.specification:
         logging.error("Database path not defined")
+
     else:
         # initialize and load the database
         runtime = LemonSpotter(Path(arguments.specification), arguments.mpicc, arguments.mpiexec)
