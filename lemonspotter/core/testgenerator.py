@@ -5,7 +5,7 @@ It provides the main function definition.
 """
 
 from core.test import Source
-from core.statement import IncludeGroupStatement, ReturnStatement, MainDefinitionStatement
+from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
 
 
 class TestGenerator:
@@ -20,13 +20,13 @@ class TestGenerator:
         source = Source()
 
         # add include statements
-        # source.add_at_start(IncludeStatement('stdio.h'))
-        # source.add_at_start(IncludeStatement('stdlib.h'))
-        # source.add_at_start(IncludeStatement('mpi.h'))
+        source.add_at_start(IncludeStatement('stdio.h'))
+        source.add_at_start(IncludeStatement('stdlib.h'))
+        source.add_at_start(IncludeStatement('mpi.h'))
 
         # TODO we assume MPI here! How do we include other APIs?
         # Database needs to reveal this.
-        source.add_at_start(IncludeGroupStatement(['stdio.h', 'stdlib.h', 'mpi.h']))
+        #source.add_at_start(IncludeGroupStatement(['stdio.h', 'stdlib.h', 'mpi.h']))
 
         # add main function
         block_main = MainDefinitionStatement()

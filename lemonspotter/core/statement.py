@@ -4,6 +4,7 @@ This module defines the base class Statement and all the derived classes.
 
 from typing import Dict, List, Optional, Iterable
 import logging
+from itertools import tee, chain
 
 from core.variable import Variable
 from core.database import Database
@@ -34,7 +35,7 @@ class Statement:
         indentation = '\t' * indent_level
 
         if self._comment is not None:
-            # TODO line break for long comments
+            # TODO line break for long comments, 80 characters - indent
             comment = f'{indentation}// {self._comment}\n'
 
         else:
@@ -43,6 +44,91 @@ class Statement:
         code = f'{indentation}{self._statement}'
 
         return comment + code
+
+
+class BlockStatement(Statement):
+    """This class serves are a base class for block definitions."""
+
+    def __init__(self, comment: str = None) -> None:
+        super().__init__(comment=comment)
+
+        self._front_statements: List[Statement] = []
+        self._back_statements: List[Statement] = []
+
+    def has_variable(self, name: str) -> bool:
+        """"""
+
+        internal = name in self.variables
+
+        if internal:
+            return internal
+
+        else:
+            # TODO search statements
+            pass
+
+    def add_at_start(self, statement: Statement):
+        """This method adds the statement at the start of the block."""
+
+        if self._front_statements and issubclass(type(self._front_statements[-1]), BlockStatement):
+            self._front_statements[-1].add_at_start(statement)
+
+        else:
+            self._front_statements.append(statement)
+            self.variables.update(statement.variables)
+
+    def add_at_end(self, statement: Statement):
+        """This method adds the statement to the end of the block."""
+
+        self._back_statements.append(statement)
+
+    def express(self, indent_level: int) -> str:
+        """"""
+
+
+        if indent_level > 0:
+            indentation = '\t' * (indent_level-1)
+            code = indentation + '{\n'
+        
+        else:
+            indentation = ''
+            code = '' 
+
+        statements = self._front_statements + self._back_statements
+        
+        if statements:
+            def prepair(iterable):
+                prevs, items = tee(iterable)
+                prevs = chain([None], prevs)
+                return zip(prevs, items)
+
+            def concat_statements(statements):
+                exp = []
+
+                for previous, statement in prepair(statements):
+                    c = ''
+                    if previous is not None and not isinstance(previous, type(statement)):
+                        c += '\n'
+
+                    exp.append(c + f'{statement.express(indent_level)}')
+
+                return '\n'.join(exp)
+
+            # unrolled last element to avoid unwanted new line
+            if len(statements) > 1:
+                code += concat_statements(statements[:-1])
+                code += '\n'
+
+            # new line between different statement types
+            if len(statements) > 1 and not isinstance(statements[-1], type(statements[-2])):
+                code += '\n'
+
+            code += f'{statements[-1].express(indent_level)}\n'
+
+        if indent_level > 0:
+            code += indentation + '}'
+
+        return code
 
 
 class IncludeStatement(Statement):
@@ -152,46 +238,6 @@ class ExitStatement(Statement):
         super().__init__(comment=comment)
 
         self._statement = f'exit({errorcode});'
-
-
-class BlockStatement(Statement):
-    """This class serves are a base class for block definitions."""
-
-    def __init__(self, comment: str = None) -> None:
-        super().__init__(comment=comment)
-
-        self._front_statements: List[Statement] = []
-        self._back_statements: List[Statement] = []
-
-    def add_at_start(self, statement: Statement):
-        """This method adds the statement at the start of the block."""
-
-        self._front_statements.append(statement)
-        self.variables.update(statement.variables)
-
-    def add_at_end(self, statement: Statement):
-        """This method adds the statement to the end of the block."""
-
-        self._back_statements.append(statement)
-
-    def express(self, indent_level: int) -> str:
-        """"""
-
-        indentation = '\t' * (indent_level-1)
-
-        code = indentation + '{\n'
-
-        for statement in self._front_statements:
-            code += f'{statement.express(indent_level)}\n\n'
-
-        for statement in self._back_statements:
-            code += f'{statement.express(indent_level)}\n\n'
-
-        # TODO no new line if last expression
-
-        code += indentation + '}'
-
-        return code
 
 
 class ConditionStatement(BlockStatement):
