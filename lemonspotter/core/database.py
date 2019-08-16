@@ -51,10 +51,20 @@ class Database(metaclass=_Singleton):
         self._constants_by_abstract_type[constant.type.abstract_type].append(constant)
         self._constants_by_name[constant.name] = constant
 
-    def get_constants(self, abstract_type: str) -> Iterable[Constant]:
+    def get_constants(self, abstract_type: str = None) -> Iterable[Constant]:
         """"""
 
+        if abstract_type is None:
+            return self._constants
+
+        assert abstract_type in self._constants_by_abstract_type
         return self._constants_by_abstract_type[abstract_type]
+
+    def get_constant(self, name: str) -> Constant:
+        """"""
+
+        assert name in self._constants_by_name
+        return self._constants_by_name[name]
 
     def add_function(self, function: Function) -> None:
         """
@@ -66,6 +76,22 @@ class Database(metaclass=_Singleton):
 
         # add to function lookup
         self._functions_by_name[function.name] = function
+
+    def get_functions(self) -> Iterable[Function]:
+        """"""
+
+        return self._functions
+
+    def get_function(self, name: str) -> Function:
+        """"""
+
+        assert name in self._functions_by_name
+        return self._functions_by_name[name]
+
+    def has_function(self, name: str) -> bool:
+        """"""
+
+        return name in self._functions_by_name
 
     def add_type(self, kind: Type) -> None:
         """

@@ -31,12 +31,12 @@ class StartEndGenerator(TestGenerator):
         # determine all start functions
         starts = list(filter(lambda f: (not (f.needs_all or f.needs_any) and
                              (f.leads_any or f.leads_all)) and f.present,
-                             Database().functions))
+                             Database().get_functions()))
 
         # determine all end points
         ends = list(filter(lambda f: (not (f.leads_all or f.leads_any) and
                            (f.needs_any or f.needs_all)) and f.present,
-                           Database().functions))
+                           Database().get_functions()))
 
         # for all combinations
         tests: MutableSet[Test] = set()

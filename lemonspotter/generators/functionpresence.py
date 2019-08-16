@@ -28,7 +28,7 @@ class FunctionPresenceGenerator(TestGenerator):
 
         # find all functions which have not been tested
         functions = filter(lambda f: not f.properties.get('presence_tested', False),
-                           Database().functions)
+                           Database().get_functions())
 
         # for all applicable functions
         for func in functions:

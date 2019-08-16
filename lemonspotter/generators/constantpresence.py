@@ -30,7 +30,7 @@ class ConstantPresenceGenerator(TestGenerator):
 
         # find all functions which have not been tested
         constants = filter(lambda c: not c.properties.get('presence_tested', False),
-                           Database().constants)
+                           Database().get_constants())
 
         # for all applicable functions
         for constant in constants:

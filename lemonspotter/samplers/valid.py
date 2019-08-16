@@ -35,7 +35,7 @@ class ValidSampler(Sampler):
 
             def evaluator() -> bool:
                 return (sample.return_variable.value ==
-                        Database().constants_by_name['MPI_SUCCESS'].value)
+                        Database().get_constant('MPI_SUCCESS').value)
 
             sample.evaluator = evaluator
 
@@ -88,7 +88,7 @@ class ValidSampler(Sampler):
             def evaluator() -> bool:
                 # todo use valid error lookup rule
                 return (sample.return_variable.value ==
-                        Database().constants_by_name['MPI_SUCCESS'].value)
+                        Database().get_constant('MPI_SUCCESS').value)
 
             sample.evaluator = evaluator
 

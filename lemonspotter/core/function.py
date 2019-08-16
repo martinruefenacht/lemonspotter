@@ -70,7 +70,7 @@ class Function:
         """This property provides the Type object of the return of this Function."""
 
         assert self._json.get('return', None) is not None
-        return Database().type_by_abstract_type[self._json['return']]
+        return Database().get_type(self._json['return'])
 
     @property  # type: ignore
     @lru_cache()
@@ -78,9 +78,9 @@ class Function:
         """This property provides access to the any set of needed Function objects."""
 
         assert self._json.get('needs_any', None) is not None
-        subset = filter(lambda name: name in Database().functions_by_name, self._json['needs_any'])
+        subset = filter(lambda name: Database().has_function(name), self._json['needs_any'])
 
-        return set(Database().functions_by_name[func_name] for func_name in subset)
+        return set(Database().get_function(func_name) for func_name in subset)
 
     @property  # type: ignore
     @lru_cache()
@@ -88,9 +88,9 @@ class Function:
         """This property provides access to the all set of needed Function objects."""
 
         assert self._json.get('needs_all', None) is not None
-        subset = filter(lambda name: name in Database().functions_by_name, self._json['needs_all'])
+        subset = filter(lambda name: Database().has_function(name), self._json['needs_all'])
 
-        return set(Database().functions_by_name[func_name] for func_name in subset)
+        return set(Database().get_function(func_name) for func_name in subset)
 
     @property  # type: ignore
     @lru_cache()
@@ -98,9 +98,9 @@ class Function:
         """This property provides access to the any set of lead Function objects."""
 
         assert self._json.get('leads_any', None) is not None
-        subset = filter(lambda name: name in Database().functions_by_name, self._json['leads_any'])
+        subset = filter(lambda name: Database().has_function(name), self._json['leads_any'])
 
-        return set(Database().functions_by_name[func_name] for func_name in subset)
+        return set(Database().get_function(func_name) for func_name in subset)
 
     @property  # type: ignore
     @lru_cache()
@@ -108,9 +108,9 @@ class Function:
         """This property provides access to the all set of lead the Function objects."""
 
         assert self._json.get('leads_all', None) is not None
-        subset = filter(lambda name: name in Database().functions_by_name, self._json['leads_all'])
+        subset = filter(lambda name: Database().has_function(name), self._json['leads_all'])
 
-        return set(Database().functions_by_name[func_name] for func_name in subset)
+        return set(Database().get_function(func_name) for func_name in subset)
 
     @property
     def present(self) -> bool:
