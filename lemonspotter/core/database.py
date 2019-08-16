@@ -27,14 +27,14 @@ class Database(metaclass=_Singleton):
     """
 
     def __init__(self) -> None:
-        self.functions: Set[Function] = set()
-        self.constants: Set[Constant] = set()
-        self.types: Set[Type] = set()
+        self._functions: Set[Function] = set()
+        self._constants: Set[Constant] = set()
+        self._types: Set[Type] = set()
 
-        self.functions_by_name: Dict[str, Function] = {}
-        self.constants_by_abstract_type: Dict[str, List[Constant]] = {}
-        self.constants_by_name: Dict[str, Constant] = {}
-        self.type_by_abstract_type: Dict[str, Type] = {}
+        self._functions_by_name: Dict[str, Function] = {}
+        self._constants_by_abstract_type: Dict[str, List[Constant]] = {}
+        self._constants_by_name: Dict[str, Constant] = {}
+        self._type_by_abstract_type: Dict[str, Type] = {}
 
     def add_constant(self, constant: Constant) -> None:
         """
@@ -42,14 +42,14 @@ class Database(metaclass=_Singleton):
         """
 
         # add to set of constants
-        self.constants.add(constant)
+        self._constants.add(constant)
 
         # add to lookups
-        if constant.type.abstract_type not in self.constants_by_abstract_type:
-            self.constants_by_abstract_type[constant.type.abstract_type] = []
+        if constant.type.abstract_type not in self._constants_by_abstract_type:
+            self._constants_by_abstract_type[constant.type.abstract_type] = []
 
-        self.constants_by_abstract_type[constant.type.abstract_type].append(constant)
-        self.constants_by_name[constant.name] = constant
+        self._constants_by_abstract_type[constant.type.abstract_type].append(constant)
+        self._constants_by_name[constant.name] = constant
 
     def add_function(self, function: Function) -> None:
         """
@@ -57,10 +57,10 @@ class Database(metaclass=_Singleton):
         """
 
         # add to set of functions
-        self.functions.add(function)
+        self._functions.add(function)
 
         # add to function lookup
-        self.functions_by_name[function.name] = function
+        self._functions_by_name[function.name] = function
 
     def add_type(self, kind: Type) -> None:
         """
@@ -68,7 +68,7 @@ class Database(metaclass=_Singleton):
         """
 
         # add to set of types
-        self.types.add(kind)
+        self._types.add(kind)
 
         # add to dictionary of types
-        self.type_by_abstract_type[kind.abstract_type] = kind
+        self._type_by_abstract_type[kind.abstract_type] = kind
