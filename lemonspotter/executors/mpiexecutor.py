@@ -133,8 +133,6 @@ class MPIExecutor:
             logging.debug('run stdout:\n%s\n', stdout)
             logging.debug('run stderr:\n%s\n', stderr)
 
-            logging.debug('source variables %s', str(test.source.variables))
-
             # test run check
             if not stderr and process.returncode == 0:
                 # filter for captures

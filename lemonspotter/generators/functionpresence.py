@@ -13,6 +13,7 @@ from core.test import Test, TestType, TestOutcome
 from core.function import Function
 from core.testgenerator import TestGenerator
 from samplers.declare import DeclarationSampler
+from core.statement import MainDefinitionStatement, ReturnStatement
 
 
 class FunctionPresenceGenerator(TestGenerator):
@@ -48,12 +49,17 @@ class FunctionPresenceGenerator(TestGenerator):
         # create Test and assign build success/fail closures
         test = Test(f'function_presence_{function.name}', test_type=TestType.BUILD_ONLY)
 
-        test.source = self._gen_main()
+        test.source = self._generate_source_frame()
+
+        block_main = MainDefinitionStatement()
+        test.source.add_at_start(block_main)
+
+        block_main.add_at_end(ReturnStatement('0'))
 
         # generate declaration of arguments
         sampler = DeclarationSampler()
         for sample in sampler.generate_samples(function):
-            sample.generate_source(test.source)
+            sample.generate_source(block_main)
 
         # todo do we want to suppress the printf and return check in the emitted code?
 

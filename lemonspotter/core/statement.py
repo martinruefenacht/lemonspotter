@@ -20,11 +20,10 @@ class Statement:
         self._statement: Optional[str] = None
         self._comment: Optional[str] = comment
 
-    @property
-    def variables(self) -> Dict[str, Variable]:
-        """This property provides the variables that are resident in this statement."""
+    def get_variable(self, name: str) -> Optional[Variable]:
+        """"""
 
-        return self._variables
+        return self._variables.get(name, None)
 
     def express(self, indent_level: int) -> str:
         """This method converts the Statement to a string."""
@@ -55,6 +54,18 @@ class BlockStatement(Statement):
         self._front_statements: List[Statement] = []
         self._back_statements: List[Statement] = []
 
+    def get_variable(self, name: str) -> Optional[Variable]:
+        if name in self._variables:
+            return self._variables[name]
+
+        else:
+            for statement in (self._front_statements + self._back_statements):
+                var = statement.get_variable(name)
+                if var is not None:
+                    return var
+
+        return None
+
     def has_variable(self, name: str) -> bool:
         """"""
 
@@ -64,27 +75,30 @@ class BlockStatement(Statement):
             return internal
 
         else:
-            # TODO search statements
-            pass
+            for statement in (self._front_statements + self._back_statements):
+                if statement.has_variable(name):
+                    return True
 
-    def add_at_start(self, statement: Statement):
+        return False
+
+    def add_at_start(self, statement: Optional[Statement]) -> None:
         """This method adds the statement at the start of the block."""
 
-        if self._front_statements and issubclass(type(self._front_statements[-1]), BlockStatement):
-            self._front_statements[-1].add_at_start(statement)
+        if statement is None:
+            return
 
-        else:
-            self._front_statements.append(statement)
-            self.variables.update(statement.variables)
+        self._front_statements.append(statement)
 
-    def add_at_end(self, statement: Statement):
+    def add_at_end(self, statement: Optional[Statement]):
         """This method adds the statement to the end of the block."""
+
+        if statement is None:
+            return
 
         self._back_statements.append(statement)
 
     def express(self, indent_level: int) -> str:
         """"""
-
 
         if indent_level > 0:
             indentation = '\t' * (indent_level-1)
@@ -138,17 +152,6 @@ class IncludeStatement(Statement):
         super().__init__(comment=comment)
 
         self._statement = f'#include <{header}>'
-
-
-class IncludeGroupStatement(Statement):
-    """
-    This class represents a group of include statements.
-    """
-
-    def __init__(self, headers: Iterable[str], comment: str = None) -> None:
-        super().__init__(comment=comment)
-
-        self._statement = '\n'.join(f'#include <{header}>' for header in headers)
 
 
 class ReturnStatement(Statement):

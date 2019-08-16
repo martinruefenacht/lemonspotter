@@ -12,7 +12,8 @@ from core.statement import (ConditionStatement,
                             FunctionStatement,
                             ExitStatement,
                             DeclarationAssignmentStatement,
-                            DeclarationStatement)
+                            DeclarationStatement,
+                            BlockStatement)
 
 
 class FunctionSample:
@@ -85,7 +86,7 @@ class FunctionSample:
         assert evaluator is not None
         self._evaluator = evaluator
 
-    def generate_source(self, source: Source) -> Source:
+    def generate_source(self, source: BlockStatement) -> None:
         """"""
 
         # assign predefined arguments and check for collisions
@@ -142,8 +143,6 @@ class FunctionSample:
 
         # note, we check out argument validity in LemonSpotter level
         # note, should we even do a return check?
-
-        return source
 
     def _generate_return_check(self) -> Optional[ConditionStatement]:
         """"""
