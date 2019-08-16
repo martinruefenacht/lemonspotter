@@ -5,11 +5,12 @@ Defines a type object of from library that can be included in Lemonspotter tests
 from functools import lru_cache
 import logging
 from typing import TYPE_CHECKING, Mapping, Any, Iterable
-if TYPE_CHECKING:
-    from core.constant import Constant
 
 from core.database import Database
 from core.partition import Partition
+
+if TYPE_CHECKING:
+    from core.constant import Constant  # noqa
 
 
 class Type:
