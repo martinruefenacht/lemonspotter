@@ -15,7 +15,11 @@ class Variable:
     This class represents any C variable for source code generation.
     """
 
-    def __init__(self, kind: 'Type', name: str = None, value: str = None, predefined: bool = False) -> None:
+    def __init__(self,
+                 kind: 'Type',
+                 name: str = None,
+                 value: str = None,
+                 predefined: bool = False) -> None:
         """
         This method constructs the Variable from a type, name and pointer level.
         """

@@ -4,7 +4,6 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 
-from core.database import Database
 from core.function import Function
 from core.sample import FunctionSample
 

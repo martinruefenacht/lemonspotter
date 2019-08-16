@@ -6,7 +6,6 @@ import logging
 from typing import Iterable
 
 from core.sampler import Sampler
-from core.database import Database
 from core.variable import Variable
 from core.function import Function
 from core.sample import FunctionSample

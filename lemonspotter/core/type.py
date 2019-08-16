@@ -2,7 +2,7 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from typing import Mapping, Any, Iterable, Optional
+from typing import Mapping, Any, Iterable
 from functools import lru_cache
 import logging
 

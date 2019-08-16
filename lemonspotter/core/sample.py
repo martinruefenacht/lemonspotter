@@ -8,7 +8,11 @@ from core.function import Function
 from core.parameter import Direction
 from core.variable import Variable
 from core.source import Source
-from core.statement import ConditionStatement, FunctionStatement, ExitStatement, DeclarationAssignmentStatement, DeclarationStatement
+from core.statement import (ConditionStatement,
+                            FunctionStatement,
+                            ExitStatement,
+                            DeclarationAssignmentStatement,
+                            DeclarationStatement)
 
 
 class FunctionSample:
@@ -86,28 +90,30 @@ class FunctionSample:
 
         # assign predefined arguments and check for collisions
         def check_argument(arg):
-                if arg.predefined:
-                    predef = source.get_variable(arg.value)
+            if arg.predefined:
+                predef = source.get_variable(arg.value)
 
-                    if predef is None:
-                        raise RuntimeError('Predefined variable not present in source.')
+                if predef is None:
+                    raise RuntimeError('Predefined variable not present in source.')
 
-                    if predef.type is arg.type:
-                        return predef
-
-                    else:
-                        # try referencing
-                        if predef.type.referencable:
-                            # create variable
-                            var = Variable(predef.type.reference(), predef.name + '_ref', '&'+predef.name)
-
-                            return var
-
-                elif source.get_variable(arg.name) is not None:
-                    raise RuntimeError('Name collision found between argument and variable.')
+                if predef.type is arg.type:
+                    return predef
 
                 else:
-                    return arg
+                    # try referencing
+                    if predef.type.referencable:
+                        # create variable
+                        var = Variable(predef.type.reference(),
+                                       f'{predef.name}_ref',
+                                       f'&{predef.name}')
+
+                        return var
+
+            elif source.get_variable(arg.name) is not None:
+                raise RuntimeError('Name collision found between argument and variable.')
+
+            else:
+                return arg
 
         self.arguments = [check_argument(argument) for argument in self.arguments]
 

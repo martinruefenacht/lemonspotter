@@ -8,9 +8,7 @@ import logging
 import json
 from subprocess import Popen, PIPE
 from pathlib import Path
-from typing import Optional
 
-from core.database import Database
 from parsers.mpiparser import MPIParser
 from executors.mpiexecutor import MPIExecutor
 from generators.startend import StartEndGenerator
@@ -82,6 +80,7 @@ class LemonSpotter:
 
         for test in start_end_tests:
             self.reporter.log_test_result(test)
+
 
 def parse_arguments():
     """

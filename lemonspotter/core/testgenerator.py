@@ -4,7 +4,6 @@ The TestGenerator is the base class for all generators.
 It provides the main function definition.
 """
 
-from core.database import Database
 from core.test import Source
 from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
 
