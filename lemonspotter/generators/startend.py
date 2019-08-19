@@ -108,12 +108,15 @@ class StartEndGenerator(TestGenerator):
         test = Test(test_name, TestType.BUILD_AND_RUN, source)
 
         def run_success():
-            if start.evaluator() and end.evaluator():
+            eval_start = start.evaluator()
+            eval_end = end.evaluator()
+
+            if eval_start and eval_end:
                 test.run_outcome = TestOutcome.SUCCESS
 
             else:
                 test.run_outcome = TestOutcome.FAILED
-                logging.warning('%s test failed.', test.name)
+                logging.warning('%s test failed with start %s and end %s.', test.name, eval_start, eval_end)
 
         test.run_success_function = run_success
 

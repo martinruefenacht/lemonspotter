@@ -139,13 +139,13 @@ class MPIExecutor:
                 for line in stdout.split('\n'):
                     if line:
                         tokens = line.split()
-                        logging.debug('tokens %s', str(tokens))
 
                         variable = test.source.get_variable(tokens[0])
                         if variable:
                             # currently only supports key-value captures
                             variable.value = tokens[1]
                             logging.debug('captured %s = %s', variable.name, tokens[1])
+                            logging.debug('executor variable %s', str(variable))
 
                         else:
                             logging.warning('capturing %s, but no variable found.', tokens[0])
