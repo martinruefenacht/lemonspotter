@@ -48,7 +48,7 @@ class Type:
         if self._json['base_type']:
             return self._json['language_type']
 
-        return Database().type_by_abstract_type[self._json['language_type']].language_type
+        return Database().get_type(self._json['language_type']).language_type
 
     @property
     def printable(self) -> bool:
@@ -57,7 +57,7 @@ class Type:
         if self._json['base_type']:
             return self._json.get('print_specifier', False)
 
-        return Database().type_by_abstract_type[self._json['language_type']].printable
+        return Database().get_type(self._json['language_type']).printable
 
     @property
     def print_specifier(self) -> str:
@@ -66,13 +66,13 @@ class Type:
         if self._json['base_type']:
             return self._json['print_specifier']
 
-        return Database().type_by_abstract_type[self._json['language_type']].print_specifier
+        return Database().get_type(self._json['language_type']).print_specifier
 
     @property
     def constants(self) -> Iterable['Constant']:
         """"""
 
-        return Database().constants_by_abstract_type[self.abstract_type]
+        return Database().get_constants(self.abstract_type)
 
     @property  # type: ignore
     @lru_cache()
@@ -103,7 +103,7 @@ class Type:
 
         assert 'reference' in self._json
 
-        return Database().type_by_abstract_type[self._json['reference']]
+        return Database().get_type(self._json['reference'])
 
     @property
     def dereferencable(self) -> bool:
@@ -116,4 +116,4 @@ class Type:
 
         assert 'dereference' in self._json
 
-        return Database().type_by_abstract_type[self._json['dereference']]
+        return Database().get_type(self._json['dereference'])

@@ -342,9 +342,9 @@ class MainDefinitionStatement(BlockStatement):
     def __init__(self, comment: str = None) -> None:
         super().__init__(comment=comment)
 
-        argc = Variable(Database().type_by_abstract_type['INT'],
+        argc = Variable(Database().get_type('INT'),
                         'argument_count')
-        argv = Variable(Database().type_by_abstract_type['CHAR_2PTR'],
+        argv = Variable(Database().get_type('CHAR_2PTR'),
                         'argument_list')
 
         self._variables[argc.name] = argc

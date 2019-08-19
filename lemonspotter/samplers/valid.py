@@ -35,7 +35,7 @@ class ValidSampler(Sampler):
 
             def evaluator() -> bool:
                 return (sample.return_variable.value ==
-                        Database().constants_by_name['MPI_SUCCESS'].value)
+                        Database().get_constant('MPI_SUCCESS').value)
 
             sample.evaluator = evaluator
 
@@ -93,7 +93,7 @@ class ValidSampler(Sampler):
                 logging.debug('sampler return variable %s', str(sample.return_variable))
 
                 return (sample.return_variable.value ==
-                        Database().constants_by_name['MPI_SUCCESS'].value)
+                        Database().get_constant('MPI_SUCCESS').value)
 
             sample.evaluator = evaluator
 
