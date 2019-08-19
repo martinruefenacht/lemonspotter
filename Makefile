@@ -4,6 +4,6 @@ default:
 
 .PHONY: clean
 clean:
-	rm -rf tests
+	rm -rf generated_tests
 	rm -rf logs
 	rm -rf reports
