@@ -16,11 +16,12 @@ class Statement:
     """
 
     indent: str = '\t'
+    max_line_length: int = 80
 
     def __init__(self, variables: Dict[str, Variable] = None, comment: str = None) -> None:
         self._variables: Dict[str, Variable] = variables if variables else {}
         self._statement: Optional[str] = None
-        self._comment: Optional[str] = comment
+        self._comment: str = comment.strip() if comment else ''
 
     def get_variable(self, name: str) -> Optional[Variable]:
         """"""
@@ -39,17 +40,38 @@ class Statement:
             raise RuntimeError('Trying to express Statement with _statement is None.')
 
         indentation = self.indent * indent_level
+        assert len(indentation) < self.max_line_length
 
-        if self._comment is not None:
-            # TODO line break for long comments, 80 characters - indent
+        if self._comment:
             comment = f'{indentation}// {self._comment}\n'
 
+            if len(comment) < self.max_line_length:
+                # single line comment
+                final_comment = comment
+
+            else:
+                final_comment = ''
+
+                # multi line comment using // instead of /* */
+                overrun = len(comment) - self.max_line_length
+
+                while overrun > 0:
+                    # find breakable space character
+                    index = comment.rfind(' ', 0, self.max_line_length)
+                    final_comment += comment[:index] + '\n'
+
+                    # separate comment lines
+                    comment = f'{indentation}// {comment[index:].strip()}'
+                    overrun = len(comment) - self.max_line_length
+
+                final_comment += comment + '\n'
+
         else:
-            comment = ''
+            final_comment = ''
 
-        code = f'{indentation}{self._statement}'
+        full_statement = f'{final_comment}{indentation}{self._statement}'
 
-        return comment + code
+        return full_statement
 
 
 class BlockStatement(Statement):
