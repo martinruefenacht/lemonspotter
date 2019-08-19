@@ -29,6 +29,8 @@ class Variable:
         self._value: Optional[str] = value
         self._predefined: bool = predefined
 
+        self._pointer_level: int = 0
+
     def __str__(self) -> str:
         assert self._name is not None
 
@@ -77,6 +79,19 @@ class Variable:
         """"""
 
         return self._predefined
+
+    @property
+    def pointer_level(self) -> int:
+        return self._pointer_level
+    
+    @pointer_level.setter
+    def pointer_level(self, level: int) -> None:
+        """"""
+
+        assert level is not None
+        assert level >= 0
+
+        self._pointer_level = level
 
     def validate(self) -> bool:
         """
