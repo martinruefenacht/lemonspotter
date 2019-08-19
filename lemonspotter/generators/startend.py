@@ -116,7 +116,8 @@ class StartEndGenerator(TestGenerator):
 
             else:
                 test.run_outcome = TestOutcome.FAILED
-                logging.warning('%s test failed with start %s and end %s.', test.name, eval_start, eval_end)
+                logging.warning('%s test failed', test.name)
+                logging.debug('with start %s and end %s.', eval_start, eval_end)
 
         test.run_success_function = run_success
 

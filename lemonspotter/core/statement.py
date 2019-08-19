@@ -189,12 +189,13 @@ class BlockStatement(Statement):
 
 class SourceStatement(BlockStatement):
     """
-    This BlockStatement subclass serves the Source expression as a simplification to the BlockStatement
-    express method, to reduce the branching.
+    This BlockStatement subclass serves the Source expression as a simplification to the
+    BlockStatement express method, to reduce the branching.
     """
 
     def express(self, indent_level: int) -> str:
         return self.express_statements(indent_level)
+
 
 class IncludeStatement(Statement):
     """This class represents any include statements in C."""
