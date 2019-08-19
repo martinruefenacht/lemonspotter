@@ -8,5 +8,5 @@
 
 *.swp
 
-tests/
+generated_tests/
 reports/
