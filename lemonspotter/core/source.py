@@ -5,7 +5,7 @@ This module contains the Source class.
 from typing import Optional
 from pathlib import Path
 
-from core.statement import Statement, BlockStatement
+from core.statement import Statement, SourceStatement
 from core.variable import Variable
 
 
@@ -15,7 +15,7 @@ class Source:
     """
 
     def __init__(self) -> None:
-        self._block_statement = BlockStatement()
+        self._block_statement = SourceStatement()
 
     def has_variable(self, name: str) -> bool:
         """"""

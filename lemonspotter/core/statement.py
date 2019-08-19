@@ -129,16 +129,14 @@ class BlockStatement(Statement):
     def express(self, indent_level: int) -> str:
         """"""
 
-        if indent_level > 0:
-            indentation = self.indent * (indent_level-1)
-            code = indentation + '{\n'
+        indentation = self.indent * (indent_level-1)
 
-        else:
-            indentation = ''
-            code = ''
+        return f'{indentation}{{\n{self.express_statements(indent_level)}{indentation}}}'
+
+    def express_statements(self, indent_level: int) -> str:
+        code = ''
 
         statements = self._front_statements + self._back_statements
-
         if statements:
             def prepair(iterable):
                 prevs, items = tee(iterable)
@@ -153,7 +151,7 @@ class BlockStatement(Statement):
                     if previous is not None and not isinstance(previous, type(statement)):
                         c += '\n'
 
-                    exp.append(c + f'{statement.express(indent_level)}')
+                    exp.append(f'{c}{statement.express(indent_level)}')
 
                 return '\n'.join(exp)
 
@@ -162,17 +160,24 @@ class BlockStatement(Statement):
                 code += concat_statements(statements[:-1])
                 code += '\n'
 
-            # new line between different statement types
-            if len(statements) > 1 and not isinstance(statements[-1], type(statements[-2])):
-                code += '\n'
+                # new line between different statement types
+                if not isinstance(statements[-1], type(statements[-2])):
+                    code += '\n'
 
+            # express last statement
             code += f'{statements[-1].express(indent_level)}\n'
-
-        if indent_level > 0:
-            code += indentation + '}'
 
         return code
 
+
+class SourceStatement(BlockStatement):
+    """
+    This BlockStatement subclass serves the Source expression as a simplification to the BlockStatement
+    express method, to reduce the branching.
+    """
+
+    def express(self, indent_level: int) -> str:
+        return self.express_statements(indent_level)
 
 class IncludeStatement(Statement):
     """This class represents any include statements in C."""
