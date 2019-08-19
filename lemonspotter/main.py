@@ -136,6 +136,12 @@ def parse_arguments():
                         default=False,
                         help='Runs the mypy type checker on LemonSpotter.')
 
+    parser.add_argument('--pytest',
+                        action='store_true',
+                        dest='pytest',
+                        default=False,
+                        help='Run the LemonSpotter test suite.')
+
     parser.add_argument('--test',
                         action='store_true',
                         dest='test',
@@ -207,6 +213,18 @@ def main() -> None:
         command = [sys.executable, '-m', 'mypy', __file__]
 
         logging.info('executing mypy with %s', ' '.join(command))
+        process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
+
+        stdout, stderr = process.communicate()
+        print(stdout)
+
+        if stderr:
+            logging.error(stderr)
+
+    elif arguments.pytest:
+        command = [sys.executable, '-m', 'pytest']
+
+        logging.info('executing test suite...')
         process = Popen(command, stdout=PIPE, stderr=PIPE, text=True)  # type: ignore
 
         stdout, stderr = process.communicate()
