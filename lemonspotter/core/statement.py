@@ -23,6 +23,14 @@ class Statement:
         self._statement: Optional[str] = None
         self._comment: str = comment.strip() if comment else ''
 
+    @property
+    def comment(self) -> str:
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment: str) -> None:
+        self._comment = comment.strip() if comment else ''
+
     def get_variable(self, name: str) -> Optional[Variable]:
         """"""
 
