@@ -97,10 +97,12 @@ class StartEndGenerator(TestGenerator):
         block_main.add_at_end(ReturnStatement('0'))
 
         logging.debug(start)
-        start.generate_source(block_main)
+        start.generate_source(block_main,
+                              'start point for start-end test')
 
         logging.debug(end)
-        end.generate_source(block_main)
+        end.generate_source(block_main,
+                            'end point for start-end test')
 
         # create test
         test = Test(test_name, TestType.BUILD_AND_RUN, source)

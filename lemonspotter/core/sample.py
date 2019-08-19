@@ -206,6 +206,7 @@ class FunctionSample:
 
         statement += ');'
 
-        return FunctionStatement(statement,
+        return FunctionStatement(self._function.name,
+                                 statement,
                                  {self.return_variable.name: self.return_variable},
                                  comment)

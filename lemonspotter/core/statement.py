@@ -136,8 +136,9 @@ class BlockStatement(Statement):
     def express_statements(self, indent_level: int) -> str:
         code = ''
 
-        statements = self._front_statements + self._back_statements
-        if statements:
+        if self._front_statements or self._back_statements:
+            # TODO clean this method up
+
             def prepair(iterable):
                 prevs, items = tee(iterable)
                 prevs = chain([None], prevs)
@@ -148,14 +149,22 @@ class BlockStatement(Statement):
 
                 for previous, statement in prepair(statements):
                     c = ''
-                    if previous is not None and not isinstance(previous, type(statement)):
-                        c += '\n'
+                    if previous is not None:
+                        if not isinstance(previous, type(statement)):
+                            c += '\n'
+
+                        elif (isinstance(previous, FunctionStatement) and
+                              isinstance(statement, FunctionStatement) and
+                              previous.function != statement.function):
+                            c += '\n'
 
                     exp.append(f'{c}{statement.express(indent_level)}')
 
                 return '\n'.join(exp)
 
             # unrolled last element to avoid unwanted new line
+            statements = self._front_statements + self._back_statements
+
             if len(statements) > 1:
                 code += concat_statements(statements[:-1])
                 code += '\n'
@@ -261,12 +270,18 @@ class FunctionStatement(Statement):
     """This class represents any Function call statement."""
 
     def __init__(self,
+                 function: Optional[str],
                  statement: str,
                  variables: Dict[str, Variable] = None,
                  comment: str = None) -> None:
         super().__init__(variables, comment=comment)
 
+        self._function = function
         self._statement: str = statement
+
+    @property
+    def function(self) -> Optional[str]:
+        return self._function
 
     @classmethod
     def generate_print(cls,
@@ -277,13 +292,13 @@ class FunctionStatement(Statement):
         """
 
         if not variable.type.printable:
-            logging.warning('%s is not printable', variable.name)
+            logging.info('%s is not printable, no Statement will be emitted.', variable.name)
             return None
 
         statement = (f'printf("{variable.name} %{variable.type.print_specifier}'
                      f'\\n", {variable.name});')
 
-        return FunctionStatement(statement, comment=comment)
+        return FunctionStatement('printf', statement, comment=comment)
 
 
 class ExitStatement(Statement):
