@@ -11,6 +11,7 @@ from core.function import Function
 from core.sample import FunctionSample
 from core.testgenerator import TestGenerator
 from core.sampler import Sampler
+from core.statement import MainDefinitionStatement, ReturnStatement
 
 
 class StartEndGenerator(TestGenerator):
@@ -88,24 +89,34 @@ class StartEndGenerator(TestGenerator):
         Generate C source code for a given path between initiator and finalizer.
         """
 
-        source = self._gen_main()
+        source = self._generate_source_frame()
+
+        block_main = MainDefinitionStatement()
+        source.add_at_start(block_main)
+
+        block_main.add_at_end(ReturnStatement('0'))
 
         logging.debug(start)
-        start.generate_source(source)
+        start.generate_source(block_main,
+                              'start point for start-end test')
 
         logging.debug(end)
-        end.generate_source(source)
+        end.generate_source(block_main,
+                            'end point for start-end test')
 
         # create test
         test = Test(test_name, TestType.BUILD_AND_RUN, source)
 
         def run_success():
-            if start.evaluator() and end.evaluator():
+            eval_start = start.evaluator()
+            eval_end = end.evaluator()
+
+            if eval_start and eval_end:
                 test.run_outcome = TestOutcome.SUCCESS
 
             else:
                 test.run_outcome = TestOutcome.FAILED
-                logging.warning('%s test failed.', test.name)
+                logging.warning('%s test failed with start %s and end %s.', test.name, eval_start, eval_end)
 
         test.run_success_function = run_success
 

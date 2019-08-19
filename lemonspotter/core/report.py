@@ -116,8 +116,6 @@ class TestReport():
 
         self._report['tests'] = test_report
 
-        print(self._report)
-
     def print_report(self, indent=2):
         """
         Pretty prints report

@@ -13,7 +13,10 @@ from core.testgenerator import TestGenerator
 from core.constant import Constant
 from core.variable import Variable
 
-from core.statement import DeclarationStatement, AssignmentStatement, FunctionStatement
+from core.statement import (DeclarationAssignmentStatement,
+                            FunctionStatement,
+                            MainDefinitionStatement,
+                            ReturnStatement)
 
 
 class ConstantPresenceGenerator(TestGenerator):
@@ -48,19 +51,22 @@ class ConstantPresenceGenerator(TestGenerator):
 
         logging.info('generating constant presence test for %s', constant.name)
 
-        source = self._gen_main()
+        source = self._generate_source_frame()
 
-        variable = Variable(constant.type, f'variable_{constant.name}')
+        block_main = MainDefinitionStatement()
+        source.add_at_start(block_main)
 
-        declaration = DeclarationStatement(variable)
-        source.add_at_start(declaration)
+        block_main.add_at_end(ReturnStatement('0'))
 
-        variable.value = constant.name
-        assignment = AssignmentStatement(variable)
-        source.add_at_start(assignment)
+        variable = Variable(constant.type, f'variable_{constant.name}', constant.name)
+
+        declaration = DeclarationAssignmentStatement(variable,
+                                                     'declare variable with constant name')
+        block_main.add_at_start(declaration)
 
         if constant.type.printable:
-            source.add_at_start(FunctionStatement.generate_print(variable))
+            block_main.add_at_start(FunctionStatement.generate_print(variable,
+                                                                     'extract constant value'))
 
             test = Test(f'constant_presence_{constant.name}',
                         TestType.BUILD_AND_RUN,

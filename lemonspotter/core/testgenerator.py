@@ -5,7 +5,7 @@ It provides the main function definition.
 """
 
 from core.test import Source
-from core.statement import IncludeStatement, ReturnStatement, MainDefinitionStatement
+from core.statement import IncludeStatement
 
 
 class TestGenerator:
@@ -14,8 +14,10 @@ class TestGenerator:
     generation.
     """
 
-    def _gen_main(self) -> Source:
-        """This function generates the main function for the test."""
+    def _generate_source_frame(self) -> Source:
+        """
+        This function generates the main function for the test.
+        """
 
         source = Source()
 
@@ -23,11 +25,6 @@ class TestGenerator:
         source.add_at_start(IncludeStatement('stdio.h'))
         source.add_at_start(IncludeStatement('stdlib.h'))
         source.add_at_start(IncludeStatement('mpi.h'))
-
-        # add main function
-        block_main = MainDefinitionStatement()
-        block_main.add_at_end(ReturnStatement('0'))
-
-        source.add_at_start(block_main)
+        # TODO we assume MPI here! How do we include other APIs?
 
         return source

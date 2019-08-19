@@ -29,16 +29,6 @@ class Variable:
         self._value: Optional[str] = value
         self._predefined: bool = predefined
 
-    def __str__(self) -> str:
-        assert self._name is not None
-
-        return f'variable {self._name}'
-
-    def __repr__(self) -> str:
-        assert self._name is not None
-
-        return f'variable {self._type} {self._name} = {self._value}'
-
     @property
     def type(self) -> 'Type':
         """This property provides the Type object of the Variable."""
