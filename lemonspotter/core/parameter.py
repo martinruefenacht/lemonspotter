@@ -35,7 +35,7 @@ class Parameter:
         """This property provides the Type object of the abstract type of this Parameter."""
 
         assert 'abstract_type' in self._json
-        return Database().type_by_abstract_type[self._json['abstract_type']]
+        return Database().get_type(self._json['abstract_type'])
 
     @property
     def direction(self) -> Direction:

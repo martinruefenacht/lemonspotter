@@ -96,11 +96,11 @@ class TestReport():
         presence_report: MutableMapping[str, Mapping[str, Any]] = {}
 
         constants = {}
-        for constant in Database().constants:
+        for constant in Database().get_constants():
             constants[constant.name] = constant.properties
 
         functions = {}
-        for function in Database().functions:
+        for function in Database().get_functions():
             functions[function.name] = function.properties
 
         presence_report['constants'] = constants
@@ -115,8 +115,6 @@ class TestReport():
                                       'run_outcome': str(test.run_outcome)}
 
         self._report['tests'] = test_report
-
-        print(self._report)
 
     def print_report(self, indent=2):
         """

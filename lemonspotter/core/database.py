@@ -3,7 +3,7 @@ This module defines the Database class.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Set, Dict, List, Mapping
+from typing import TYPE_CHECKING, Set, Dict, List, Mapping, Iterable
 if TYPE_CHECKING:
     from core.function import Function
     from core.constant import Constant
@@ -27,14 +27,14 @@ class Database(metaclass=_Singleton):
     """
 
     def __init__(self) -> None:
-        self.functions: Set[Function] = set()
-        self.constants: Set[Constant] = set()
-        self.types: Set[Type] = set()
+        self._functions: Set[Function] = set()
+        self._constants: Set[Constant] = set()
+        self._types: Set[Type] = set()
 
-        self.functions_by_name: Dict[str, Function] = {}
-        self.constants_by_abstract_type: Dict[str, List[Constant]] = {}
-        self.constants_by_name: Dict[str, Constant] = {}
-        self.type_by_abstract_type: Dict[str, Type] = {}
+        self._functions_by_name: Dict[str, Function] = {}
+        self._constants_by_abstract_type: Dict[str, List[Constant]] = {}
+        self._constants_by_name: Dict[str, Constant] = {}
+        self._type_by_abstract_type: Dict[str, Type] = {}
 
     def add_constant(self, constant: Constant) -> None:
         """
@@ -42,14 +42,29 @@ class Database(metaclass=_Singleton):
         """
 
         # add to set of constants
-        self.constants.add(constant)
+        self._constants.add(constant)
 
         # add to lookups
-        if constant.type.abstract_type not in self.constants_by_abstract_type:
-            self.constants_by_abstract_type[constant.type.abstract_type] = []
+        if constant.type.abstract_type not in self._constants_by_abstract_type:
+            self._constants_by_abstract_type[constant.type.abstract_type] = []
 
-        self.constants_by_abstract_type[constant.type.abstract_type].append(constant)
-        self.constants_by_name[constant.name] = constant
+        self._constants_by_abstract_type[constant.type.abstract_type].append(constant)
+        self._constants_by_name[constant.name] = constant
+
+    def get_constants(self, abstract_type: str = None) -> Iterable[Constant]:
+        """"""
+
+        if abstract_type is None:
+            return self._constants
+
+        assert abstract_type in self._constants_by_abstract_type
+        return self._constants_by_abstract_type[abstract_type]
+
+    def get_constant(self, name: str) -> Constant:
+        """"""
+
+        assert name in self._constants_by_name
+        return self._constants_by_name[name]
 
     def add_function(self, function: Function) -> None:
         """
@@ -57,10 +72,26 @@ class Database(metaclass=_Singleton):
         """
 
         # add to set of functions
-        self.functions.add(function)
+        self._functions.add(function)
 
         # add to function lookup
-        self.functions_by_name[function.name] = function
+        self._functions_by_name[function.name] = function
+
+    def get_functions(self) -> Iterable[Function]:
+        """"""
+
+        return self._functions
+
+    def get_function(self, name: str) -> Function:
+        """"""
+
+        assert name in self._functions_by_name
+        return self._functions_by_name[name]
+
+    def has_function(self, name: str) -> bool:
+        """"""
+
+        return name in self._functions_by_name
 
     def add_type(self, kind: Type) -> None:
         """
@@ -68,7 +99,12 @@ class Database(metaclass=_Singleton):
         """
 
         # add to set of types
-        self.types.add(kind)
+        self._types.add(kind)
 
         # add to dictionary of types
-        self.type_by_abstract_type[kind.abstract_type] = kind
+        self._type_by_abstract_type[kind.abstract_type] = kind
+
+    def get_type(self, abstract_type: str) -> Type:
+        """"""
+
+        return self._type_by_abstract_type[abstract_type]

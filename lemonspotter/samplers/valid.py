@@ -35,7 +35,7 @@ class ValidSampler(Sampler):
 
             def evaluator() -> bool:
                 return (sample.return_variable.value ==
-                        Database().constants_by_name['MPI_SUCCESS'].value)
+                        Database().get_constant('MPI_SUCCESS').value)
 
             sample.evaluator = evaluator
 
@@ -85,10 +85,15 @@ class ValidSampler(Sampler):
             sample = FunctionSample(function, True, set(argument_list), argument_list)
 
             # function without parameters
-            def evaluator() -> bool:
+            # NOTE sample=sample is done to avoid late binding closure behaviour!
+            def evaluator(sample=sample) -> bool:
                 # todo use valid error lookup rule
+                logging.debug('evaluator for function %s', function.name)
+                logging.debug('return variable value %s == MPI_SUCCESS', sample.return_variable.value)
+                logging.debug('sampler return variable %s', str(sample.return_variable))
+
                 return (sample.return_variable.value ==
-                        Database().constants_by_name['MPI_SUCCESS'].value)
+                        Database().get_constant('MPI_SUCCESS').value)
 
             sample.evaluator = evaluator
 

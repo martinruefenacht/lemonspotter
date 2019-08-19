@@ -7,12 +7,12 @@ import logging
 from core.function import Function
 from core.parameter import Direction
 from core.variable import Variable
-from core.source import Source
 from core.statement import (ConditionStatement,
                             FunctionStatement,
                             ExitStatement,
                             DeclarationAssignmentStatement,
-                            DeclarationStatement)
+                            DeclarationStatement,
+                            BlockStatement)
 
 
 class FunctionSample:
@@ -85,7 +85,7 @@ class FunctionSample:
         assert evaluator is not None
         self._evaluator = evaluator
 
-    def generate_source(self, source: Source) -> Source:
+    def generate_source(self, source: BlockStatement, comment: str = None) -> None:
         """"""
 
         # assign predefined arguments and check for collisions
@@ -128,7 +128,7 @@ class FunctionSample:
                     source.add_at_start(DeclarationStatement(variable))
 
         # add function call to source
-        source.add_at_start(self._generate_statement(source))
+        source.add_at_start(self._generate_statement(source, comment))
 
         # add outputs
         source.add_at_start(FunctionStatement.generate_print(self._return_variable))
@@ -142,8 +142,6 @@ class FunctionSample:
 
         # note, we check out argument validity in LemonSpotter level
         # note, should we even do a return check?
-
-        return source
 
     def _generate_return_check(self) -> Optional[ConditionStatement]:
         """"""
@@ -165,7 +163,9 @@ class FunctionSample:
 
         return statement
 
-    def _generate_statement(self, source: Source) -> FunctionStatement:
+    def _generate_statement(self,
+                            source: BlockStatement,
+                            comment: str = None) -> FunctionStatement:
         """
         Generates a compilable expression of the function with the given arguments.
         """
@@ -206,4 +206,7 @@ class FunctionSample:
 
         statement += ');'
 
-        return FunctionStatement(statement, {self.return_variable.name: self.return_variable})
+        return FunctionStatement(self._function.name,
+                                 statement,
+                                 {self.return_variable.name: self.return_variable},
+                                 comment)

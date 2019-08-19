@@ -2,10 +2,10 @@
 This module contains the Source class.
 """
 
-from typing import Dict, Optional
+from typing import Optional
 from pathlib import Path
 
-from core.statement import Statement, BlockStatement
+from core.statement import Statement, SourceStatement
 from core.variable import Variable
 
 
@@ -14,76 +14,40 @@ class Source:
     The Source object manages all C statments and variables.
     """
 
-    def __init__(self):
-        self._variables: Dict[str, Variable] = {}
+    def __init__(self) -> None:
+        self._block_statement = SourceStatement()
 
-        self._front_statements = []
-        self._back_statements = []
+    def has_variable(self, name: str) -> bool:
+        """"""
 
-    @property
-    def variables(self) -> Dict[str, Variable]:
-        return self._variables
+        return self._block_statement.has_variable(name)
 
     def get_variable(self, name: str) -> Optional[Variable]:
         """This method looks up a variable by name."""
 
-        if name in self.variables:
-            return self.variables[name]
-
-        # search sub-blocks for variables
-        # todo end statements as well?
-        for statement in self._front_statements:
-            if issubclass(type(statement), BlockStatement):
-                if name in statement.variables:
-                    return statement.variables[name]
-
-        return None
+        return self._block_statement.get_variable(name)
 
     def add_at_start(self, statement: Optional[Statement]) -> None:
         """
         Adds a generated string to the front of the source code.
         """
 
-        if statement is None:
-            return
-
-        # todo currently only able to add to nested block
-        if self._front_statements and issubclass(type(self._front_statements[-1]),
-                                                 BlockStatement):
-            self._front_statements[-1].add_at_start(statement)
-
-        else:
-            self._front_statements.append(statement)
-
-            # todo how to handle this internally?
-            # how do statements have access to whole global variables?
-            if not issubclass(type(statement), BlockStatement):
-                self._variables.update(statement.variables)
+        if statement is not None:
+            self._block_statement.add_at_start(statement)
 
     def add_at_end(self, statement: Statement) -> None:
         """
         Adds a generated string to the back of the source code.
         """
 
-        self._back_statements.append(statement)
-
-        # todo we need back variables and front variables? this is ordering
-        self._variables.update(statement.variables)
+        self._block_statement.add_at_end(statement)
 
     def __repr__(self) -> str:
         """
         Combines the front and back lines into a single string.
         """
 
-        code = ''
-
-        for statement in self._front_statements:
-            code += statement.express() + '\n'
-
-        for statement in self._back_statements:
-            code += statement.express() + '\n'
-
-        return code
+        return self._block_statement.express(0)
 
     def write(self, path: Path):
         """

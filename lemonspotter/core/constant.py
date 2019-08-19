@@ -31,7 +31,7 @@ class Constant:
     def type(self) -> Type:
         """This property provides the Type object from the Constant."""
 
-        return Database().type_by_abstract_type[self._json['abstract_type']]
+        return Database().get_type(self._json['abstract_type'])
 
     @property
     def properties(self) -> Dict[str, Any]:
