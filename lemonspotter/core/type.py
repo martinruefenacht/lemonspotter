@@ -91,29 +91,3 @@ class Type:
         logging.debug('%s is valid with type %s: %s', value, self.name, str(valid))
 
         return valid
-
-    @property
-    def referencable(self) -> bool:
-        """"""
-
-        return 'reference' in self._json
-
-    def reference(self) -> 'Type':
-        """"""
-
-        assert 'reference' in self._json
-
-        return Database().get_type(self._json['reference'])
-
-    @property
-    def dereferencable(self) -> bool:
-        """"""
-
-        return 'dereference' in self._json
-
-    def dereference(self) -> 'Type':
-        """"""
-
-        assert 'dereference' in self._json
-
-        return Database().get_type(self._json['dereference'])
