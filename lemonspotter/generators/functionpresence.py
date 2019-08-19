@@ -68,7 +68,7 @@ class FunctionPresenceGenerator(TestGenerator):
             function.properties['presence_tested'] = True
             function.properties['present'] = False
 
-            test.build_outcome = TestOutcome.FAIL
+            test.build_outcome = TestOutcome.FAILED
 
         test.build_fail_function = build_fail
 
