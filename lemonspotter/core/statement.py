@@ -15,6 +15,8 @@ class Statement:
     This class is the base class for all Statements.
     """
 
+    indent: str = '\t'
+
     def __init__(self, variables: Dict[str, Variable] = None, comment: str = None) -> None:
         self._variables: Dict[str, Variable] = variables if variables else {}
         self._statement: Optional[str] = None
@@ -36,7 +38,7 @@ class Statement:
         if self._statement is None:
             raise RuntimeError('Trying to express Statement with _statement is None.')
 
-        indentation = '\t' * indent_level
+        indentation = self.indent * indent_level
 
         if self._comment is not None:
             # TODO line break for long comments, 80 characters - indent
@@ -106,7 +108,7 @@ class BlockStatement(Statement):
         """"""
 
         if indent_level > 0:
-            indentation = '\t' * (indent_level-1)
+            indentation = self.indent * (indent_level-1)
             code = indentation + '{\n'
 
         else:
@@ -277,7 +279,7 @@ class ConditionStatement(BlockStatement):
     def express(self, indent_level: int) -> str:
         """"""
 
-        indentation = '\t' * indent_level
+        indentation = self.indent * indent_level
 
         code = indentation + f'if({self._condition})\n{super().express(indent_level+1)}'
 
@@ -303,6 +305,6 @@ class MainDefinitionStatement(BlockStatement):
     def express(self, indent_level: int) -> str:
         """"""
 
-        indentation = '\t' * indent_level
+        indentation = self.indent * indent_level
 
         return indentation + f'{self._statement}\n{super().express(indent_level+1)}'
