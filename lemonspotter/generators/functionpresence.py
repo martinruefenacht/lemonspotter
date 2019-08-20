@@ -8,12 +8,12 @@ building success or fail.
 import logging
 from typing import Set
 
-from core.database import Database
-from core.test import Test, TestType, TestOutcome
-from core.function import Function
-from core.testgenerator import TestGenerator
-from samplers.declare import DeclarationSampler
-from core.statement import MainDefinitionStatement, ReturnStatement
+from lemonspotter.core.database import Database
+from lemonspotter.core.test import Test, TestType, TestOutcome
+from lemonspotter.core.function import Function
+from lemonspotter.core.testgenerator import TestGenerator
+from lemonspotter.core.statement import MainDefinitionStatement, ReturnStatement
+from lemonspotter.samplers.declare import DeclarationSampler
 
 
 class FunctionPresenceGenerator(TestGenerator):

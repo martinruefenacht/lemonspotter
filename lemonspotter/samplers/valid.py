@@ -6,13 +6,13 @@ import logging
 from typing import Iterable
 import itertools
 
-from core.sampler import Sampler
-from core.database import Database
-from core.variable import Variable
-from core.function import Function
-from core.sample import FunctionSample
-from core.parameter import Parameter, Direction
-from core.partition import PartitionType
+from lemonspotter.core.sampler import Sampler
+from lemonspotter.core.database import Database
+from lemonspotter.core.variable import Variable
+from lemonspotter.core.function import Function
+from lemonspotter.core.sample import FunctionSample
+from lemonspotter.core.parameter import Parameter, Direction
+from lemonspotter.core.partition import PartitionType
 
 
 class ValidSampler(Sampler):

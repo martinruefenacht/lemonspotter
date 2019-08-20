@@ -5,8 +5,8 @@ This module contains the Source class.
 from typing import Optional
 from pathlib import Path
 
-from core.statement import Statement, SourceStatement
-from core.variable import Variable
+from lemonspotter.core.statement import Statement, SourceStatement
+from lemonspotter.core.variable import Variable
 
 
 class Source:

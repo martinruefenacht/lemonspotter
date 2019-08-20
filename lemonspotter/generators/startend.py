@@ -5,13 +5,13 @@ This module defines the initiation point to finalization point generator.
 import logging
 from typing import Iterable, MutableSet, MutableMapping
 
-from core.test import Test, TestType, TestOutcome
-from core.database import Database
-from core.function import Function
-from core.sample import FunctionSample
-from core.testgenerator import TestGenerator
-from core.sampler import Sampler
-from core.statement import MainDefinitionStatement, ReturnStatement
+from lemonspotter.core.test import Test, TestType, TestOutcome
+from lemonspotter.core.database import Database
+from lemonspotter.core.function import Function
+from lemonspotter.core.sample import FunctionSample
+from lemonspotter.core.testgenerator import TestGenerator
+from lemonspotter.core.sampler import Sampler
+from lemonspotter.core.statement import MainDefinitionStatement, ReturnStatement
 
 
 class StartEndGenerator(TestGenerator):
