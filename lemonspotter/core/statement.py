@@ -106,16 +106,15 @@ class BlockStatement(Statement):
         self._back_statements: List[Statement] = []
 
     def get_variable(self, name: str) -> Optional[Variable]:
-        if name in self._variables:
-            return self._variables[name]
+        var = super().get_variable(name)
 
-        else:
+        if var is None:
             for statement in (self._front_statements + self._back_statements):
                 var = statement.get_variable(name)
                 if var is not None:
-                    return var
+                    break
 
-        return None
+        return var
 
     def has_variable(self, name: str) -> bool:
         """"""
