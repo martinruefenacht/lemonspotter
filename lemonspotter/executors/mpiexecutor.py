@@ -5,7 +5,7 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Set, List
 
-from core.test import Test, TestType
+from lemonspotter.core.test import Test, TestType
 
 
 class MPIExecutor:

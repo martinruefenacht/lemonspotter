@@ -4,7 +4,7 @@
 from typing import Mapping, Any, Optional
 from enum import Enum
 
-from core.database import Database
+from lemonspotter.core.database import Database
 
 
 class Operand(Enum):

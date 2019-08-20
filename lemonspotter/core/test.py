@@ -6,7 +6,7 @@ from typing import Callable, Optional
 from enum import Enum
 from pathlib import Path
 
-from core.source import Source
+from lemonspotter.core.source import Source
 
 
 class TestType(Enum):

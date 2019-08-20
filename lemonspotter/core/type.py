@@ -6,11 +6,11 @@ from functools import lru_cache
 import logging
 from typing import TYPE_CHECKING, Mapping, Any, Iterable
 
-from core.database import Database
-from core.partition import Partition
+from lemonspotter.core.database import Database
+from lemonspotter.core.partition import Partition
 
 if TYPE_CHECKING:
-    from core.constant import Constant  # noqa
+    from lemonspotter.core.constant import Constant  # noqa
 
 
 class Type:

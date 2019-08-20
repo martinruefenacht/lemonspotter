@@ -6,8 +6,8 @@ from typing import Dict, List, Optional
 import logging
 from itertools import tee, chain
 
-from core.variable import Variable
-from core.database import Database
+from lemonspotter.core.variable import Variable
+from lemonspotter.core.database import Database
 
 
 class Statement:

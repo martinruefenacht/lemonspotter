@@ -5,10 +5,10 @@ This module contains the definition of the DefaultSampler.
 import logging
 from typing import Iterable
 
-from core.sampler import Sampler
-from core.variable import Variable
-from core.function import Function
-from core.sample import FunctionSample
+from lemonspotter.core.sampler import Sampler
+from lemonspotter.core.variable import Variable
+from lemonspotter.core.function import Function
+from lemonspotter.core.sample import FunctionSample
 
 
 class DeclarationSampler(Sampler):
