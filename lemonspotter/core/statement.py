@@ -53,35 +53,47 @@ class Statement:
             raise Exception('Length of indentation for statements is larger than allowed max line length.')
 
         if self._comment:
-            comment = f'{indentation}// {self._comment}\n'
+            final_comment = self._express_comment(indent_level)
+            full_statement = f'{final_comment}{indentation}{self._statement}'
 
-            if len(comment) < self.max_line_length:
-                # single line comment
-                final_comment = comment
+            return full_statement
 
-            else:
-                final_comment = ''
+        else:
+            return f'{indentation}{self._statement}'
 
-                # multi line comment using // instead of /* */
-                overrun = len(comment) - self.max_line_length
+    def _express_comment(self, indent_level: int) -> Optional[str]:
+        """
+        """
 
-                while overrun > 0:
-                    # find breakable space character
-                    index = comment.rfind(' ', 0, self.max_line_length)
-                    final_comment += comment[:index] + '\n'
+        if not self._comment:
+            return
 
-                    # separate comment lines
-                    comment = f'{indentation}// {comment[index:].strip()}'
-                    overrun = len(comment) - self.max_line_length
+        indentation = self.indent * indent_level
 
-                final_comment += comment + '\n'
+        comment = f'{indentation}// {self._comment}\n'
+
+        if len(comment) < self.max_line_length:
+            # single line comment
+            final_comment = comment
 
         else:
             final_comment = ''
 
-        full_statement = f'{final_comment}{indentation}{self._statement}'
+            # multi line comment using // instead of /* */
+            overrun = len(comment) - self.max_line_length
 
-        return full_statement
+            while overrun > 0:
+                # find breakable space character
+                index = comment.rfind(' ', 0, self.max_line_length)
+                final_comment += comment[:index] + '\n'
+
+                # separate comment lines
+                comment = f'{indentation}// {comment[index:].strip()}'
+                overrun = len(comment) - self.max_line_length
+
+            final_comment += comment + '\n'
+
+        return final_comment
 
 
 class BlockStatement(Statement):
