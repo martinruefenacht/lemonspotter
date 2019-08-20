@@ -3,10 +3,10 @@ import json
 from typing import Mapping, Any, Sequence
 import logging
 
-from core.database import Database
-from core.function import Function
-from core.type import Type
-from core.constant import Constant
+from lemonspotter.core.database import Database
+from lemonspotter.core.function import Function
+from lemonspotter.core.type import Type
+from lemonspotter.core.constant import Constant
 
 
 class MPIParser:

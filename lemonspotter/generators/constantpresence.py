@@ -7,16 +7,15 @@ Tests whether a specific constant exists. No execution is required only building
 import logging
 from typing import Set
 
-from core.database import Database
-from core.test import Test, TestType, TestOutcome
-from core.testgenerator import TestGenerator
-from core.constant import Constant
-from core.variable import Variable
-
-from core.statement import (DeclarationAssignmentStatement,
-                            FunctionStatement,
-                            MainDefinitionStatement,
-                            ReturnStatement)
+from lemonspotter.core.database import Database
+from lemonspotter.core.test import Test, TestType, TestOutcome
+from lemonspotter.core.testgenerator import TestGenerator
+from lemonspotter.core.constant import Constant
+from lemonspotter.core.variable import Variable
+from lemonspotter.core.statement import (DeclarationAssignmentStatement,
+                                         FunctionStatement,
+                                         MainDefinitionStatement,
+                                         ReturnStatement)
 
 
 class ConstantPresenceGenerator(TestGenerator):

@@ -4,8 +4,8 @@ The TestGenerator is the base class for all generators.
 It provides the main function definition.
 """
 
-from core.test import Source
-from core.statement import IncludeStatement
+from lemonspotter.core.test import Source
+from lemonspotter.core.statement import IncludeStatement
 
 
 class TestGenerator:

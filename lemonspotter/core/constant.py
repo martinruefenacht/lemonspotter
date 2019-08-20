@@ -5,9 +5,9 @@ This module contains the definition of the Constant class.
 from typing import Dict, Any, Optional
 import logging
 
-from core.database import Database
-from core.type import Type
-from core.variable import Variable
+from lemonspotter.core.database import Database
+from lemonspotter.core.type import Type
+from lemonspotter.core.variable import Variable
 
 
 class Constant:

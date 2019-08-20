@@ -5,9 +5,9 @@ This module defines the function class which respresents functions from the spec
 from typing import Mapping, Any, AbstractSet, Sequence, Iterable
 from functools import lru_cache
 
-from core.database import Database
-from core.type import Type
-from core.parameter import Parameter
+from lemonspotter.core.database import Database
+from lemonspotter.core.type import Type
+from lemonspotter.core.parameter import Parameter
 
 
 class Function:

@@ -5,11 +5,11 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Set, List
 
-from core.test import Test, TestType
+from lemonspotter.core.test import Test, TestType
 
 
 class MPIExecutor:
-    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path = Path('tests/')):
+    def __init__(self, mpicc: str, mpiexec: str, test_directory: Path = Path('generated_tests/')):
         """
         Initializes a test executor for MPI Libraries
         """

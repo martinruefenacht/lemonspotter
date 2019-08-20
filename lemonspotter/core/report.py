@@ -1,12 +1,12 @@
 import datetime
 import json
-
 from pathlib import Path
 from typing import List, MutableMapping, Mapping, Any
-from core.test import Test
-from core.test import TestType
-from core.test import TestOutcome
-from core.database import Database
+
+from lemonspotter.core.test import Test
+from lemonspotter.core.test import TestType
+from lemonspotter.core.test import TestOutcome
+from lemonspotter.core.database import Database
 
 
 class TestReport():

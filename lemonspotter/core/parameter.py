@@ -5,8 +5,8 @@ This module contains the class definition of Parameter.
 from typing import Dict, Any
 from enum import Enum
 
-from core.database import Database
-from core.type import Type
+from lemonspotter.core.database import Database
+from lemonspotter.core.type import Type
 
 
 class Direction(Enum):

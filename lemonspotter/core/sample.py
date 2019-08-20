@@ -4,15 +4,15 @@
 from typing import Optional, Sequence, Callable, Iterable
 import logging
 
-from core.function import Function
-from core.parameter import Direction
-from core.variable import Variable
-from core.statement import (ConditionStatement,
-                            FunctionStatement,
-                            ExitStatement,
-                            DeclarationAssignmentStatement,
-                            DeclarationStatement,
-                            BlockStatement)
+from lemonspotter.core.function import Function
+from lemonspotter.core.parameter import Direction
+from lemonspotter.core.variable import Variable
+from lemonspotter.core.statement import (ConditionStatement,
+                                         FunctionStatement,
+                                         ExitStatement,
+                                         DeclarationAssignmentStatement,
+                                         DeclarationStatement,
+                                         BlockStatement)
 
 
 class FunctionSample:
