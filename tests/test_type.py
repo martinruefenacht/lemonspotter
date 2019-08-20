@@ -1,16 +1,17 @@
-#from hypothesis import given, strategies as st
-#
-#type_info = st.fixed_dictionaries({
-#    'default': st.text(),
-#    'name': st.text(),
-#    'abstract_type': st.text(),
-#    'language_type': st.text(),
-#    'base_type': st.booleans(),
-#    'print_specifier': st.text(),
-#
-#    
-#    })
-#
-#@given()
-#def test_type_creation():
-#    pass
+from hypothesis import given, strategies as st
+
+from lemonspotter.core.type import Type
+
+type_info = st.fixed_dictionaries({
+    'name': st.text(),
+    'abstract_type': st.text(),
+    'base_type': st.booleans(),
+    'language_type': st.text(),
+    'print_specifier': st.text()
+    #'reference'
+    #'dereference'
+    })
+
+@given(json=st.none())
+def test_type_instantiation(self, json):
+    type = Type(json)

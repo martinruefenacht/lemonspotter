@@ -2,8 +2,8 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from functools import lru_cache
 import logging
+from functools import lru_cache
 from typing import TYPE_CHECKING, Mapping, Any, Iterable
 
 from lemonspotter.core.database import Database
