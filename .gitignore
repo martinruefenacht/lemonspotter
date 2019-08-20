@@ -8,5 +8,7 @@
 
 *.swp
 
+.hypothesis
+
 generated_tests/
 reports/
