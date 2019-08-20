@@ -48,7 +48,9 @@ class Statement:
             raise RuntimeError('Trying to express Statement with _statement is None.')
 
         indentation = self.indent * indent_level
-        assert len(indentation) < self.max_line_length
+
+        if len(indentation) > self.max_line_length:
+            raise Exception('Length of indentation for statements is larger than allowed max line length.')
 
         if self._comment:
             comment = f'{indentation}// {self._comment}\n'

@@ -46,7 +46,9 @@ class ValidSampler(Sampler):
         for parameter in function.parameters:  # type: ignore
             argument_lists.append(self.generate_sample(parameter))
 
-        assert argument_lists
+        if not argument_lists:
+            raise Exception('No arguments generated from a function with parameters.')
+
         logging.debug('pre cartesian product: %s', str(argument_lists))
 
         # cartesian product of all arguments

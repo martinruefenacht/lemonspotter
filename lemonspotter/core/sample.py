@@ -55,7 +55,9 @@ class FunctionSample:
     def arguments(self, arguments: Sequence[Variable]) -> None:
         """"""
 
-        assert arguments is not None
+        if arguments is None:
+            raise Exception('Arguments given to Sample are None.')
+
         self._arguments = arguments
 
     @property
@@ -68,21 +70,27 @@ class FunctionSample:
     def variables(self, variables: Iterable[Variable]) -> None:
         """"""
 
-        assert variables is not None
+        if variables is None:
+            raise Exception('Variables given to Sample is None.')
+
         self._variables = variables
 
     @property
     def evaluator(self) -> Callable[[], bool]:
         """"""
 
-        assert self._evaluator is not None
+        if self._evaluator is None:
+            raise Exception('Evaluator is None. Needs to be assigned.')
+
         return self._evaluator
 
     @evaluator.setter
     def evaluator(self, evaluator: Callable[[], bool]) -> None:
         """"""
 
-        assert evaluator is not None
+        if evaluator is None:
+            raise Exception('Evaluator given to Sample is None.') 
+
         self._evaluator = evaluator
 
     def generate_source(self, source: BlockStatement, comment: str = None) -> None:

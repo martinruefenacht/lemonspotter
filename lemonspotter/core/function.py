@@ -40,7 +40,9 @@ class Function:
     def name(self) -> str:
         """This property provides access to the Function name."""
 
-        assert self._json.get('name', None) is not None
+        if 'name' not in self._json:
+            raise Exception('Function name is not in JSON.')
+
         return self._json['name']
 
     @property
@@ -54,22 +56,18 @@ class Function:
     def parameters(self) -> Sequence[Parameter]:
         """This property provides access to the parameter list of this Function object."""
 
-        assert self._json.get('parameters', None) is not None
-        return tuple(Parameter(parameter) for parameter in self._json['parameters'])
+        if 'parameters' not in self._json:
+            raise Exception('Parameters are not in JSON.')
 
-#    @property
-#    def default_partition(self) -> Partition:
-#        """"""
-#
-#        assert self._json.get('partitions', None) is not None
-#        assert self._json['partitions'].get('default', None) is not None
-#        return Partition(Database(), self, self._json['partitions']['default'])
+        return tuple(Parameter(parameter) for parameter in self._json['parameters'])
 
     @property
     def return_type(self) -> Type:
         """This property provides the Type object of the return of this Function."""
 
-        assert self._json.get('return', None) is not None
+        if 'return' not in self._json:
+            raise Exception('Return is not in JSON.')
+
         return Database().get_type(self._json['return'])
 
     @property  # type: ignore
@@ -77,7 +75,9 @@ class Function:
     def needs_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of needed Function objects."""
 
-        assert self._json.get('needs_any', None) is not None
+        if 'needs_any' not in self._json:
+            raise Exception('Needs any is not in JSON.')
+
         subset = filter(lambda name: Database().has_function(name), self._json['needs_any'])
 
         return set(Database().get_function(func_name) for func_name in subset)
@@ -87,7 +87,9 @@ class Function:
     def needs_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of needed Function objects."""
 
-        assert self._json.get('needs_all', None) is not None
+        if 'needs_all' not in self._json:
+            raise Exception('Needs all is not in JSON.')
+
         subset = filter(lambda name: Database().has_function(name), self._json['needs_all'])
 
         return set(Database().get_function(func_name) for func_name in subset)
@@ -97,7 +99,9 @@ class Function:
     def leads_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of lead Function objects."""
 
-        assert self._json.get('leads_any', None) is not None
+        if 'leads_any' not in self._json:
+            raise Exception('Leads any is not in JSON.')
+
         subset = filter(lambda name: Database().has_function(name), self._json['leads_any'])
 
         return set(Database().get_function(func_name) for func_name in subset)
@@ -107,7 +111,9 @@ class Function:
     def leads_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
-        assert self._json.get('leads_all', None) is not None
+        if 'leads_all' not in self._json:
+            raise Exception('Leads all is not in JSON.')
+
         subset = filter(lambda name: Database().has_function(name), self._json['leads_all'])
 
         return set(Database().get_function(func_name) for func_name in subset)

@@ -57,13 +57,17 @@ class Database(metaclass=_Singleton):
         if abstract_type is None:
             return self._constants
 
-        assert abstract_type in self._constants_by_abstract_type
+        elif abstract_type not in self._constants_by_abstract_type:
+            raise Exception(f'abstract type {abstract_type} not in "constants by abstract type" look up.')
+
         return self._constants_by_abstract_type[abstract_type]
 
     def get_constant(self, name: str) -> Constant:
         """"""
 
-        assert name in self._constants_by_name
+        if name not in self._constants_by_name:
+            raise Exception(f'Constant {name} not in "constants by name" look up.')
+
         return self._constants_by_name[name]
 
     def add_function(self, function: Function) -> None:
@@ -85,7 +89,9 @@ class Database(metaclass=_Singleton):
     def get_function(self, name: str) -> Function:
         """"""
 
-        assert name in self._functions_by_name
+        if name not in self._functions_by_name:
+            raise Exception(f'Function {name} not in "functions by name" look up.')
+
         return self._functions_by_name[name]
 
     def has_function(self, name: str) -> bool:

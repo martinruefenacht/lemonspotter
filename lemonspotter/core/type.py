@@ -101,7 +101,8 @@ class Type:
     def reference(self) -> 'Type':
         """"""
 
-        assert 'reference' in self._json
+        if 'reference' not in self._json:
+            raise Exception(f'Type {self._json["name"]} cannot be referenced.')
 
         return Database().get_type(self._json['reference'])
 
@@ -114,6 +115,7 @@ class Type:
     def dereference(self) -> 'Type':
         """"""
 
-        assert 'dereference' in self._json
+        if 'dereference' not in self._json:
+            raise Exception(f'Type {self._json["name"]} cannot be dereferenced.')
 
         return Database().get_type(self._json['dereference'])

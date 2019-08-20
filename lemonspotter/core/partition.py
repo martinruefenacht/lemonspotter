@@ -110,7 +110,6 @@ class Partition:
 #        """"""
 #
 #        if self._return['type'] == 'constant':
-#            assert 'constant' in self._return
 #            return self._return['constant']
 #
 #        else:
@@ -122,7 +121,6 @@ class Partition:
 #        """"""
 #
 #        operand = self._return.get('operand', None)
-#        assert operand is not None
 #
 #        logging.debug('converted from "%s" to %s', operand, Operand(operand))
 #        return Operand(operand)
