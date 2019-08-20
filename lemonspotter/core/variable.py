@@ -7,7 +7,7 @@ from typing import Optional, TYPE_CHECKING
 import logging
 
 if TYPE_CHECKING:
-    from core.type import Type
+    from lemonspotter.core.type import Type
 
 
 class Variable:

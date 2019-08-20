@@ -7,6 +7,7 @@ import json
 
 from lemonspotter.core.runtime import Runtime
 
+
 def parse_arguments():
     """
     Parse the arguments given on the command line.
@@ -94,6 +95,7 @@ def parse_arguments():
 
     return arguments
 
+
 def set_logging_level(log_level: str):
     """
     Set the logging level to the one specified on the command line.
@@ -174,6 +176,7 @@ def main() -> None:
 
         # Prints report and writes to file
         runtime.reporter.print_report()
+
 
 if __name__ == '__main__':
     main()

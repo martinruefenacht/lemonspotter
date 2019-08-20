@@ -13,9 +13,9 @@ from lemonspotter.core.testgenerator import TestGenerator
 from lemonspotter.core.constant import Constant
 from lemonspotter.core.variable import Variable
 from lemonspotter.core.statement import (DeclarationAssignmentStatement,
-                            FunctionStatement,
-                            MainDefinitionStatement,
-                            ReturnStatement)
+                                         FunctionStatement,
+                                         MainDefinitionStatement,
+                                         ReturnStatement)
 
 
 class ConstantPresenceGenerator(TestGenerator):

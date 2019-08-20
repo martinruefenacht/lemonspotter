@@ -8,11 +8,11 @@ from lemonspotter.core.function import Function
 from lemonspotter.core.parameter import Direction
 from lemonspotter.core.variable import Variable
 from lemonspotter.core.statement import (ConditionStatement,
-                            FunctionStatement,
-                            ExitStatement,
-                            DeclarationAssignmentStatement,
-                            DeclarationStatement,
-                            BlockStatement)
+                                         FunctionStatement,
+                                         ExitStatement,
+                                         DeclarationAssignmentStatement,
+                                         DeclarationStatement,
+                                         BlockStatement)
 
 
 class FunctionSample:

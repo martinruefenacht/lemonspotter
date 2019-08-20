@@ -2,8 +2,6 @@
 Lemonspotter Runtime
 """
 
-import logging
-import json
 from pathlib import Path
 
 from lemonspotter.parsers.mpiparser import MPIParser

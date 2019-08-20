@@ -12,8 +12,8 @@ from lemonspotter.core.database import Database
 from lemonspotter.core.test import Test, TestType, TestOutcome
 from lemonspotter.core.function import Function
 from lemonspotter.core.testgenerator import TestGenerator
-from lemonspotter.samplers.declare import DeclarationSampler
 from lemonspotter.core.statement import MainDefinitionStatement, ReturnStatement
+from lemonspotter.samplers.declare import DeclarationSampler
 
 
 class FunctionPresenceGenerator(TestGenerator):

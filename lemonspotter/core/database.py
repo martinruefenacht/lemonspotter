@@ -5,9 +5,9 @@ This module defines the Database class.
 from __future__ import annotations
 from typing import TYPE_CHECKING, Set, Dict, List, Mapping, Iterable
 if TYPE_CHECKING:
-    from core.function import Function
-    from core.constant import Constant
-    from core.type import Type
+    from lemonspotter.core.function import Function
+    from lemonspotter.core.constant import Constant
+    from lemonspotter.core.type import Type
 
 
 class _Singleton(type):
