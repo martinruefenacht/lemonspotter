@@ -221,6 +221,9 @@ class ReturnStatement(Statement):
     def __init__(self, expression: str, comment: str = None) -> None:
         super().__init__(comment=comment)
 
+        if not expression:
+            raise Exception('Expression passed to ReturnStatement is empty.')
+
         self._statement = f'return {expression};'
 
 
