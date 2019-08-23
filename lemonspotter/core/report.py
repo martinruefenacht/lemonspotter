@@ -109,7 +109,6 @@ class TestReport():
                                       'run_outcome': str(test.run_outcome)}
 
         self._report['tests'] = test_report
-        print(self._report)
 
     def print_report(self, indent=2):
         """
