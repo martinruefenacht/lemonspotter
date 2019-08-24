@@ -39,14 +39,18 @@ class Variable:
     def name(self) -> str:
         """This property provides the name of the Variable."""
 
-        assert self._name is not None
+        if self._name is None:
+            raise Exception('Name is None.')
+
         return self._name
 
     @name.setter
     def name(self, name: str) -> None:
         """"""
 
-        assert name is not None
+        if name is None:
+            raise Exception('Assigning None to name of Variable.')
+
         self._name = name
 
     @property
@@ -59,7 +63,9 @@ class Variable:
     def value(self, value: str) -> None:
         """This allows setting the value of the Variable."""
 
-        assert value is not None
+        if value is None:
+            raise Exception('Assigning None to value of Variable.')
+
         self._value = value
 
     @property

@@ -27,19 +27,25 @@ class Parameter:
     def name(self) -> str:
         """This property provides the name of the Parameter."""
 
-        assert 'name' in self._json
+        if 'name' not in self._json:
+            raise Exception('Name is not in JSON.')
+
         return self._json['name']
 
     @property
     def type(self) -> Type:
         """This property provides the Type object of the abstract type of this Parameter."""
 
-        assert 'abstract_type' in self._json
+        if 'abstract_type' not in self._json:
+            raise Exception('Abstract type is not in JSON.')
+
         return Database().get_type(self._json['abstract_type'])
 
     @property
     def direction(self) -> Direction:
         """This property provides the direction of the Parameter."""
 
-        assert 'direction' in self._json
+        if 'direction' not in self._json:
+            raise Exception('Direction is not in JSON.')
+
         return Direction(self._json['direction'])

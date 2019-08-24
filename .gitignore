@@ -9,5 +9,7 @@
 *.swp
 .hypothesis
 
-tests/
+.hypothesis
+
+generated_tests/
 reports/

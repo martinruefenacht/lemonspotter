@@ -1,3 +1,7 @@
+"""
+Lemonspotter Runtime
+"""
+
 from pathlib import Path
 
 from lemonspotter.parsers.mpiparser import MPIParser

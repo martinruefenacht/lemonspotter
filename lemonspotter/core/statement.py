@@ -48,38 +48,52 @@ class Statement:
             raise RuntimeError('Trying to express Statement with _statement is None.')
 
         indentation = self.indent * indent_level
-        assert len(indentation) < self.max_line_length
+
+        if len(indentation) > self.max_line_length:
+            raise Exception('Length of indentation for statements is larger than allowed max line length.')
 
         if self._comment:
-            comment = f'{indentation}// {self._comment}\n'
+            final_comment = self._express_comment(indent_level)
+            full_statement = f'{final_comment}{indentation}{self._statement}'
 
-            if len(comment) < self.max_line_length:
-                # single line comment
-                final_comment = comment
+            return full_statement
 
-            else:
-                final_comment = ''
+        else:
+            return f'{indentation}{self._statement}'
 
-                # multi line comment using // instead of /* */
-                overrun = len(comment) - self.max_line_length
+    def _express_comment(self, indent_level: int) -> Optional[str]:
+        """
+        """
 
-                while overrun > 0:
-                    # find breakable space character
-                    index = comment.rfind(' ', 0, self.max_line_length)
-                    final_comment += comment[:index] + '\n'
+        if not self._comment:
+            return
 
-                    # separate comment lines
-                    comment = f'{indentation}// {comment[index:].strip()}'
-                    overrun = len(comment) - self.max_line_length
+        indentation = self.indent * indent_level
 
-                final_comment += comment + '\n'
+        comment = f'{indentation}// {self._comment}\n'
+
+        if len(comment) < self.max_line_length:
+            # single line comment
+            final_comment = comment
 
         else:
             final_comment = ''
 
-        full_statement = f'{final_comment}{indentation}{self._statement}'
+            # multi line comment using // instead of /* */
+            overrun = len(comment) - self.max_line_length
 
-        return full_statement
+            while overrun > 0:
+                # find breakable space character
+                index = comment.rfind(' ', 0, self.max_line_length)
+                final_comment += comment[:index] + '\n'
+
+                # separate comment lines
+                comment = f'{indentation}// {comment[index:].strip()}'
+                overrun = len(comment) - self.max_line_length
+
+            final_comment += comment + '\n'
+
+        return final_comment
 
 
 class BlockStatement(Statement):
@@ -92,16 +106,15 @@ class BlockStatement(Statement):
         self._back_statements: List[Statement] = []
 
     def get_variable(self, name: str) -> Optional[Variable]:
-        if name in self._variables:
-            return self._variables[name]
+        var = super().get_variable(name)
 
-        else:
+        if var is None:
             for statement in (self._front_statements + self._back_statements):
                 var = statement.get_variable(name)
                 if var is not None:
-                    return var
+                    break
 
-        return None
+        return var
 
     def has_variable(self, name: str) -> bool:
         """"""
@@ -220,6 +233,9 @@ class ReturnStatement(Statement):
 
     def __init__(self, expression: str, comment: str = None) -> None:
         super().__init__(comment=comment)
+
+        if not expression:
+            raise Exception('Expression passed to ReturnStatement is empty.')
 
         self._statement = f'return {expression};'
 

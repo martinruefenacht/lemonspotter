@@ -2,8 +2,8 @@
 Defines a type object of from library that can be included in Lemonspotter tests.
 """
 
-from functools import lru_cache
 import logging
+from functools import lru_cache
 from typing import TYPE_CHECKING, Mapping, Any, Iterable
 
 from lemonspotter.core.database import Database
@@ -101,7 +101,8 @@ class Type:
     def reference(self) -> 'Type':
         """"""
 
-        assert 'reference' in self._json
+        if 'reference' not in self._json:
+            raise Exception(f'Type {self._json["name"]} cannot be referenced.')
 
         return Database().get_type(self._json['reference'])
 
@@ -114,6 +115,7 @@ class Type:
     def dereference(self) -> 'Type':
         """"""
 
-        assert 'dereference' in self._json
+        if 'dereference' not in self._json:
+            raise Exception(f'Type {self._json["name"]} cannot be dereferenced.')
 
         return Database().get_type(self._json['dereference'])

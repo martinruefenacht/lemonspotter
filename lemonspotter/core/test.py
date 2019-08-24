@@ -133,7 +133,9 @@ class Test:
     def source(self) -> Source:
         """This property provides the Source of the Test."""
 
-        assert self._source is not None
+        if self._source is None:
+            raise Exception('Source is None.')
+
         return self._source
 
     @source.setter
