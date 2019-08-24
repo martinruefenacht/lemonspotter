@@ -3,4 +3,4 @@ python:
     - "3.7"
 
 install: pip install hypothesis
-script: pytest
+script: python3.7 -m pytest
