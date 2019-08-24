@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/martinruefenacht/lemonspotter.svg?token=pPyajLGh7dycZ7EPBDvw&branch=develop)](https://travis-ci.com/martinruefenacht/lemonspotter)
+
 # Lemon Spotter
 This is a test and benchmark suite for MPI.
 
