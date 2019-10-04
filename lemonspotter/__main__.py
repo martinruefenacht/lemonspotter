@@ -172,6 +172,7 @@ def main() -> None:
         # initialize and load the database
         runtime = Runtime(Path(arguments.specification), arguments.mpicc, arguments.mpiexec)
         runtime.presence_testing()
+        runtime.independent_testing()
         runtime.start_end_testing()
 
         # Prints report and writes to file
