@@ -134,7 +134,7 @@ class FunctionSample:
         """
         for parameter, argument in zip(self.function.parameters, self.arguments):  # type: ignore
             if parameter.direction is Direction.OUT or parameter.direction is Direction.INOUT:
-                if "PTR" in parameter.type:
+                if "PTR" in parameter.type.abstract_type:
                     print("Pointer Detected")
 
         # add arguments to source
