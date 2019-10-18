@@ -133,9 +133,11 @@ class FunctionSample:
         4. The pointer will need to be set to the address of the true value variable
         """
         for parameter, argument in zip(self.function.parameters, self.arguments):  # type: ignore
-            if parameter.direction is Direction.OUT or parameter.direction is Direction.INOUT:
-                if "PTR" in parameter.type.abstract_type:
-                    print("Pointer Detected")
+            if parameter.direction is Direction.OUT:
+                if "1PTR" in parameter.type.abstract_type:
+                    print(parameter.name)
+                    #true_variable = Variable(parameter.type.language_type[1:], "test", "&"+argument.name)
+                    print(parameter.type.language_type[1:])
 
         # add arguments to source
         for variable in self.arguments:
