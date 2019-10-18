@@ -125,6 +125,18 @@ class FunctionSample:
 
         self.arguments = [check_argument(argument) for argument in self.arguments]
 
+        """
+        Attempting to Implement Bug Fix Here. The following things need to occur:
+        1. If parameter is Out or INOUT then it is eligible for further testing.
+        2. If eligible parameter is also a pointer then it will require an extra variable
+        3. A variable will need to be created that stores the true value.
+        4. The pointer will need to be set to the address of the true value variable
+        """
+        for parameter, argument in zip(self.function.parameters, self.arguments):  # type: ignore
+            if parameter.direction is Direction.OUT or parameter.direction is Direction.INOUT:
+                if "PTR" in parameter.type:
+                    print("Pointer Detected")
+
         # add arguments to source
         for variable in self.arguments:
             existing = source.get_variable(variable.name)
