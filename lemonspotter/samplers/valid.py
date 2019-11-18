@@ -109,10 +109,6 @@ class ValidSampler(Sampler):
         type_samples = []
 
         if parameter.direction == Direction.OUT:
-            print(parameter.name)
-            """
-            CODE NEEDS TO BE IMPLEMENTED HERE
-            """
             if parameter.type.referencable:
                 nonref_var = Variable(parameter.type.dereference(),
                                       "nonref_"+parameter.name)
