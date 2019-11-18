@@ -109,10 +109,23 @@ class ValidSampler(Sampler):
         type_samples = []
 
         if parameter.direction == Direction.OUT:
-            # generate out variable
-            var = Variable(parameter.type, parameter.name + '_out')
+            print(parameter.name)
+            """
+            CODE NEEDS TO BE IMPLEMENTED HERE
+            """
+            if parameter.type.referencable:
+                nonref_var = Variable(parameter.type.dereference(),
+                                      "nonref_"+parameter.name)
+                var = Variable(parameter.type, parameter.name+'_out', "&"+nonref_var.name+"_out")
 
-            type_samples.append(var)
+                type_samples.append(nonref_var)
+                type_samples.append(var)
+
+            else:
+                # generate out variable
+                var = Variable(parameter.type, parameter.name + '_out')
+
+                type_samples.append(var)
 
             return type_samples
 

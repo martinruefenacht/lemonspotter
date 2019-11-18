@@ -89,7 +89,7 @@ class FunctionSample:
         """"""
 
         if evaluator is None:
-            raise Exception('Evaluator given to Sample is None.') 
+            raise Exception('Evaluator given to Sample is None.')
 
         self._evaluator = evaluator
 
@@ -124,20 +124,6 @@ class FunctionSample:
                 return arg
 
         self.arguments = [check_argument(argument) for argument in self.arguments]
-
-        """
-        Attempting to Implement Bug Fix Here. The following things need to occur:
-        1. If parameter is Out or INOUT then it is eligible for further testing.
-        2. If eligible parameter is also a pointer then it will require an extra variable
-        3. A variable will need to be created that stores the true value.
-        4. The pointer will need to be set to the address of the true value variable
-        """
-        for parameter, argument in zip(self.function.parameters, self.arguments):  # type: ignore
-            if parameter.direction is Direction.OUT:
-                if "1PTR" in parameter.type.abstract_type:
-                    print(parameter.name)
-                    #true_variable = Variable(parameter.type.language_type[1:], "test", "&"+argument.name)
-                    print(parameter.type.language_type[1:])
 
         # add arguments to source
         for variable in self.arguments:
