@@ -3,6 +3,7 @@
 
 from typing import Optional, Sequence, Callable, Iterable
 import logging
+import copy
 
 from lemonspotter.core.function import Function
 from lemonspotter.core.parameter import Direction
@@ -196,6 +197,10 @@ class FunctionSample:
             pairs = zip(self.arguments, self.function.parameters)  # type: ignore
             for idx, (argument, parameter) in enumerate(pairs):
                 mod = ''
+
+                if parameter.direction == Direction.OUT:
+                    mod += '&'
+
 
 #                pointer_diff = argument.pointer_level - parameter.pointer_level
 #                if pointer_diff < 0:
