@@ -2,7 +2,6 @@
 **/__pycache__
 
 *.pyc
-**/*.json
 **/*_binary
 **/*.c
 
