@@ -1,0 +1,21 @@
+{
+    "language": "c",
+    "valid":
+    {
+        "$return":
+        {
+            "returntype": "ERRORCODE",
+            "type": "constant",
+            "operand": "equal",
+            "constant": "MPI_SUCCESS"
+        }
+    },
+
+    "invalid":
+    {
+        "$return":
+        {
+            
+        }
+    }
+}

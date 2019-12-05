@@ -1,0 +1,31 @@
+{
+	"name": "MPI_Init_thread",
+	"return": "int",
+	"version": "1.3",
+	"arguments":
+	[
+		{
+			"name": "argument_count",
+			"datatype": "int",
+			"pointer": 1
+		},
+		{
+			"name": "argument_list",
+			"datatype": "char",
+			"pointer": 3
+		},
+		{
+			"name": "required",
+			"datatype": "int",
+			"pointer": 0
+		},
+		{
+			"name": "provided",
+			"datatype": "int",
+			"pointer": 1
+		}
+	],
+	"requires": [],
+	"start" : true,
+	"end" : false
+}

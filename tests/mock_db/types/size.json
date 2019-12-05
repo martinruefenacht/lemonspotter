@@ -1,0 +1,17 @@
+[
+    {
+        "name": "communicator size",
+        "abstract_type": "SIZE",
+
+        "base_type": false,
+        "language_type": "INT"
+    },
+
+    {
+        "name": "communicator size pointer",
+        "abstract_type": "SIZE_1PTR",
+
+        "base_type": false,
+        "language_type": "INT_1PTR"
+    }
+]

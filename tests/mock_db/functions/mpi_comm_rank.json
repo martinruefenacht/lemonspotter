@@ -1,0 +1,19 @@
+{
+	"name": "MPI_Comm_rank",
+	"return": "ERRORCODE",
+	"version": "1.3",
+
+	"parameters":
+	[
+		{
+			"name": "communicator",
+			"abstract_type": "COMMUNICATOR"
+		},
+
+		{
+			"name": "rank",
+			"abstract_type": "RANK_1PTR",
+			"direction": "out"
+		}
+	]
+}

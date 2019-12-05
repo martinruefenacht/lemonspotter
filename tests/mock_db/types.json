@@ -1,0 +1,164 @@
+[
+    {
+        "name": "errorclass",
+        "abstract_type": "ERRORCLASS",
+        "base_type": false,
+        "language_type": "INT",
+        "sources": ["constant"],
+        "partitions":
+        [
+            {
+                "type": "constant",
+                "expected":
+                {
+                    "valid":
+                    {
+                        "type": "constant",
+                        "operand": "equal",
+                        "constant": "MPI_SUCCESS"
+                    },
+                    "invalid":
+                    {
+                        "type": "constant",
+                        "operand": "equal",
+                        "constant": "MPI_ERR_ARG"
+                    }
+                }
+            }
+        ]
+    },
+
+    {
+        "name": "errorcode",
+        "abstract_type": "ERRORCODE",
+
+        "base_type": false,
+        "language_type": "INT",
+
+        "sources": ["constant"],
+        "partitions":
+        [
+            {
+                "type": "constant",
+                "expected":
+                {
+                    "valid":
+                    {
+                        "type": "constant",
+                        "operand": "equal",
+                        "constant": "MPI_SUCCESS"
+                    },
+                    "invalid":
+                    {
+                        "type": "constant",
+                        "operand": "equal",
+                        "constant": "MPI_ERR_OTHER"
+                    }
+                }
+            }
+        ]
+    },
+
+    {
+        "name": "datatype",
+        "abstract_type": "DATATYPE",
+
+        "base_type": true,
+        "language_type": "MPI_Datatype",
+
+        "partitions":
+        [
+            {
+                "type": "constant",
+                "error": "MPI_ERR_TYPE"
+            },
+
+            {
+                "type": "creation",
+                "error": "MPI_ERR_TYPE"
+            }
+        ],
+
+        "source": ["constant", "creation"],
+        "error": "MPI_ERR_TYPE",
+
+        "default": "MPI_INT"
+    },
+
+    {
+        "name": "request",
+        "abstract_type": "REQUEST",
+
+        "base_type": true,
+        "language_type": "MPI_Request",
+
+        "partitions":
+        [
+            {
+                "type": "creation",
+                "error": "MPI_ERR_REQUEST"
+            }
+        ],
+
+        "source": ["creation"],
+        "error": "MPI_ERR_REQUEST",
+
+        "default": "MPI_REQUEST_NULL"
+    },
+
+
+    {
+        "name": "count",
+        "abstract_type": "COUNT",
+
+        "base_type": false,
+        "language_type": "INT",
+
+        "source": ["range"],
+        "range": [0, 2147483647],
+        "error": "MPI_ERR_COUNT",
+        "default": 0
+    },
+    
+
+    {
+        "name": "tag",
+        "abstract_type": "TAG",
+
+        "base_type": false,
+        "language_type": "INT",
+
+        "partitions":
+        [
+            {
+                "type": "range",
+                "min": {"type":"numeric", "inclusive":true, "value":0},
+                "max": {"type":"constant", "inclusive":true, "value":"MPI_TAG_UB"},
+                "error": "MPI_ERR_TAG"
+            }
+        ],
+
+        "source": ["range"],
+        "range": [0, "MPI_TAG_UB"],
+        "default": 0
+    },
+
+    {
+        "name": "time",
+        "abstract_type": "TIME",
+
+        "base_type": false,
+        "language_type": "DOUBLE",
+
+        "source": ["return"],
+        "default": 0.0
+    },
+
+    {
+        "name": "attribute",
+        "abstract_type": "ATTRIBUTE",
+
+        "base_type": false,
+        "language_type": "INT"
+    }
+]

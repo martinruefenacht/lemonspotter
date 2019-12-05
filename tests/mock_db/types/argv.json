@@ -1,0 +1,33 @@
+[
+    {
+        "name": "argument_list",
+        "abstract_type": "ARGV",
+
+        "base_type": false,
+        "language_type": "CHAR_2PTR",
+
+        "reference": "ARGV_1PTR"
+    },
+
+    {
+        "name": "mpi argument_list",
+        "abstract_type": "ARGV_1PTR",
+
+        "base_type": false,
+        "language_type": "CHAR_3PTR",
+
+        "dereference": "ARGV",
+
+        "partitions":
+        [
+            {
+                "type": "literal",
+                "value": "NULL"
+            },
+            {
+                "type": "predefined",
+                "value": "argument_list"
+            }
+        ]
+    }
+]

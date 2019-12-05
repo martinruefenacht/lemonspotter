@@ -1,0 +1,18 @@
+[
+    {
+        "name": "single_precision",
+        "abstract_type": "FLOAT",
+
+        "base_type": true,
+        "language_type": "float",
+
+        "print_specifier": "f",
+
+        "comment_partitions":
+        [
+            {
+                "_comment": "how do we define this"
+            }
+        ]
+    }
+]

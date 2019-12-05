@@ -1,0 +1,23 @@
+{
+	"function":
+	{
+		"parameters": [],
+        "once": false,
+
+		"needs_all": [],
+		"needs_any": ["MPI_Init", "MPI_Init_thread"],
+
+		"leads_all": [],
+		"leads_any": ["MPI_Finalize"],
+
+	   	"filters":
+	    [ {"name": "empty"} ]
+	},
+
+	"parameter":
+	{
+		"pointer": 0,
+		"const": false,
+		"direction": "in"
+	}
+}

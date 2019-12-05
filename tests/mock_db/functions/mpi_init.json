@@ -1,0 +1,47 @@
+{
+	"name": "MPI_Init",
+	"return": "ERRORCODE",
+	"version": "1.3",
+    "once": true,
+	"parameters":
+	[
+		{
+			"name": "argument_count",
+			"abstract_type": "ARGC_1PTR",
+			"direction": "inout"
+		},
+		{
+			"name": "argument_list",
+			"abstract_type": "ARGV_1PTR",
+			"direction": "inout"
+		}
+	],
+
+    "needs_any": [],
+
+    "filters":
+    [
+        {
+            "name": "argc_argv",
+            "argument_count":
+            {
+                "value": "argument_count"
+            },
+            "argument_list":
+            {
+                "value": "argument_list"
+            }
+        },
+        {
+            "name": "NULL_NULL",
+            "argument_count":
+            {
+                "value": "NULL"
+            },
+            "argument_list":
+            {
+                "value": "NULL"
+            }
+        }
+    ]
+}

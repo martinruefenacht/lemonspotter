@@ -1,0 +1,33 @@
+[
+    {
+        "name": "argument_count",
+        "abstract_type": "ARGC",
+
+        "base_type": false,
+        "language_type": "INT",
+
+        "reference": "ARGC_1PTR"
+    },
+
+    {
+        "name": "mpi_argument_count",
+        "abstract_type": "ARGC_1PTR",
+        
+        "base_type": false,
+        "language_type": "INT_1PTR",
+
+        "dereference": "ARGC",
+        
+        "partitions":
+        [
+            {
+                "type": "literal",
+                "value": "NULL"
+            },
+            {
+                "type": "predefined",
+                "value": "argument_count"
+            }
+        ]
+    }
+]

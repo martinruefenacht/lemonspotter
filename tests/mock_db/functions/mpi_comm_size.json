@@ -1,0 +1,19 @@
+{
+	"name": "MPI_Comm_size",
+	"return": "ERRORCODE",
+	"version": "1.3",
+
+	"parameters":
+	[
+		{
+			"name": "communicator",
+			"abstract_type": "COMMUNICATOR"
+		},
+
+		{
+			"name": "size",
+			"abstract_type": "SIZE_1PTR",
+			"direction": "out"
+		}
+	]
+}

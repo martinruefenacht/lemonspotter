@@ -1,0 +1,41 @@
+{
+	"version": "1.3",
+	"name": "MPI_Isend",
+	"return": "int",
+
+	"parameters":
+	[
+		{
+			"name": "buf",
+			"datatype": "void",
+			"pointer": 1,
+			"const": true
+		},
+		{
+			"name": "count",
+			"datatype": "int"
+		},
+		{
+			"name": "datatype",
+			"datatype" : "MPI_Datatype"
+		},
+		{
+			"name": "dest",
+			"datatype": "int"
+		},
+		{
+			"name": "tag",
+			"datatype": "int"
+		},
+		{
+			"name": "comm",
+			"datatype": "MPI_Comm"
+		},
+		{
+			"name": "request",
+			"datatype": "MPI_Request",
+			"pointer": 1,
+			"direction": "out"
+		}
+	]
+}

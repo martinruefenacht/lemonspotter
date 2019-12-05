@@ -1,0 +1,65 @@
+{
+    "name": "MPI_Init_thread",
+    "return": "ERRORCODE",
+    "version": "1.3",
+    "once": true,
+    "parameters":
+    [
+        {
+            "name": "argument_count",
+            "abstract_type": "ARGC_1PTR",
+            "direction": "inout"
+        },
+        {
+            "name": "argument_list",
+            "abstract_type": "ARGV_1PTR",
+            "direction": "inout"
+        },
+        {
+            "name": "required",
+            "abstract_type": "THRD_LVL"
+        },
+        {
+            "name": "provided",
+            "abstract_type": "THRD_LVL_1PTR",
+            "pointer": 1,
+            "direction": "out"
+        }
+    ],
+
+    "needs_any": [],
+
+    "filters":
+    [
+        {
+            "name": "argc_argv",
+            "argument_count": 
+            {
+                "value": "argument_count"
+            },
+            "argument_list":
+            {
+                "value": "argument_list"
+            },
+            "required":
+            {
+                "value": "any"
+            }
+        },
+        {
+            "name": "NULL_NULL",
+            "argument_count":
+            {
+                "value": "NULL"
+            },
+            "argument_list":
+            {
+                "value": "NULL"
+            },
+            "required":
+            {
+                "value": "any"
+            }
+        }
+    ]
+}

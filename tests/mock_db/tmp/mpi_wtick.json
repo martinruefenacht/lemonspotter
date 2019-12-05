@@ -1,0 +1,5 @@
+{
+	"name": "MPI_Wtick",
+	"return": "double",
+	"version": "1.3"
+}

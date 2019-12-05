@@ -1,0 +1,45 @@
+[
+    {
+        "name": "thread_level",
+        "abstract_type": "THRD_LVL",
+        
+        "base_type": false,
+        "language_type": "INT",
+
+        "reference": "THRD_LVL_1PTR",
+
+        "sources": ["constant"],
+        "partitions":
+        [
+            {
+                "type": "constant",
+                "valid":
+                {
+                    "variable": "$return",
+                    "type": "constant",
+                    "operand": "equal",
+                    "constant": "MPI_SUCCESS"
+                },
+                "invalid":
+                {
+                    "variable": "$return",
+                    "type": "constant",
+                    "_operand": "equal",
+                    "operand": "inequal",
+                    "_constant": "MPI_ERR_OTHER",
+                    "constant": "MPI_SUCCESS"
+                }
+            }
+        ]
+    },
+
+    {
+        "name": "thread_level pointer",
+        "abstract_type": "THRD_LVL_1PTR",
+
+        "base_type": false,
+        "language_type": "INT_1PTR",
+
+        "dereference": "THRD_LVL"
+    }
+]

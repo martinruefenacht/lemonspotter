@@ -1,0 +1,71 @@
+[
+    {
+        "name": "character",
+        "abstract_type": "CHAR",
+
+        "base_type": true,
+        "language_type": "char",
+
+        "print_specifier": "c",
+
+        "reference": "CHAR_1PTR",
+
+        "comment_partitions":
+        [
+            {
+                "type": "range",
+                "min": {"type": "numeric", "value":-127},
+                "max": {"type": "numeric", "value": 0}
+            },
+            {
+                "type": "range",
+                "min": {"type": "numeric", "value": 0},
+                "max": {"type": "numeric", "value": 0}
+            },
+            {
+                "type": "range",
+                "min": {"type": "numeric", "value": 0},
+                "max": {"type": "numeric", "value": 128}
+            }
+        ]
+    },
+
+    {
+        "name": "char pointer",
+        "abstract_type": "CHAR_1PTR",
+
+        "base_type": true,
+        "language_type": "char*",
+
+        "print_specifier": "p",
+
+        "reference": "CHAR_2PTR",
+        "dereference": "CHAR"
+    },
+
+    {
+        "name": "char double pointer",
+        "abstract_type": "CHAR_2PTR",
+
+        "base_type": true,
+        "language_type": "char**",
+
+        "print_specifier": "p",
+        
+        "reference": "CHAR_3PTR",
+        "dereference": "CHAR_1PTR"
+    },
+
+    {
+        "name": "char triple pointer",
+        "abstract_type": "CHAR_3PTR",
+
+        "base_type": true,
+        "language_type": "char***",
+
+        "print_specifier": "p",
+        
+        "dereference": "CHAR_2PTR"
+    }
+
+]

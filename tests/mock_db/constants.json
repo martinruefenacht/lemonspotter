@@ -1,0 +1,90 @@
+[
+	{
+		"name": "MPI_COMM_WORLD",
+		"abstract_type": "COMMUNICATOR"
+	},
+
+	{
+		"name": "MPI_COMM_SELF",
+		"abstract_type": "COMMUNICATOR"
+	},
+
+	{
+		"name": "MPI_COMM_NULL",
+		"abstract_type": "COMMUNICATOR"
+	},
+
+	{
+		"name": "MPI_SUCCESS",
+		"abstract_type": "ERRORCODE",
+
+        "defined":
+        {
+            "operand": "equal",
+		    "value": "0",
+            "globally_equal": true
+        }
+	},
+	
+	{
+		"name": "MPI_ERR_BUFFER",
+		"abstract_type": "ERRORCODE"
+	},
+
+	{
+		"name": "MPI_ERR_COUNT",
+		"abstract_type": "ERRORCODE"
+	},
+
+	{
+		"name": "MPI_ERR_TYPE",
+		"abstract_type": "ERRORCODE"
+	},
+
+	{	
+		"name": "MPI_ERR_TAG",
+		"abstract_type": "ERRORCODE"
+	},
+
+	{
+		"name": "MPI_ERR_COMM",
+		"abstract_type": "ERRORCODE"
+	},
+
+	{
+		"name": "MPI_ERR_RANK",
+		"abstract_type": "ERRORCODE"
+	},
+
+    {
+        "name": "MPI_TAG_UB",
+        "abstract_type": "ATTRIBUTE"
+    },
+
+    {
+        "name": "MPI_INT",
+        "abstract_type": "DATATYPE"
+    },
+
+    {
+        "name": "MPI_ANY_TAG",
+        "abstract_type": "TAG"
+    },
+
+    {
+        "name": "MPI_THREAD_SINGLE",
+        "abstract_type": "THRD_LVL"
+    },
+    {
+        "name": "MPI_THREAD_FUNNELED",
+        "abstract_type": "THRD_LVL"
+    },
+    {
+        "name": "MPI_THREAD_SERIALIZED",
+        "abstract_type": "THRD_LVL"
+    },
+    {
+        "name": "MPI_THREAD_MULTIPLE",
+        "abstract_type": "THRD_LVL"
+    }
+]

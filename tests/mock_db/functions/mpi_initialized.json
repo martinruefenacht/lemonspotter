@@ -1,0 +1,17 @@
+{
+	"name": "MPI_Initialized",
+	"return": "ERRORCODE",
+	"version": "1.3",
+
+	"needs_any": [],
+    "leads_any": [],
+
+    "parameters":
+    [
+        {
+            "name": "flag",
+            "abstract_type": "INT_1PTR",
+            "direction": "out"
+        }
+    ]
+}

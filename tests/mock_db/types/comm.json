@@ -1,0 +1,45 @@
+[
+    {
+        "name": "communicator",
+        "abstract_type": "COMMUNICATOR",
+
+        "base_type": true,
+        "language_type": "MPI_Comm",
+
+        "reference": "COMMUNICATOR_1PTR",
+
+        "sources": ["constant", "creation"],
+
+        "partitions":
+        [
+            {
+                "type": "constant",
+                "error": "MPI_ERR_COMM"
+            },
+
+            {
+                "type": "creation",
+                "error": "MPI_ERR_COMM"
+            }
+        ]
+    },
+
+    {
+        "name": "communicator pointer",
+        "abstract_type": "COMMUNICATOR_1PTR",
+
+        "base_type": true,
+        "language_type": "MPI_Comm*",
+
+        "dereference": "COMMUNICATOR",
+
+        "partitions":
+        [
+            {
+                "type": "range",
+                "min": {"type": "hex", "value": "0x1"},
+                "max": {"type": "hex", "value": "0xFFFFFFFFFFFFFFFE"}
+            }
+        ]
+    }
+]

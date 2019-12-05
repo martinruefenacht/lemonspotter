@@ -1,0 +1,22 @@
+{
+	"name": "MPI_Get_library_version",
+	"return": "ERRORCODE",
+	"version": "1.3",
+
+	"needs_any": [],
+    "leads_any": [],
+
+    "parameters":
+    [
+        {
+            "name": "version",
+            "abstract_type": "CHAR_1PTR",
+            "direction": "out"
+        },
+        {
+        	"name": "resultlen",
+        	"abstract_type": "INT_1PTR",
+        	"direction": "out"
+        }
+    ]
+}

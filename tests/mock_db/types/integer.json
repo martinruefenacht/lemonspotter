@@ -1,0 +1,58 @@
+[
+    {
+        "name": "integer",
+        "abstract_type": "INT",
+
+        "base_type": true,
+        "language_type": "int",
+
+        "print_specifier": "i",
+
+        "reference": "INT_1PTR",
+
+        "comment_partitions":
+        [
+            {
+                "type": "range",
+                "min": {"type": "numeric", "value":-2147483648},
+                "max": {"type": "numeric", "value": 0}
+            },
+            {
+                "type": "range",
+                "min": {"type": "numeric", "value": 0},
+                "max": {"type": "numeric", "value": 0}
+            },
+            {
+                "type": "range",
+                "min": {"type": "numeric", "value": 0},
+                "max": {"type": "numeric", "value": 2147483647}
+            }
+        ]
+    },
+
+    {
+        "name": "integer pointer",
+        "abstract_type": "INT_1PTR",
+
+        "base_type": true,
+        "language_type": "int*",
+
+        "print_specifier": "p",
+
+        "reference": "INT_2PTR",
+        "dereference": "INT"
+    },
+
+    {
+        "name": "integer double pointer",
+        "abstract_type": "INT_2PTR",
+
+        "base_type": true,
+        "language_type": "int**",
+
+        "print_specifier": "p",
+
+        "dereference": "INT_1PTR"
+    }
+
+]
