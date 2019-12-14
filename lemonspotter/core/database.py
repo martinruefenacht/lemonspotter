@@ -58,7 +58,8 @@ class Database(metaclass=_Singleton):
             return self._constants
 
         elif abstract_type not in self._constants_by_abstract_type:
-            raise Exception(f'abstract type {abstract_type} not in "constants by abstract type" look up.')
+            raise Exception(f'''abstract type {abstract_type} not in
+                              "constants by abstract type" look up.''')
 
         return self._constants_by_abstract_type[abstract_type]
 
