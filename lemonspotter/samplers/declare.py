@@ -37,12 +37,14 @@ class DeclarationSampler(Sampler):
 
         for parameter in function.parameters:  # type: ignore
             if parameter.direction == Direction.OUT and parameter.type.dereferencable:
-                variable = Variable(parameter.type.dereference(), f'arg_{parameter.name}')
+                mem_alloc = f'malloc(sizeof({parameter.type.dereference().language_type}))'
+
+                variable = Variable(parameter.type, f'arg_{parameter.name}', mem_alloc)
+                variables.add(variable)
             else:
                 variable = Variable(parameter.type, f'arg_{parameter.name}')
+                variables.add(variable)
 
-            # add variable to variable set
-            variables.add(variable)
 
             logging.debug('declaring variable argument: %s', variable.name)
             arguments.append(variable)
