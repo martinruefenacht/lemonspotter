@@ -109,8 +109,6 @@ class ValidSampler(Sampler):
         type_samples = []
 
         if parameter.direction == Direction.OUT:
-            #var = Variable(parameter.type, parameter.name + '_out')
-            #type_samples.append(var)
             if parameter.type.dereferencable:
                 mem_alloc = f'malloc(sizeof({parameter.type.dereference().language_type}))'
                 var = Variable(parameter.type, parameter.name + '_out', mem_alloc)
