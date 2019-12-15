@@ -2,7 +2,7 @@
 This module contains the class definition of Parameter.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from enum import Enum
 
 from lemonspotter.core.database import Database
@@ -49,3 +49,11 @@ class Parameter:
             raise Exception('Direction is not in JSON.')
 
         return Direction(self._json['direction'])
+
+    @property
+    def length(self) -> Optional[str]:
+        """
+        This property, if not None, provides the length of the parameter.
+        """
+
+        return self._json.get('length', None)
