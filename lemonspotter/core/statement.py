@@ -50,7 +50,7 @@ class Statement:
         indentation = self.indent * indent_level
 
         if len(indentation) > self.max_line_length:
-            raise Exception('''Length of indentation for statements
+            raise RuntimeError('''Length of indentation for statements
                                is larger than allowed max line length.''')
 
         if self._comment:
