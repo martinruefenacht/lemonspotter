@@ -7,6 +7,7 @@ from pathlib import Path
 from lemonspotter.parsers.mpiparser import MPIParser
 from lemonspotter.executors.mpiexecutor import MPIExecutor
 from lemonspotter.generators.startend import StartEndGenerator
+from lemonspotter.generators.independent import IndependentGenerator
 from lemonspotter.generators.constantpresence import ConstantPresenceGenerator
 from lemonspotter.generators.functionpresence import FunctionPresenceGenerator
 from lemonspotter.samplers.valid import ValidSampler
@@ -63,6 +64,16 @@ class Runtime:
             self.reporter.log_test_result(test)
 
         for test in function_tests:
+            self.reporter.log_test_result(test)
+
+    def independent_testing(self):
+        sampler = ValidSampler()
+
+        generator = IndependentGenerator()
+        independent_tests = generator.generate(sampler)
+
+        self._executor.execute(independent_tests)
+        for test in independent_tests:
             self.reporter.log_test_result(test)
 
     def start_end_testing(self):
