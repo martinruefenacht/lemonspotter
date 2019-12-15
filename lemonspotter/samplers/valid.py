@@ -109,7 +109,12 @@ class ValidSampler(Sampler):
         type_samples = []
 
         if parameter.direction == Direction.OUT:
-            if parameter.type.dereferencable:
+            if parameter.type.abstract_type == 'STRING':
+                mem_alloc = f'malloc({parameter.length} * sizeof(char))'
+                var = Variable(parameter.type, parameter.name + '_out', mem_alloc)
+                type_samples.append(var)
+
+            elif parameter.type.dereferencable:
                 mem_alloc = f'malloc(sizeof({parameter.type.dereference().language_type}))'
                 var = Variable(parameter.type, parameter.name + '_out', mem_alloc)
                 type_samples.append(var)
