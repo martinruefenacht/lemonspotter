@@ -5,6 +5,7 @@ This module contains the definition of the DefaultSampler.
 import logging
 from typing import Iterable
 
+from lemonspotter.core.parameter import Direction
 from lemonspotter.core.sampler import Sampler
 from lemonspotter.core.variable import Variable
 from lemonspotter.core.function import Function
@@ -35,10 +36,14 @@ class DeclarationSampler(Sampler):
         variables = set()
 
         for parameter in function.parameters:  # type: ignore
-            variable = Variable(parameter.type, f'arg_{parameter.name}')
+            if parameter.direction == Direction.OUT and parameter.type.dereferencable:
+                mem_alloc = f'malloc(sizeof({parameter.type.dereference().language_type}))'
 
-            # add variable to variable set
-            variables.add(variable)
+                variable = Variable(parameter.type, f'arg_{parameter.name}', mem_alloc)
+                variables.add(variable)
+            else:
+                variable = Variable(parameter.type, f'arg_{parameter.name}')
+                variables.add(variable)
 
             logging.debug('declaring variable argument: %s', variable.name)
             arguments.append(variable)

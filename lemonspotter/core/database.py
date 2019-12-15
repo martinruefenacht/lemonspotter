@@ -58,7 +58,8 @@ class Database(metaclass=_Singleton):
             return self._constants
 
         elif abstract_type not in self._constants_by_abstract_type:
-            raise Exception(f'abstract type {abstract_type} not in "constants by abstract type" look up.')
+            raise RuntimeError(f'''abstract type {abstract_type} not in
+                               "constants by abstract type" look up.''')
 
         return self._constants_by_abstract_type[abstract_type]
 
@@ -66,7 +67,7 @@ class Database(metaclass=_Singleton):
         """"""
 
         if name not in self._constants_by_name:
-            raise Exception(f'Constant {name} not in "constants by name" look up.')
+            raise RuntimeError(f'Constant {name} not in "constants by name" look up.')
 
         return self._constants_by_name[name]
 
@@ -90,7 +91,7 @@ class Database(metaclass=_Singleton):
         """"""
 
         if name not in self._functions_by_name:
-            raise Exception(f'Function {name} not in "functions by name" look up.')
+            raise RuntimeError(f'Function {name} not in "functions by name" look up.')
 
         return self._functions_by_name[name]
 
