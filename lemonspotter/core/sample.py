@@ -56,7 +56,7 @@ class FunctionSample:
         """"""
 
         if arguments is None:
-            raise Exception('Arguments given to Sample are None.')
+            raise RuntimeError('Arguments given to Sample are None.')
 
         self._arguments = arguments
 
@@ -71,7 +71,7 @@ class FunctionSample:
         """"""
 
         if variables is None:
-            raise Exception('Variables given to Sample is None.')
+            raise RuntimeError('Variables given to Sample is None.')
 
         self._variables = variables
 
@@ -80,7 +80,7 @@ class FunctionSample:
         """"""
 
         if self._evaluator is None:
-            raise Exception('Evaluator is None. Needs to be assigned.')
+            raise RuntimeError('Evaluator is None. Needs to be assigned.')
 
         return self._evaluator
 
@@ -89,7 +89,7 @@ class FunctionSample:
         """"""
 
         if evaluator is None:
-            raise Exception('Evaluator given to Sample is None.') 
+            raise RuntimeError('Evaluator given to Sample is None.')
 
         self._evaluator = evaluator
 
@@ -196,7 +196,6 @@ class FunctionSample:
             pairs = zip(self.arguments, self.function.parameters)  # type: ignore
             for idx, (argument, parameter) in enumerate(pairs):
                 mod = ''
-
 #                pointer_diff = argument.pointer_level - parameter.pointer_level
 #                if pointer_diff < 0:
 #                    # addressof &
