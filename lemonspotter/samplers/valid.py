@@ -44,7 +44,8 @@ class ValidSampler(Sampler):
         argument_lists = []
 
         for parameter in function.parameters:  # type: ignore
-            argument_lists.append(self.generate_sample(parameter))
+            if parameter.direction is not Direction.OUT:
+                argument_lists.append(self._generate_argument(parameter))
 
         if not argument_lists:
             raise Exception('No arguments generated from a function with parameters.')
@@ -64,19 +65,18 @@ class ValidSampler(Sampler):
                         # note we don't write out arguments in function filters
                         continue
 
-                    elif sieve[parameter.name]['value'] == 'any':
+                    if sieve[parameter.name]['value'] == 'any':
                         continue
 
-                    elif sieve[parameter.name]['value'] != argument.value:
+                    if sieve[parameter.name]['value'] != argument.value:
                         break
 
                 else:
                     # sieve applies
                     return True
 
-            else:
-                logging.debug('%s has no sieve allowed.', argument_list)
-                return False
+            logging.debug('%s has no sieve allowed.', argument_list)
+            return False
 
         filtered = filter(argument_filter, combined)
 
@@ -103,28 +103,12 @@ class ValidSampler(Sampler):
 
         return samples
 
-    def generate_sample(self, parameter: Parameter) -> Iterable[Variable]:
+    def _generate_argument(self, parameter: Parameter) -> Iterable[Variable]:
         """"""
 
+        assert parameter.direction is not Direction.OUT
+
         type_samples = []
-
-        if parameter.direction == Direction.OUT:
-            if parameter.type.abstract_type == 'STRING':
-                mem_alloc = f'malloc({parameter.length} * sizeof(char))'
-                var = Variable(parameter.type, parameter.name + '_out', mem_alloc)
-                type_samples.append(var)
-
-            elif parameter.type.dereferencable:
-                mem_alloc = f'malloc(sizeof({parameter.type.dereference().language_type}))'
-                var = Variable(parameter.type, parameter.name + '_out', mem_alloc)
-                type_samples.append(var)
-
-            else:
-                # generate out variable
-                var = Variable(parameter.type, parameter.name + '_out')
-                type_samples.append(var)
-
-            return type_samples
 
         # TODO partition should return str for value
         # it is in charge of interpreting PartitionType, not here

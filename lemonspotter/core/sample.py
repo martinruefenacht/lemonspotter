@@ -26,22 +26,30 @@ class FunctionSample:
                  evaluator: Optional[Callable[[], bool]] = None,
                  ) -> None:
         self._function = function
+
         self._valid = valid
         self._variables = variables
         self._arguments = arguments
         self._evaluator = evaluator
 
+        # generate out variables, return, and out parameters
         self._return_variable: Variable = Variable(function.return_type)
+        self._out_arguments = []
 
     @property
     def function(self) -> Function:
-        """"""
+        """
+        Retrieve the Function object which this FunctionSample is a sample of.
+        """
 
         return self._function
 
     @property
     def return_variable(self) -> Variable:
-        """"""
+        """
+        Retrieve the Variable instance which is the return variable of this
+        FunctionSample instance.
+        """
 
         return self._return_variable
 
@@ -217,3 +225,27 @@ class FunctionSample:
                                  statement,
                                  {self.return_variable.name: self.return_variable},
                                  comment)
+
+    def _generate_out_argument(self) -> None:
+        """
+        Generates appropriate out variables for the out parameters.
+        """
+
+        if self._function.has_parameters():
+            for parameter in self._function.parameters:
+                if parameter.direction is Direction.OUT:
+                    # generate out variable and its dependents
+                    value = None
+                    
+                    # TODO this doesn't really capture it, some types are dereferencable,
+                    # but need to be passed in as is
+                    if parameter.type.abstract_type == 'STRING':
+                        value = f'malloc({parameter.length} * sizeof(char))'
+
+                    elif parameter.type.dereferencable():
+                        value = f'malloc(sizeof({parameter.type.dereference().language_type}))'
+
+                    self._out_arguments.append(Variable(
+                        parameter.type,
+                        parameter.name + '_out',
+                        value))

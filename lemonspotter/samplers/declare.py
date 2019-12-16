@@ -10,6 +10,7 @@ from lemonspotter.core.sampler import Sampler
 from lemonspotter.core.variable import Variable
 from lemonspotter.core.function import Function
 from lemonspotter.core.sample import FunctionSample
+from lemonspotter.core.parameter import Parameter
 
 
 class DeclarationSampler(Sampler):
@@ -23,6 +24,8 @@ class DeclarationSampler(Sampler):
 
     def generate_samples(self, function: Function) -> Iterable[FunctionSample]:
         """
+        Generate a FunctionSample which correctly declares everything such
+        that it is able to be used to build a source fragment.
         """
 
         logging.debug('DeclarationSampler used for %s', function.name)
@@ -33,21 +36,28 @@ class DeclarationSampler(Sampler):
 
         # generate valid but empty arguments
         arguments = []
-        variables = set()
 
         for parameter in function.parameters:  # type: ignore
-            if parameter.direction == Direction.OUT and parameter.type.dereferencable:
-                mem_alloc = f'malloc(sizeof({parameter.type.dereference().language_type}))'
+            variables = self._generate_argument(parameter)
 
-                variable = Variable(parameter.type, f'arg_{parameter.name}', mem_alloc)
-                variables.add(variable)
-            else:
-                variable = Variable(parameter.type, f'arg_{parameter.name}')
-                variables.add(variable)
-
-            logging.debug('declaring variable argument: %s', variable.name)
-            arguments.append(variable)
+            logging.debug('declaring variable argument: %s', variables[0].name)
+            arguments.append(variables[0])
 
         sample = FunctionSample(function, True, variables, arguments, evaluator)
 
         return set([sample])
+
+    @classmethod
+    def _generate_argument(cls, parameter: Parameter) -> Iterable[Variable]:
+        """
+        Generate all variables required for this parameter.
+        """
+
+        assert parameter.direction is not Direction.OUT
+
+        variables = []
+
+        variable = Variable(parameter.type, f'arg_{parameter.name}')
+        variables.append(variable)
+
+        return variables
