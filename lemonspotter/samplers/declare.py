@@ -3,7 +3,8 @@ This module contains the definition of the DefaultSampler.
 """
 
 import logging
-from typing import Iterable
+from typing import Sequence, Iterable
+from itertools import chain
 
 from lemonspotter.core.parameter import Direction
 from lemonspotter.core.sampler import Sampler
@@ -11,6 +12,7 @@ from lemonspotter.core.variable import Variable
 from lemonspotter.core.function import Function
 from lemonspotter.core.sample import FunctionSample
 from lemonspotter.core.parameter import Parameter
+from lemonspotter.core.argument import Argument
 
 
 class DeclarationSampler(Sampler):
@@ -35,29 +37,22 @@ class DeclarationSampler(Sampler):
                                       'code, not runnable.')
 
         # generate valid but empty arguments
-        arguments = []
+        arguments = {}
 
-        for parameter in function.parameters:  # type: ignore
-            variables = self._generate_argument(parameter)
+        for parameter in chain(function.in_parameters,
+                               function.inout_parameters):  # type: ignore
+            arguments[parameter.name] = self._generate_argument(parameter)
 
-            logging.debug('declaring variable argument: %s', variables[0].name)
-            arguments.append(variables[0])
-
-        sample = FunctionSample(function, True, variables, arguments, evaluator)
+        sample = FunctionSample(function, True, arguments, evaluator)
 
         return set([sample])
 
     @classmethod
-    def _generate_argument(cls, parameter: Parameter) -> Iterable[Variable]:
+    def _generate_argument(cls, parameter: Parameter) -> Argument:
         """
         Generate all variables required for this parameter.
         """
 
         assert parameter.direction is not Direction.OUT
 
-        variables = []
-
-        variable = Variable(parameter.type, f'arg_{parameter.name}')
-        variables.append(variable)
-
-        return variables
+        return Argument(Variable(parameter.type, f'arg_{parameter.name}'))

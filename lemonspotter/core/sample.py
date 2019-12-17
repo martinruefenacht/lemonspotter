@@ -1,10 +1,14 @@
 """
+Defines the FunctionSample class.
 """
 
-from typing import Optional, Sequence, Callable, Iterable
+from typing import Optional, Callable, Mapping, MutableMapping
 import logging
+from itertools import chain
 
 from lemonspotter.core.function import Function
+from lemonspotter.core.parameter import Parameter
+from lemonspotter.core.argument import Argument
 from lemonspotter.core.parameter import Direction
 from lemonspotter.core.variable import Variable
 from lemonspotter.core.statement import (ConditionStatement,
@@ -16,25 +20,25 @@ from lemonspotter.core.statement import (ConditionStatement,
 
 
 class FunctionSample:
-    """"""
+    """
+    Container for a function and arguments.
+    """
 
     def __init__(self,
                  function: Function,
                  valid: bool,
-                 variables: Iterable[Variable] = set(),
-                 arguments: Sequence[Variable] = [],
+                 arguments: Optional[Mapping[str, Argument]] = None,
                  evaluator: Optional[Callable[[], bool]] = None,
                  ) -> None:
         self._function = function
-
         self._valid = valid
-        self._variables = variables
-        self._arguments = arguments
+        self._arguments = arguments if arguments else {}
         self._evaluator = evaluator
 
         # generate out variables, return, and out parameters
-        self._return_variable: Variable = Variable(function.return_type)
-        self._out_arguments = []
+        self._return_variable = Variable(function.return_type,
+                                         'return_' + function.name)
+        self._generate_out_arguments()
 
     @property
     def function(self) -> Function:
@@ -54,38 +58,18 @@ class FunctionSample:
         return self._return_variable
 
     @property
-    def arguments(self) -> Sequence[Variable]:
-        """"""
+    def arguments(self) -> Mapping[str, Argument]:
+        """
+        Gets the arguments from this FunctionSample.
+        """
 
         return self._arguments
 
-    @arguments.setter
-    def arguments(self, arguments: Sequence[Variable]) -> None:
-        """"""
-
-        if arguments is None:
-            raise RuntimeError('Arguments given to Sample are None.')
-
-        self._arguments = arguments
-
-    @property
-    def variables(self) -> Iterable[Variable]:
-        """"""
-
-        return self._variables
-
-    @variables.setter
-    def variables(self, variables: Iterable[Variable]) -> None:
-        """"""
-
-        if variables is None:
-            raise RuntimeError('Variables given to Sample is None.')
-
-        self._variables = variables
-
     @property
     def evaluator(self) -> Callable[[], bool]:
-        """"""
+        """
+        Gets the evaluator function for this FunctionSample.
+        """
 
         if self._evaluator is None:
             raise RuntimeError('Evaluator is None. Needs to be assigned.')
@@ -94,7 +78,9 @@ class FunctionSample:
 
     @evaluator.setter
     def evaluator(self, evaluator: Callable[[], bool]) -> None:
-        """"""
+        """
+        Sets the evaluator function for this FunctionSample.
+        """
 
         if evaluator is None:
             raise RuntimeError('Evaluator given to Sample is None.')
@@ -102,46 +88,57 @@ class FunctionSample:
         self._evaluator = evaluator
 
     def generate_source(self, source: BlockStatement, comment: str = None) -> None:
-        """"""
+        """
+        Expresses the FunctionSample as a FunctionStatement and adds it to the given
+        Source.
+        """
 
+        # TODO what does this even do???
         # assign predefined arguments and check for collisions
-        def check_argument(arg):
-            if arg.predefined:
-                predef = source.get_variable(arg.value)
+        #  def check_argument(arg: Argument):
+        #      if arg.variable.predefined:
+        #          predef = source.get_variable(arg.value)
 
-                if predef is None:
-                    raise RuntimeError('Predefined variable not present in source.')
+        #          if predef is None:
+        #              raise RuntimeError('Predefined variable not present in source.')
 
-                if predef.type is arg.type:
-                    return predef
+        #          if predef.type is arg.variable.type:
+        #              return predef
 
-                else:
-                    # try referencing
-                    if predef.type.referencable:
-                        # create variable
-                        var = Variable(predef.type.reference(),
-                                       f'{predef.name}_ref',
-                                       f'&{predef.name}')
+        #          else:
+        #              # try referencing
+        #              if predef.type.referencable:
+        #                  # create variable
+        #                  var = Variable(predef.type.reference(),
+        #                                 f'{predef.name}_ref',
+        #                                 f'&{predef.name}')
 
-                        return var
+        #                  return var
 
-            elif source.get_variable(arg.name) is not None:
-                raise RuntimeError('Name collision found between argument and variable.')
+        #      elif source.get_variable(arg.name) is not None:
+        #          raise RuntimeError('Name collision found between argument and variable.')
 
-            else:
-                return arg
+        #      else:
+        #          return arg
 
-        self.arguments = [check_argument(argument) for argument in self.arguments]
+        # self.arguments = [check_argument(argument) for argument in self.arguments]
 
         # add arguments to source
-        for variable in self.arguments:
-            existing = source.get_variable(variable.name)
-            if not existing:
-                if variable.value:
-                    source.add_at_start(DeclarationAssignmentStatement(variable))
+        logging.debug('%s', self.arguments)
+        for parameter in self.function.parameters:
+            # fetch argument
+            argument = self.arguments[parameter.name]
+
+            # add dependent variables to source
+            # TODO
+
+            # add argument variable to source
+            if not source.get_variable(argument.variable.name):
+                if argument.variable.value:
+                    source.add_at_start(DeclarationAssignmentStatement(argument.variable))
 
                 else:
-                    source.add_at_start(DeclarationStatement(variable))
+                    source.add_at_start(DeclarationStatement(argument.variable))
 
         # add function call to source
         source.add_at_start(self._generate_statement(source, comment))
@@ -149,9 +146,9 @@ class FunctionSample:
         # add outputs
         source.add_at_start(FunctionStatement.generate_print(self._return_variable))
 
-        for parameter, argument in zip(self.function.parameters, self.arguments):  # type: ignore
-            if parameter.direction is Direction.OUT or parameter.direction is Direction.INOUT:
-                source.add_at_start(FunctionStatement.generate_print(argument))
+        for parameter in chain(self.function.out_parameters, self.function.inout_parameters):
+            source.add_at_start(FunctionStatement.generate_print(
+                self.arguments[parameter.name].variable))
 
         # add check statements to call
         source.add_at_start(self._generate_return_check())
@@ -186,66 +183,60 @@ class FunctionSample:
         Generates a compilable expression of the function with the given arguments.
         """
 
-        self.return_variable.name = f'return_{self.function.name}'
-
         if source.get_variable(self.return_variable.name) is not None:
             # todo rename output return name, we have control over this above
-            raise NotImplementedError('Test if the variable already exists.')
+            raise NotImplementedError('Return variable already exists!.')
+        # TODO need to check out arguments as well
 
-        statement = (f'{self.function.return_type.language_type} {self.return_variable.name}'
-                     f' = {self.function.name}(')
-
-        # add arguments
-        logging.debug('arguments %s', str(self.arguments))
-        logging.debug('parameters %s', str(self.function.parameters))
+        statement = []
+        statement.append((f'{self.function.return_type.language_type} '
+                          f'{self.return_variable.name} '
+                          f'= {self.function.name}('))
 
         # fill arguments
-        if self.arguments is not None:
-            pairs = zip(self.arguments, self.function.parameters)  # type: ignore
-            for idx, (argument, parameter) in enumerate(pairs):
-                mod = ''
-#                pointer_diff = argument.pointer_level - parameter.pointer_level
-#                if pointer_diff < 0:
-#                    # addressof &
-#                    mod += '&'
-#
-#                elif pointer_diff > 0:
-#                    # dereference *
-#                    raise NotImplementedError
+        if self.function.has_parameters:
+            for idx, parameter in enumerate(self.function.parameters):
+                # get argument for parameter
+                argument = self.arguments[parameter.name]
 
-                statement += (mod + argument.name)
+                statement.append(argument.variable.name)
 
                 # if not last argument then add comma
-                if (idx + 1) != len(self._arguments):
-                    statement += ', '
+                if (idx + 1) != len(self.function.parameters):
+                    statement.append(', ')
 
-        statement += ');'
+        statement.append(');')
+
+        logging.debug('function statement %s', ''.join(statement))
 
         return FunctionStatement(self._function.name,
-                                 statement,
+                                 ''.join(statement),
                                  {self.return_variable.name: self.return_variable},
                                  comment)
 
-    def _generate_out_argument(self) -> None:
+    def _generate_out_arguments(self) -> None:
         """
         Generates appropriate out variables for the out parameters.
         """
 
-        if self._function.has_parameters():
-            for parameter in self._function.parameters:
-                if parameter.direction is Direction.OUT:
-                    # generate out variable and its dependents
-                    value = None
-                    
-                    # TODO this doesn't really capture it, some types are dereferencable,
-                    # but need to be passed in as is
-                    if parameter.type.abstract_type == 'STRING':
-                        value = f'malloc({parameter.length} * sizeof(char))'
+        logging.debug('generating out arguments for %s', self.function.name)
+        logging.debug('out parameters %s', self.function.out_parameters)
 
-                    elif parameter.type.dereferencable():
-                        value = f'malloc(sizeof({parameter.type.dereference().language_type}))'
+        for parameter in self.function.out_parameters:
+            logging.debug('generating out argument for parameter %s', parameter.name)
 
-                    self._out_arguments.append(Variable(
-                        parameter.type,
-                        parameter.name + '_out',
-                        value))
+            # generate out variable and its dependents
+            value = None
+
+            # TODO this doesn't really capture it, some types are dereferencable,
+            # but need to be passed in as is
+            if parameter.type.abstract_type == 'STRING':
+                value = f'malloc({parameter.length} * sizeof(char))'
+
+            elif parameter.type.dereferencable:
+                value = f'malloc(sizeof({parameter.type.dereference().language_type}))'
+
+            self._arguments[parameter.name] = Argument(Variable(
+                parameter.type,
+                parameter.name + '_out',
+                value))

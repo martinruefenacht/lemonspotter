@@ -50,6 +50,7 @@ class Operand(Enum):
         return symbols[operand]
 
 
+# TODO should be multiple subclasses of Partition
 class PartitionType(Enum):
     NUMERIC = 'numeric'
     LITERAL = 'literal'

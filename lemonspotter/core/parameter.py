@@ -10,6 +10,9 @@ from lemonspotter.core.type import Type
 
 
 class Direction(Enum):
+    """
+    """
+
     IN = 'in'
     OUT = 'out'
     INOUT = 'inout'
@@ -28,7 +31,7 @@ class Parameter:
         """This property provides the name of the Parameter."""
 
         if 'name' not in self._json:
-            raise Exception('Name is not in JSON.')
+            raise RuntimeError('Name is not in JSON.')
 
         return self._json['name']
 
@@ -37,7 +40,7 @@ class Parameter:
         """This property provides the Type object of the abstract type of this Parameter."""
 
         if 'abstract_type' not in self._json:
-            raise Exception('Abstract type is not in JSON.')
+            raise RuntimeError('Abstract type is not in JSON.')
 
         return Database().get_type(self._json['abstract_type'])
 
@@ -46,7 +49,7 @@ class Parameter:
         """This property provides the direction of the Parameter."""
 
         if 'direction' not in self._json:
-            raise Exception('Direction is not in JSON.')
+            raise RuntimeError('Direction is not in JSON.')
 
         return Direction(self._json['direction'])
 

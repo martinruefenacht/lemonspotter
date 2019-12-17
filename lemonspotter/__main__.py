@@ -109,6 +109,15 @@ def set_logging_level(log_level: str):
     logging.basicConfig(level=numeric_level)
 
 
+def check_version() -> None:
+    """
+    Check that current version of Python runtime is at least 3.8.
+    """
+
+    if not (sys.version_info[0] >= 3 and sys.version_info[1] >= 8):
+        raise RuntimeError('CPython 3.8 is required to run LemonSpotter.')
+
+
 def main() -> None:
     """
     This function is the workflow of LemonSpotter.

@@ -3,11 +3,11 @@ This module defines the function class which respresents functions from the spec
 """
 
 from typing import Mapping, Any, AbstractSet, Sequence, Iterable
-from functools import lru_cache
 
 from lemonspotter.core.database import Database
 from lemonspotter.core.type import Type
 from lemonspotter.core.parameter import Parameter
+from lemonspotter.core.parameter import Direction
 
 
 class Function:
@@ -21,6 +21,12 @@ class Function:
 
         self._json: Mapping[str, Any] = json
         self.properties: Mapping[str, Any] = {}
+
+        # cache
+        self._parameters = None
+        self._in_parameters = None
+        self._inout_parameters = None
+        self._out_parameters = None
 
     def __repr__(self) -> str:
         """
@@ -41,7 +47,7 @@ class Function:
         """This property provides access to the Function name."""
 
         if 'name' not in self._json:
-            raise Exception('Function name is not in JSON.')
+            raise RuntimeError('Function name is not in JSON.')
 
         return self._json['name']
 
@@ -49,70 +55,126 @@ class Function:
     def has_parameters(self) -> bool:
         """"""
 
-        return self._json.get('parameters', False)
+        return 'parameters' in self._json
+
+    @property
+    def has_in_parameters(self) -> bool:
+        """"""
+
+        return len(self.in_parameters) > 0
+
+    @property
+    def has_inout_parameters(self) -> bool:
+        """"""
+
+        return len(self.inout_parameters) > 0
+
+    @property
+    def has_out_parameters(self) -> bool:
+        """"""
+
+        return len(self.out_parameters) > 0
 
     @property  # type: ignore
-    @lru_cache()
     def parameters(self) -> Sequence[Parameter]:
         """This property provides access to the parameter list of this Function object."""
 
         if 'parameters' not in self._json:
-            raise Exception('Parameters are not in JSON.')
+            raise RuntimeError('Parameters are not in JSON.')
 
-        return tuple(Parameter(parameter) for parameter in self._json['parameters'])
+        if self._parameters is None:
+            self._parameters = tuple(Parameter(parameter)
+                                     for parameter in self._json['parameters'])
+
+        return self._parameters
+
+    @property
+    def in_parameters(self) -> Sequence[Parameter]:
+        """
+        Find all parameters which are with IN or INOUT parameters.
+        """
+
+        if self._in_parameters is None:
+            self._in_parameters = tuple(parameter
+                                        for parameter in self.parameters
+                                        if parameter.direction is Direction.IN)
+
+        return self._in_parameters
+
+    @property
+    def inout_parameters(self) -> Sequence[Parameter]:
+        """
+        Find all parameters which are with IN or INOUT parameters.
+        """
+
+        if self._inout_parameters is None:
+            self._inout_parameters = tuple(parameter
+                                           for parameter in self.parameters
+                                           if parameter.direction is Direction.INOUT)
+
+        return self._inout_parameters
+
+    @property
+    def out_parameters(self) -> Sequence[Parameter]:
+        """
+        Find all parameters which are either OUT or INOUT parameters.
+        """
+
+        if self._out_parameters is None:
+            self._out_parameters = tuple(parameter
+                                         for parameter in self.parameters
+                                         if parameter.direction is Direction.OUT)
+
+        return self._out_parameters
 
     @property
     def return_type(self) -> Type:
         """This property provides the Type object of the return of this Function."""
 
         if 'return' not in self._json:
-            raise Exception('Return is not in JSON.')
+            raise RuntimeError('Return is not in JSON.')
 
         return Database().get_type(self._json['return'])
 
     @property  # type: ignore
-    @lru_cache()
     def needs_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of needed Function objects."""
 
         if 'needs_any' not in self._json:
-            raise Exception('Needs any is not in JSON.')
+            raise RuntimeError('Needs any is not in JSON.')
 
         subset = filter(lambda name: Database().has_function(name), self._json['needs_any'])
 
         return set(Database().get_function(func_name) for func_name in subset)
 
     @property  # type: ignore
-    @lru_cache()
     def needs_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of needed Function objects."""
 
         if 'needs_all' not in self._json:
-            raise Exception('Needs all is not in JSON.')
+            raise RuntimeError('Needs all is not in JSON.')
 
         subset = filter(lambda name: Database().has_function(name), self._json['needs_all'])
 
         return set(Database().get_function(func_name) for func_name in subset)
 
     @property  # type: ignore
-    @lru_cache()
     def leads_any(self) -> AbstractSet['Function']:
         """This property provides access to the any set of lead Function objects."""
 
         if 'leads_any' not in self._json:
-            raise Exception('Leads any is not in JSON.')
+            raise RuntimeError('Leads any is not in JSON.')
 
         subset = filter(lambda name: Database().has_function(name), self._json['leads_any'])
 
         return set(Database().get_function(func_name) for func_name in subset)
 
     @property  # type: ignore
-    @lru_cache()
     def leads_all(self) -> AbstractSet['Function']:
         """This property provides access to the all set of lead the Function objects."""
 
         if 'leads_all' not in self._json:
-            raise Exception('Leads all is not in JSON.')
+            raise RuntimeError('Leads all is not in JSON.')
 
         subset = filter(lambda name: Database().has_function(name), self._json['leads_all'])
 
