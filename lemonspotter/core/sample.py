@@ -93,35 +93,34 @@ class FunctionSample:
         Source.
         """
 
-        # TODO what does this even do???
         # assign predefined arguments and check for collisions
-        #  def check_argument(arg: Argument):
-        #      if arg.variable.predefined:
-        #          predef = source.get_variable(arg.value)
+        def check_argument(arg: Argument):
+            if arg.variable.predefined:
+                predef = source.get_variable(arg.variable.value)
 
-        #          if predef is None:
-        #              raise RuntimeError('Predefined variable not present in source.')
+                if predef is None:
+                    raise RuntimeError('Predefined variable not present in source.')
 
-        #          if predef.type is arg.variable.type:
-        #              return predef
+                if predef.type is arg.variable.type:
+                    return predef
 
-        #          else:
-        #              # try referencing
-        #              if predef.type.referencable:
-        #                  # create variable
-        #                  var = Variable(predef.type.reference(),
-        #                                 f'{predef.name}_ref',
-        #                                 f'&{predef.name}')
+                else:
+                    # try referencing
+                    if predef.type.referencable:
+                        # create variable
+                        var = Variable(predef.type.reference(),
+                                       f'{predef.name}_ref',
+                                       f'&{predef.name}')
 
-        #                  return var
+                        return var
 
-        #      elif source.get_variable(arg.name) is not None:
-        #          raise RuntimeError('Name collision found between argument and variable.')
+            elif source.get_variable(arg.variable.name) is not None:
+                raise RuntimeError('Name collision found between argument and variable.')
 
-        #      else:
-        #          return arg
+            else:
+                return arg
 
-        # self.arguments = [check_argument(argument) for argument in self.arguments]
+        self._arguments = [check_argument(argument) for argument in self._arguments]
 
         # add arguments to source
         logging.debug('%s', self.arguments)

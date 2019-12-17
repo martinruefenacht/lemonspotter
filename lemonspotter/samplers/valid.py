@@ -112,12 +112,12 @@ class ValidSampler(Sampler):
 
                 arguments.add(Argument(Variable(parameter.type, name, partition.value)))
 
-            if partition.type is PartitionType.NUMERIC:
+            elif partition.type is PartitionType.NUMERIC:
                 name = f'{parameter.name}_arg_{partition.value}'
 
                 arguments.add(Argument(Variable(parameter.type, name, partition.value)))
 
-            if partition.type is PartitionType.PREDEFINED:
+            elif partition.type is PartitionType.PREDEFINED:
                 name = f'{parameter.name}_arg_{partition.value}'
 
                 arguments.add(Argument(Variable(parameter.type,
@@ -125,14 +125,15 @@ class ValidSampler(Sampler):
                                                 partition.value,
                                                 predefined=True)))
 
-            if partition.type is PartitionType.CONSTANT:
+            elif partition.type is PartitionType.CONSTANT:
                 for constant in parameter.type.constants:
                     name = f'{parameter.name}_arg_{constant.name}'
 
                     arguments.add(Argument(constant.generate_variable(name)))
 
-            logging.error(('Trying to generate variable from unknown partition'
-                           ' type %s in ValidSampler.'),
-                          partition.type)
+            else:
+                logging.error(('Trying to generate variable from unknown partition'
+                               ' type %s in ValidSampler.'),
+                              partition.type)
 
         return arguments
