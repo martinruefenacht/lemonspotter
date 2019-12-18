@@ -21,6 +21,12 @@ class Argument:
         self._variable = variable
         self._dependencies = dependencies
 
+    def __str__(self) -> str:
+        return self._variable.name
+
+    def __repr__(self) -> str:
+        return self._variable.name
+
     @property
     def variable(self) -> Variable:
         """

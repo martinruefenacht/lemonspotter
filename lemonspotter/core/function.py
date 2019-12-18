@@ -2,7 +2,7 @@
 This module defines the function class which respresents functions from the specification.
 """
 
-from typing import Mapping, Any, AbstractSet, Sequence, Iterable
+from typing import Mapping, Any, AbstractSet, Sequence, Iterable, Optional
 
 from lemonspotter.core.database import Database
 from lemonspotter.core.type import Type
@@ -23,10 +23,10 @@ class Function:
         self.properties: Mapping[str, Any] = {}
 
         # cache
-        self._parameters = None
-        self._in_parameters = None
-        self._inout_parameters = None
-        self._out_parameters = None
+        self._parameters: Optional[Sequence[Parameter]] = None
+        self._in_parameters: Optional[Sequence[Parameter]] = None
+        self._inout_parameters: Optional[Sequence[Parameter]] = None
+        self._out_parameters: Optional[Sequence[Parameter]] = None
 
     def __repr__(self) -> str:
         """

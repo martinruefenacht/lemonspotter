@@ -55,7 +55,7 @@ class ValidSampler(Sampler):
         logging.debug('prefiltering argument lists: %s', combined)
 
         # respect filters of Function
-        def argument_filter(arguments: Mapping[Parameter, Argument]) -> bool:
+        def argument_filter(arguments: Mapping[str, Argument]) -> bool:
             for sieve in function.filters:  # any sieve needs to be True
                 # go through parameters/argument mapping, needs to match all requirements
                 for parameter_name, argument in arguments.items():  # type: ignore
@@ -77,8 +77,8 @@ class ValidSampler(Sampler):
         # convert to FunctionSample
         samples = set()
 
-        for arguments in filtered:
-            sample = FunctionSample(function, True, arguments)
+        for argument in filtered:
+            sample = FunctionSample(function, True, argument)
 
             # function without parameters
             # note sample=sample is done to avoid late binding closure behaviour!
@@ -118,7 +118,7 @@ class ValidSampler(Sampler):
                 arguments.add(Argument(Variable(parameter.type, name, partition.value)))
 
             elif partition.type is PartitionType.PREDEFINED:
-                name = f'{parameter.name}_arg_{partition.value}'
+                name = f'{partition.value}'
 
                 arguments.add(Argument(Variable(parameter.type,
                                                 name,

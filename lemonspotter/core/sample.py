@@ -27,12 +27,12 @@ class FunctionSample:
     def __init__(self,
                  function: Function,
                  valid: bool,
-                 arguments: Optional[Mapping[str, Argument]] = None,
+                 arguments: Optional[MutableMapping[str, Argument]] = None,
                  evaluator: Optional[Callable[[], bool]] = None,
                  ) -> None:
         self._function = function
         self._valid = valid
-        self._arguments = arguments if arguments else {}
+        self._arguments: MutableMapping[str, Argument] = arguments if arguments else {}
         self._evaluator = evaluator
 
         # generate out variables, return, and out parameters
@@ -93,46 +93,46 @@ class FunctionSample:
         Source.
         """
 
-        # assign predefined arguments and check for collisions
-        def check_argument(arg: Argument):
-            if arg.variable.predefined:
-                predef = source.get_variable(arg.variable.value)
-
-                if predef is None:
-                    raise RuntimeError('Predefined variable not present in source.')
-
-                if predef.type is arg.variable.type:
-                    return predef
-
-                else:
-                    # try referencing
-                    if predef.type.referencable:
-                        # create variable
-                        var = Variable(predef.type.reference(),
-                                       f'{predef.name}_ref',
-                                       f'&{predef.name}')
-
-                        return var
-
-            elif source.get_variable(arg.variable.name) is not None:
-                raise RuntimeError('Name collision found between argument and variable.')
-
-            else:
-                return arg
-
-        self._arguments = [check_argument(argument) for argument in self._arguments]
-
         # add arguments to source
-        logging.debug('%s', self.arguments)
+        logging.debug('Arguments: %s', self.arguments)
+        logging.debug('Source variables %s', source._variables)
         for parameter in self.function.parameters:
             # fetch argument
             argument = self.arguments[parameter.name]
 
             # add dependent variables to source
             # TODO
+            # same procedure as below?
 
             # add argument variable to source
-            if not source.get_variable(argument.variable.name):
+            if argument.variable.predefined:
+                # argument.variable.value has to match a source variable
+                # get variable from source
+                source_variable = source.get_variable(argument.variable.name)
+                if source_variable is None:
+                    raise RuntimeError('Predefined argument %s not found in source %s.',
+                                       argument.variable.name,
+                                       source._variables)
+
+                if source_variable is argument.variable.type:
+                    # variable found is identical to required
+                    pass
+
+                else:
+                    if source_variable.type.referencable:
+                        transition_variable = Variable(source_variable.type.reference(),
+                                                       f'{source_variable.name}_ref',
+                                                       f'&{source_variable.name}')
+                        source.add_at_start(DeclarationAssignmentStatement(transition_variable))
+                        # this variable needs to be referenced in the function statement!
+
+                        self._arguments[parameter.name] = Argument(transition_variable)
+
+                    else:
+                        raise NotImplementedError('variable of predefined found, but not same '
+                                                  'type.')
+
+            elif not source.get_variable(argument.variable.name):
                 if argument.variable.value:
                     source.add_at_start(DeclarationAssignmentStatement(argument.variable))
 
