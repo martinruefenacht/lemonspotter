@@ -115,7 +115,7 @@ def check_version() -> None:
     """
 
     if not (sys.version_info[0] >= 3 and sys.version_info[1] >= 8):
-        raise RuntimeError('CPython 3.8 is required to run LemonSpotter.')
+        raise RuntimeError('Python 3.8 is required to run LemonSpotter.')
 
 
 def main() -> None:

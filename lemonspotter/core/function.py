@@ -91,7 +91,7 @@ class Function:
     @property
     def in_parameters(self) -> Sequence[Parameter]:
         """
-        Find all parameters which are with IN or INOUT parameters.
+        Find all parameters which are with IN parameters.
         """
 
         if self._in_parameters is None:
@@ -104,7 +104,7 @@ class Function:
     @property
     def inout_parameters(self) -> Sequence[Parameter]:
         """
-        Find all parameters which are with IN or INOUT parameters.
+        Find all parameters which are with INOUT parameters.
         """
 
         if self._inout_parameters is None:
@@ -117,7 +117,7 @@ class Function:
     @property
     def out_parameters(self) -> Sequence[Parameter]:
         """
-        Find all parameters which are either OUT or INOUT parameters.
+        Find all parameters which are either OUT parameters.
         """
 
         if self._out_parameters is None:

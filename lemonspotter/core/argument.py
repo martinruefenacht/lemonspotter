@@ -17,9 +17,9 @@ class Argument:
 
     def __init__(self,
                  variable: Variable,
-                 variables: Optional[Sequence[Variable]] = None):
+                 dependencies: Optional[Sequence[Variable]] = None):
         self._variable = variable
-        self._variables = variables
+        self._dependencies = dependencies
 
     @property
     def variable(self) -> Variable:
@@ -33,14 +33,14 @@ class Argument:
         """
         """
 
-        return self._variables is not None
+        return self._dependencies is not None
 
     @property
     def dependencies(self) -> Sequence[Variable]:
         """
         """
 
-        if self._variables is None:
+        if self._dependencies is None:
             raise RuntimeError('No dependencies for this argument.')
 
-        return self._variables
+        return self._dependencies
