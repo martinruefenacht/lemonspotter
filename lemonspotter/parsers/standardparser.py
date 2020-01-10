@@ -47,9 +47,22 @@ class StandardParser:
         translation['needs_all'] = definition['needs_all']
         translation['leads_any'] = definition['leads_any']
         translation['leads_all'] = definition['leads_all']
+        translation['parameters'] = []
 
-        #  TODO parameters
-        #  TODO filter, valid combinations of parameters
+        for parameter in definition['params']:
+            param = {}
+
+            param['name'] = parameter['name']
+            param['abstract_type'] = parameter['kind']
+            param['direction'] = param['param_direction']
+            param['length'] = param['length']
+
+            # TODO pointer
+            # TODO const
+
+            translation['parameters'].append(param)
+
+        # TODO filter, valid combinations of parameters
 
         Database().add_function(Function(translation))
 
