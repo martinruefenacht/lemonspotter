@@ -42,6 +42,13 @@ class Parameter:
         return Database().get_type(self._json['abstract_type'])
 
     @property
+    def abstract_type(self) -> str:
+        """
+        """
+
+        return self._json['abstract_type']
+
+    @property
     def direction(self) -> Direction:
         """This property provides the direction of the Parameter."""
 

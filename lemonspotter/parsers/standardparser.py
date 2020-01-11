@@ -50,12 +50,15 @@ class StandardParser:
         translation['parameters'] = []
 
         for parameter in definition['params']:
+            if parameter['name'] == 'ierror':
+                continue
+
             param = {}
 
             param['name'] = parameter['name']
             param['abstract_type'] = parameter['kind']
-            param['direction'] = param['param_direction']
-            param['length'] = param['length']
+            param['direction'] = parameter['param_direction']
+            param['length'] = parameter['length']
 
             # TODO pointer
             # TODO const

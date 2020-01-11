@@ -70,6 +70,13 @@ class Function:
 
         return Database().get_type(self._json['return'])
 
+    @property
+    def return_abstract_type(self) -> str:
+        """
+        """
+
+        return self._json['return']
+
     @property  # type: ignore
     @lru_cache()
     def needs_any(self) -> AbstractSet['Function']:
