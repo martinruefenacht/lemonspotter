@@ -42,14 +42,14 @@ class StandardParser:
         translation = {}
 
         translation['name'] = definition['name']
-        translation['return'] = definition['return']
-        translation['needs_any'] = definition['needs_any']
-        translation['needs_all'] = definition['needs_all']
-        translation['leads_any'] = definition['leads_any']
-        translation['leads_all'] = definition['leads_all']
+        translation['return'] = definition['return_kind']
+        translation['needs_any'] = definition['attributes']['needs_any']
+        translation['needs_all'] = definition['attributes']['needs_all']
+        translation['leads_any'] = definition['attributes']['leads_any']
+        translation['leads_all'] = definition['attributes']['leads_all']
         translation['parameters'] = []
 
-        for parameter in definition['params']:
+        for parameter in definition['parameters']:
             param = {}
 
             param['name'] = parameter['name']
