@@ -76,7 +76,7 @@ def main() -> None:
 
         return path
 
-    for idx in range(100):
+    for idx in range(1000):
         path = generate_path()
 
         if path not in paths:
@@ -87,57 +87,21 @@ def main() -> None:
         for node in path:
             if node in no_lead_nodes:
                 # end
-                net.add_node(node.name+'_'+str(idx), label=node.name, color='#F6AE2D')
+                net.add_node(node.name+'_'+str(idx), label=node.name, color='#E76F51')
 
             elif node in no_need_nodes:
                 # start
-                net.add_node(node.name+'_'+str(idx), label=node.name, color='#F26419')
+                net.add_node(node.name+'_'+str(idx), label=node.name, color='#F4A261')
 
             elif node in independent_nodes:
-                net.add_node(node.name+'_'+str(idx), label=node.name, color='#33658A')
+                net.add_node(node.name+'_'+str(idx), label=node.name, color='#E9C46A')
 
             else:
-                net.add_node(node.name+'_'+str(idx), label=node.name, color='#758E4F')
+                net.add_node(node.name+'_'+str(idx), label=node.name, color='#2A9D8F')
 
         # edges
         for n0, n1 in zip(path, path[1:]):
-            net.add_edge(n0.name+'_'+str(idx), n1.name+'_'+str(idx), color='#86BBD8')
-
-#    # add all nodes
-#    for id, function in enumerate(Database().get_functions()):
-#        if not function.leads_all and not function.leads_any and not function.needs_all and not function.needs_any:
-#            net.add_node(function.name, color='#F4F1BB')
-#
-#        elif not function.needs_all and not function.needs_any:
-#            net.add_node(function.name, color='#ED6A5A')
-#
-#        elif not function.leads_all and not function.leads_any:
-#            net.add_node(function.name, color='#E6EBE0')
-#
-#        else:
-#            net.add_node(function.name)
-#
-#    # add need edges
-#    for function in Database().get_functions():
-#        for need in function.needs_any:
-#            if function in need.leads_all or function in need.leads_any:
-#                continue
-#
-#            net.add_edge(need.name, function.name, color='#95C623')
-#
-#    # add lead edges
-#    for function in Database().get_functions():
-#        for lead in function.leads_any:
-#            if function in lead.needs_all or function in lead.needs_any:
-#                continue
-#
-#            net.add_edge(function.name, lead.name, color='#0E4749')
-#
-#    # add critical edges, start -> end
-#    for function in Database().get_functions():
-#        for lead in function.leads_any:
-#            if function in lead.needs_any:
-#                net.add_edge(function.name, lead.name, color='#E55812')
+            net.add_edge(n0.name+'_'+str(idx), n1.name+'_'+str(idx), color='#264653')
 
     net.show('plot.html')
 
