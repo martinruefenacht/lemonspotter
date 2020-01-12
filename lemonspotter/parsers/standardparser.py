@@ -31,7 +31,8 @@ class StandardParser:
             apis = json.load(encoded)
 
             for name, definition in apis.items():
-                if 'lemonspotter' in definition and definition['lemonspotter']:
+                if ('lemonspotter' in definition['attributes'] and
+                        definition['attributes']['lemonspotter']):
                     self._parse_API(definition)
 
     def _parse_API(self, definition: Mapping) -> None:
@@ -42,14 +43,14 @@ class StandardParser:
         translation = {}
 
         translation['name'] = definition['name']
-        translation['return'] = definition['return']
-        translation['needs_any'] = definition['needs_any']
-        translation['needs_all'] = definition['needs_all']
-        translation['leads_any'] = definition['leads_any']
-        translation['leads_all'] = definition['leads_all']
+        translation['return'] = definition['return_kind']
+        translation['needs_any'] = definition['attributes']['needs_any']
+        translation['needs_all'] = definition['attributes']['needs_all']
+        translation['leads_any'] = definition['attributes']['leads_any']
+        translation['leads_all'] = definition['attributes']['leads_all']
         translation['parameters'] = []
 
-        for parameter in definition['params']:
+        for parameter in definition['parameters']:
             if parameter['name'] == 'ierror':
                 continue
 
