@@ -5,6 +5,7 @@
 **/*.json
 **/*_binary
 **/*.c
+**/*.html
 
 *.swp
 .hypothesis
