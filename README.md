@@ -5,8 +5,8 @@ This is a test and benchmark suite for MPI.
 
 The intention is to not rely on an entire library, but only incremental steps.
 
-Lemons are both tests that fail, MPI functions that don't do the correct thing and
-bad performance implementations.
+Lemons are both tests that fail, MPI functions that don't do the correct thing
+and bad performance implementations.
 
 
 # Usage
@@ -17,7 +17,8 @@ python -m lemonspotter [path_to_database]
 ```
 
 # Requirements
-To run Lemonspotter only python 3.8.0 is needed. To contribute to development, please install all packages listed in the `requirements.txt` file.
+To run Lemonspotter only python 3.8.0 is needed. To contribute to development,
+please install all packages listed in the `requirements.txt` file.
 
 ## Arguments
 
@@ -26,5 +27,3 @@ To run Lemonspotter only python 3.8.0 is needed. To contribute to development, p
 
 #### Print Lemonspotter Version
 ```-v, --version```
-
-

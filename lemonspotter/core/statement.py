@@ -23,6 +23,10 @@ class Statement:
         self._statement: Optional[str] = None
         self._comment: str = comment.strip() if comment else ''
 
+    def __str__(self) -> str:
+        assert self._statement is not None
+        return self._statement
+
     @property
     def comment(self) -> str:
         return self._comment
@@ -236,7 +240,7 @@ class ReturnStatement(Statement):
         super().__init__(comment=comment)
 
         if not expression:
-            raise Exception('Expression passed to ReturnStatement is empty.')
+            raise RuntimeError('Expression passed to ReturnStatement is empty.')
 
         self._statement = f'return {expression};'
 

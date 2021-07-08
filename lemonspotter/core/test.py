@@ -134,7 +134,7 @@ class Test:
         """This property provides the Source of the Test."""
 
         if self._source is None:
-            raise Exception('Source is None.')
+            raise RuntimeError('Source is None.')
 
         return self._source
 

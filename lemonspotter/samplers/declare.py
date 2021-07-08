@@ -3,13 +3,16 @@ This module contains the definition of the DefaultSampler.
 """
 
 import logging
-from typing import Iterable
+from typing import Sequence, Iterable
+from itertools import chain
 
 from lemonspotter.core.parameter import Direction
 from lemonspotter.core.sampler import Sampler
 from lemonspotter.core.variable import Variable
 from lemonspotter.core.function import Function
 from lemonspotter.core.sample import FunctionSample
+from lemonspotter.core.parameter import Parameter
+from lemonspotter.core.argument import Argument
 
 
 class DeclarationSampler(Sampler):
@@ -23,6 +26,8 @@ class DeclarationSampler(Sampler):
 
     def generate_samples(self, function: Function) -> Iterable[FunctionSample]:
         """
+        Generate a FunctionSample which correctly declares everything such
+        that it is able to be used to build a source fragment.
         """
 
         logging.debug('DeclarationSampler used for %s', function.name)
@@ -32,22 +37,22 @@ class DeclarationSampler(Sampler):
                                       'code, not runnable.')
 
         # generate valid but empty arguments
-        arguments = []
-        variables = set()
+        arguments = {}
 
-        for parameter in function.parameters:  # type: ignore
-            if parameter.direction == Direction.OUT and parameter.type.dereferencable:
-                mem_alloc = f'malloc(sizeof({parameter.type.dereference().language_type}))'
+        for parameter in chain(function.in_parameters,
+                               function.inout_parameters):  # type: ignore
+            arguments[parameter.name] = self._generate_argument(parameter)
 
-                variable = Variable(parameter.type, f'arg_{parameter.name}', mem_alloc)
-                variables.add(variable)
-            else:
-                variable = Variable(parameter.type, f'arg_{parameter.name}')
-                variables.add(variable)
-
-            logging.debug('declaring variable argument: %s', variable.name)
-            arguments.append(variable)
-
-        sample = FunctionSample(function, True, variables, arguments, evaluator)
+        sample = FunctionSample(function, True, arguments, evaluator)
 
         return set([sample])
+
+    @classmethod
+    def _generate_argument(cls, parameter: Parameter) -> Argument:
+        """
+        Generate all variables required for this parameter.
+        """
+
+        assert parameter.direction is not Direction.OUT
+
+        return Argument(Variable(parameter.type, f'arg_{parameter.name}'))

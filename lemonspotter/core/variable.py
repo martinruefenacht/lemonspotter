@@ -40,7 +40,7 @@ class Variable:
         """This property provides the name of the Variable."""
 
         if self._name is None:
-            raise Exception('Name is None.')
+            raise RuntimeError('Name is None.')
 
         return self._name
 
@@ -49,7 +49,7 @@ class Variable:
         """"""
 
         if name is None:
-            raise Exception('Assigning None to name of Variable.')
+            raise RuntimeError('Assigning None to name of Variable.')
 
         self._name = name
 
@@ -64,7 +64,7 @@ class Variable:
         """This allows setting the value of the Variable."""
 
         if value is None:
-            raise Exception('Assigning None to value of Variable.')
+            raise RuntimeError('Assigning None to value of Variable.')
 
         self._value = value
 
