@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/martinruefenacht/lemonspotter.svg?token=pPyajLGh7dycZ7EPBDvw&branch=develop)](https://travis-ci.com/martinruefenacht/lemonspotter)
+[![LemonSpotter Test Suite](https://github.com/martinruefenacht/lemonspotter/actions/workflows/testsuite.yml/badge.svg)](https://github.com/martinruefenacht/lemonspotter/actions/workflows/testsuite.yml)
 
 # Lemonspotter
 This is a test and benchmark suite for MPI.
