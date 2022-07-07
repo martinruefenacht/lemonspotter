@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import argparse
 import json
+import os
 
 from lemonspotter.core.runtime import Runtime
 
@@ -20,6 +21,10 @@ def parse_arguments():
                         action='version',
                         version='%(prog)s 0.1',
                         help='Print version of LemonSpotter')
+
+    parser.add_argument('-c', '--clean',
+                        action='store_true',
+                        help='Removes existing generated tests')
 
     parser.add_argument('--log',
                         default='warning',
@@ -165,8 +170,13 @@ def main() -> None:
 
         print(json.dumps(report, indent=2))
 
+    elif arguments.clean:
+        os.remove(Path('generated_tests/'))
+
     elif not arguments.specification:
         logging.error("Database path not defined")
+
+
 
     else:
         # initialize and load the database
