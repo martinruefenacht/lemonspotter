@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import argparse
 import json
+import shutil
 import os
 
 from lemonspotter.core.runtime import Runtime
@@ -171,12 +172,14 @@ def main() -> None:
         print(json.dumps(report, indent=2))
 
     elif arguments.clean:
-        os.remove(Path('generated_tests/'))
+        path = Path('generated_tests/')
+        if os.path.isfile(path):
+            shutil.rmtree(path)
+        else:
+            logging.error("generated_tests directory not found")
 
     elif not arguments.specification:
         logging.error("Database path not defined")
-
-
 
     else:
         # initialize and load the database
